@@ -24,8 +24,8 @@ public class ArticleController {
     @RequestMapping("add")
     @ResponseBody
     public String add(String title, String content) {
-        Article article = new Article(1, title, content, Util.getCurrentDate());
-        articleRepository.save(article);
+        Article article = new Article(title, content, Util.getCurrentDate());
+        articleRepository.save(article); // save -> ID가 없으면 insert, ID가 있으면 update
 
         return "게시물이 등록되었습니다.";
     }
