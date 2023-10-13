@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 @Controller
@@ -20,7 +22,6 @@ public class ArticleController {
     ArticleRepository articleRepository;
     Scanner scan = new Scanner(System.in);
 
-
     @RequestMapping("add")
     @ResponseBody
     public String add(String title, String content) {
@@ -31,31 +32,30 @@ public class ArticleController {
     }
 
 
-//    @RequestMapping("list")
-//    public String list(Model model) {
-//        ArrayList<Article> articles = articleRepository.findAllArticles();
-//
-//        model.addAttribute("articleList", articles);
-//        // 템플릿 필요 -> 나 html에서 자바 하고싶어요.
-//        return "article_list";
-//    }
-//
-//
-//    @RequestMapping("update")
-//    @ResponseBody
-//    public String update(int targetId, String newTitle, String newContent) {
-//
-//        Article article = articleRepository.findById(targetId);
-//
-//        if (article == null) {
-//            return "없는 게시물입니다.";
-//        } else {
-//            article.setTitle(newTitle);
-//            article.setContent(newContent);
-//
-//            return "수정이 완료되었습니다.";
-//        }
-//    }
+    @RequestMapping("list")
+    public String list(Model model) {
+        List<Article> articles = articleRepository.findAll();
+        model.addAttribute("articleList", articles);
+        // 템플릿 필요 -> 나 html에서 자바 하고싶어요.
+        return "article_list";
+    }
+
+    @RequestMapping("update")
+    @ResponseBody
+    public String update(int targetId, String newTitle, String newContent) {
+
+        Optional<Article> op = articleRepository.findById(targetId);
+        Article article = op.get();
+        if (article == null) {
+            return "없는 게시물입니다.";
+        } else {
+            article.setTitle(newTitle);
+            article.setContent(newContent);
+            articleRepository.save(article); // save는 ID가 있으면 update, ID가 없으면 insert
+
+            return "수정이 완료되었습니다.";
+        }
+    }
 //
 //
 //    @RequestMapping("delete")
