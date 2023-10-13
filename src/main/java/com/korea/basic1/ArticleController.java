@@ -2,6 +2,7 @@ package com.korea.basic1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,11 +28,12 @@ public class ArticleController {
 
 
     @RequestMapping("list")
-    @ResponseBody
-    public ArrayList<Article> list() {
+    public String list(Model model) {
         ArrayList<Article> articles = articleRepository.findAllArticles();
-        return articles;
 
+        model.addAttribute("articleList", articles);
+        // 템플릿 필요 -> 나 html에서 자바 하고싶어요.
+        return "article_list";
     }
 
 
