@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
@@ -88,23 +89,11 @@ public class ArticleController {
         }
     }
 
-    public void search() {
-        System.out.print("검색 키워드를 입력해주세요 : ");
-        String keyword = scan.nextLine();
+
+    @RequestMapping("search")
+    @ResponseBody
+    public ArrayList<Article> search(@RequestParam(defaultValue = "") String keyword) {
         ArrayList<Article> searchedArticles = articleRepository.findByTitle(keyword);
-        articleView.printArticles(searchedArticles);
-    }
-
-    public int getParamInt(String input, int defaulValue) {
-
-        try {
-            int num = Integer.parseInt(input);
-            return num;
-
-        } catch (NumberFormatException e) {
-            System.out.println("숫자만 입력 가능합니다.");
-        }
-
-        return defaulValue;
+        return searchedArticles;
     }
 }
