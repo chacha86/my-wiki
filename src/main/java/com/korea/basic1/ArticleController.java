@@ -49,20 +49,18 @@ public class ArticleController {
         }
     }
 
-    public void delete() {
-        System.out.print("삭제할 게시물 번호 : ");
-        int targetId = getParamInt(scan.nextLine(), -1);
 
-        if(targetId == -1) {
-            return;
-        }
+    @RequestMapping("delete")
+    @ResponseBody
+    public String delete(int targetId) {
 
         Article article = articleRepository.findById(targetId);
 
         if (article == null) {
-            System.out.println("없는 게시물입니다.");
+            return "없는 게시물입니다.";
         } else {
             articleRepository.delete(article);
+            return "삭제가 완료되었습니다.";
         }
     }
 
