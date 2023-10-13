@@ -1,5 +1,6 @@
 package com.korea.basic1;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -64,23 +65,30 @@ public class ArticleController {
         }
     }
 
-    public void detail() {
-        // 중복 -> 함수
-
-        System.out.print("상세보기 할 게시물 번호를 입력해주세요 : ");
-        int targetId = getParamInt(scan.nextLine(), -1);
-        if(targetId == -1) {
-            return;
-        }
+    @RequestMapping("detail")
+    @ResponseBody
+    public String detail(int targetId) {
         Article article = articleRepository.findById(targetId);
 
         if (article == null) {
-            System.out.println("존재하지 않는 게시물입니다.");
+            return "존재하지 않는 게시물입니다.";
         } else {
             article.setHit(article.getHit() + 1);
-            articleView.printArticleDetail(article);
+            String jsonString = "";
+            try {
+                // ObjectMapper 인스턴스 생성
+                ObjectMapper mapper = new ObjectMapper();
+
+                // Java 객체를 JSON 문자열로 변환
+                 jsonString = mapper.writeValueAsString(article);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return jsonString;
         }
-    }
+   }
 
     public void search() {
         System.out.print("검색 키워드를 입력해주세요 : ");
