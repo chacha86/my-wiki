@@ -1,8 +1,8 @@
 package com.korea.basic1;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,11 +28,12 @@ public class ArticleController {
 
 
     @RequestMapping("list")
-    @ResponseBody
-    public ArrayList<Article> list() {
+    public String list(Model model) {
         ArrayList<Article> articles = articleRepository.findAllArticles();
-        return articles;
 
+        model.addAttribute("articleList", articles);
+        // 템플릿 필요 -> 나 html에서 자바 하고싶어요.
+        return "article_list";
     }
 
 
@@ -79,16 +80,19 @@ public class ArticleController {
             String jsonString = "";
 
             try {
+                // ObjectMapper 인스턴스 생성
                 ObjectMapper mapper = new ObjectMapper();
-                jsonString = mapper.writeValueAsString(article);
+
+                // Java 객체를 JSON 문자열로 변환
+                 jsonString = mapper.writeValueAsString(article);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             return jsonString;
         }
-    }
-
+   }
 
     @RequestMapping("search")
     @ResponseBody
