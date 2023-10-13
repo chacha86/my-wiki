@@ -32,27 +32,20 @@ public class ArticleController {
 
     }
 
-    public void update() {
 
-        System.out.print("수정할 게시물 번호 : ");
-        int targetId = getParamInt(scan.nextLine(), -1);
-        if(targetId == -1) {
-            return;
-        }
+    @RequestMapping("update")
+    @ResponseBody
+    public String update(int targetId, String newTitle, String newContent) {
+
         Article article = articleRepository.findById(targetId);
 
         if (article == null) {
-            System.out.println("없는 게시물입니다.");
+            return "없는 게시물입니다.";
         } else {
-            System.out.print("제목 : ");
-            String newTitle = scan.nextLine();
-            System.out.print("내용 : ");
-            String newContent = scan.nextLine();
-
             article.setTitle(newTitle);
             article.setContent(newContent);
 
-            System.out.println("수정이 완료되었습니다.");
+            return "수정이 완료되었습니다.";
         }
     }
 
