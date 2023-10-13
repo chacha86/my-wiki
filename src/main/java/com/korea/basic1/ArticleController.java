@@ -17,20 +17,19 @@ public class ArticleController {
 
     @RequestMapping("add")
     @ResponseBody
-    public void add() {
-        System.out.print("게시물 제목을 입력해주세요 : ");
-        String title = scan.nextLine();
-        System.out.print("게시물 내용을 입력해주세요 : ");
-        String content = scan.nextLine();
-
+    public String add(String title, String content) {
         articleRepository.insert(title, content);
 
-        System.out.println("게시물이 등록되었습니다.");
+        return "게시물이 등록되었습니다.";
     }
 
-    public void list() {
+
+    @RequestMapping("list")
+    @ResponseBody
+    public ArrayList<Article> list() {
         ArrayList<Article> articles = articleRepository.findAllArticles();
-        articleView.printArticles(articles);
+        return articles;
+
     }
 
     public void update() {
