@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -14,15 +15,13 @@ import java.util.Optional;
 import java.util.Scanner;
 
 @Controller
+@RequestMapping("/article")
 public class ArticleController {
-
-    ArticleView articleView = new ArticleView();
 
     @Autowired
     ArticleRepository articleRepository;
-    Scanner scan = new Scanner(System.in);
 
-    @RequestMapping("add")
+    @RequestMapping("/add")
     @ResponseBody
     public String add(String title, String content) {
         Article article = new Article(title, content, Util.getCurrentDate());
@@ -32,11 +31,13 @@ public class ArticleController {
     }
 
 
-    @RequestMapping("list")
-    public String list(Model model) {
+    @RequestMapping("/list/{id}")
+    public String list(Model model, @PathVariable int id) {
+        System.out.println(id);
         List<Article> articles = articleRepository.findAll();
+        Article article = articleRepository.findById(id).get();
         model.addAttribute("articleList", articles);
-        // 템플릿 필요 -> 나 html에서 자바 하고싶어요.
+        model.addAttribute("detail", article);
         return "article_list";
     }
 

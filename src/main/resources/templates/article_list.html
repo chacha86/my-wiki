@@ -3,11 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<h1>게시물 목록</h1>
-<ul th:each="article : ${articleList}">
-    <li th:text="${article.title}"></li>
-</ul>
+<body class="text-center">
+<div class="header bg-gray-800">
+    <h1 class="text-white text-[2rem] p-[20px]">logo</h1>
+</div>
+<div class="main flex h-[600px]">
+    <div class="left-side-menu w-[25%] px-[30px] bg-red-300 overflow-scroll">
+        <h1 class="text-[1.5rem] p-[20px] border-b-[1px] font-bold">게시물 목록</h1>
+        <ul th:each="article : ${articleList}">
+            <li th:with="customClass=${article.id == detail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"
+                th:class="|${customClass}|">
+                <a class="block p-[20px] w-[100%]" th:href="@{|/article/list/${article.id}|}"
+                   th:text="${article.title}"></a>
+            </li>
+            <!--            <li th:if="${article.id == 1}" class="bg-green-200 p-[20px] border-b-[3px] border-red-400">-->
+            <!--                <a href="list" th:text="${article.title}"></a>-->
+            <!--            </li>-->
+            <!--            <li th:if="${article.id != 1}" class="p-[20px] border-b-[1px]">-->
+            <!--                <a href="#" th:text="${article.title}"></a>-->
+            <!--            </li>-->
+        </ul>
+    </div>
+    <div class="content w-[75%] bg-blue-300 overflow-x-hidden overflow-y-hidden">
+        <div th:replace="~{fragments/detail :: detail_edit}"></div>
+<!--        <div th:replace="fragments/detail :: detail_view"></div>-->
+    </div>
+</div>
+<div class="foot text-center text-white bg-gray-800 h-[50px]">
+    <h1>footer</h1>
+</div>
 </body>
 </html>

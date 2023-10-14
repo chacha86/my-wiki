@@ -28,9 +28,11 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'com.mysql:mysql-connector-j:8.0.33'
+//	implementation 'com.mysql:mysql-connector-j:8.0.33'
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.2.0'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.commonmark:commonmark:0.21.0'
 }
 
 tasks.named('test') {
