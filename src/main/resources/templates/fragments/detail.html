@@ -8,24 +8,32 @@
 <div class="h-[100%]" th:fragment="detail_edit">
     <script>
         function resizeTextarea() {
-            const textarea = document.getElementById('autoResizeTextarea');
-            console.log(textarea)
-            // 초기화
-            textarea.style.height = 'auto';
-            // 스크롤 높이를 기반으로 높이를 조절
-            textarea.style.height = (textarea.scrollHeight) + 'px';
+            // const textarea = document.getElementById('autoResizeTextarea');
+            // console.log(textarea)
+            // // 초기화
+            // textarea.style.height = 'auto';
+            // // 스크롤 높이를 기반으로 높이를 조절
+            // textarea.style.height = (textarea.scrollHeight) + 'px';
+            // 일단 높이를 초기화해주어야 스크롤 높이를 올바르게 측정할 수 있습니다.
+            this.style.height = 'auto';
+
+            // 스크롤 높이와 뷰포트 높이를 비교하여 높이를 조절합니다.
+            if (this.scrollHeight > this.clientHeight) {
+                this.style.height = this.scrollHeight + 'px';
+            }
+
         }
     </script>
     <input class="block bg-blue-300 border-b-[1px] my-[20px] ml-[20px] overflow-scroll focus:outline-none" type="text" name="title" th:value="${detail.title}"/>
-    <textarea onkeydown="resizeTextarea()" id="autoResizeTextarea" class="w-[100%] ml-[20px] resize-none bg-blue-300 border-blue-300 focus:outline-none" th:text="${detail.content}">
+    <textarea oninput="resizeTextarea()" id="autoResizeTextarea" class="w-[100%] h-[100%] pl-[20px] resize-none bg-blue-300 border-blue-300 overflow-scroll focus:outline-none" name="content" th:text="${detail.content}">
     </textarea>
 </div>
 
 
-<div th:fragment="detail_view">
+<div class="h-[100%]" th:fragment="detail_view">
     <h1 class="text-[1.5rem] p-[20px] border-b-[1px] font-bold" th:text="${detail.title}"></h1>
     <div>
-        <div th:utext="${detail.content}"></div>
+        <div class="w-[100%] h-[100%] pl-[20px] bg-blue-300 border-blue-300" th:utext="${detail.content}"></div>
     </div>
 </div>
 

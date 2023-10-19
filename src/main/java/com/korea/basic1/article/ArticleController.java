@@ -1,6 +1,5 @@
-package com.korea.basic1;
+package com.korea.basic1.article;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,22 +8,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 @Controller
 @RequestMapping("/article")
 public class ArticleController {
 
+    private enum DetailMode {
+        EDIT,
+        VIEW
+    }
+
     @Autowired
     ArticleRepository articleRepository;
+
+    @RequestMapping("/test")
+    public String test() {
+        return "test";
+    }
 
     @RequestMapping("/add")
     @ResponseBody
     public String add(String title, String content) {
-        Article article = new Article(title, content, Util.getCurrentDate());
+        Article article = Article.builder()
+                .title(title)
+                .content(content)
+                .hit(0)
+                .createDate(LocalDateTime.now())
+                .build();
         articleRepository.save(article); // save -> ID가 없으면 insert, ID가 있으면 update
 
         return "게시물이 등록되었습니다.";
@@ -32,30 +45,30 @@ public class ArticleController {
 
 
     @RequestMapping("/list/{id}")
-    public String list(Model model, @PathVariable int id) {
-        System.out.println(id);
+    public String list(Model model, @PathVariable Long id, @RequestParam(defaultValue = "EDIT") DetailMode mode) {
         List<Article> articles = articleRepository.findAll();
         Article article = articleRepository.findById(id).get();
         model.addAttribute("articleList", articles);
         model.addAttribute("detail", article);
+        model.addAttribute("mode", mode);
+
         return "article_list";
     }
 
     @RequestMapping("update")
-    @ResponseBody
-    public String update(int targetId, String newTitle, String newContent) {
+    public String update(Long id, String title, String content) {
 
-        Optional<Article> op = articleRepository.findById(targetId);
+        Optional<Article> op = articleRepository.findById(id);
         Article article = op.get();
         if (article == null) {
-            return "없는 게시물입니다.";
+            new IllegalArgumentException("해당 게시물은 존재하지 않습니다.");
         } else {
-            article.setTitle(newTitle);
-            article.setContent(newContent);
+            article.setTitle(title);
+            article.setContent(content);
             articleRepository.save(article); // save는 ID가 있으면 update, ID가 없으면 insert
-
-            return "수정이 완료되었습니다.";
         }
+
+        return String.format("redirect:/article/list/%d", id);
     }
 //
 //

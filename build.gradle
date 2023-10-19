@@ -28,11 +28,18 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//	implementation 'com.mysql:mysql-connector-j:8.0.33'
 	implementation 'org.mariadb.jdbc:mariadb-java-client:3.2.0'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.commonmark:commonmark:0.21.0'
+	implementation "org.springframework.boot:spring-boot-starter-security"
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation:3.1.4'
+
 }
 
 tasks.named('test') {

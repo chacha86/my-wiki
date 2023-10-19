@@ -3,36 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="/github-markdown.css" type="text/css"/>
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
+    <link rel="stylesheet" href="/test.css"/>
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css"
+    />
+    <link
+            rel="stylesheet"
+            href="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight.min.css"
+    />
+<!--    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.3/dist/full.css" rel="stylesheet" type="text/css"/>-->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="text-center">
-<div class="header bg-gray-800">
-    <h1 class="text-white text-[2rem] p-[20px]">logo</h1>
-</div>
-<div class="main flex h-[600px]">
-    <div class="left-side-menu w-[25%] px-[30px] bg-red-300 overflow-scroll">
-        <h1 class="text-[1.5rem] p-[20px] border-b-[1px] font-bold">게시물 목록</h1>
-        <ul th:each="article : ${articleList}">
-            <li th:with="customClass=${article.id == detail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"
-                th:class="|${customClass}|">
-                <a class="block p-[20px] w-[100%]" th:href="@{|/article/list/${article.id}|}"
-                   th:text="${article.title}"></a>
-            </li>
-            <!--            <li th:if="${article.id == 1}" class="bg-green-200 p-[20px] border-b-[3px] border-red-400">-->
-            <!--                <a href="list" th:text="${article.title}"></a>-->
-            <!--            </li>-->
-            <!--            <li th:if="${article.id != 1}" class="p-[20px] border-b-[1px]">-->
-            <!--                <a href="#" th:text="${article.title}"></a>-->
-            <!--            </li>-->
-        </ul>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
+<!-- 하이라이트 라이브러리, 언어 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/php.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/php-template.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/sql.min.js"></script>
+<!-- 토스트 UI 에디터, 신택스 하이라이트 플러그인 추가 -->
+<script src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
+<form id="updateForm" action="/article/update" method="post" onsubmit="return false">
+    <div class="header bg-gray-800">
+        <h1 class="text-white text-[2rem] p-[20px]">logo</h1>
     </div>
-    <div class="content w-[75%] bg-blue-300 overflow-x-hidden overflow-y-hidden">
-        <div th:replace="~{fragments/detail :: detail_edit}"></div>
-<!--        <div th:replace="fragments/detail :: detail_view"></div>-->
+    <div class="main h-[750px] overflow-hidden flex">
+        <div class="left-side-menu w-[25%] px-[30px] bg-red-300 overflow-y-scroll">
+            <h1 class="text-[1.5rem] p-[20px] border-b-[1px] font-bold">게시물 목록</h1>
+            <ul th:each="article : ${articleList}">
+                <li th:with="customClass=${article.id == detail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"
+                    th:class="|${customClass}|">
+                    <a class="block p-[20px] w-[100%]" th:href="@{|/article/list/${article.id}|}"
+                       th:text="${article.title}"></a>
+                </li>
+            </ul>
+        </div>
+        <div class="content w-[75%] overflow-x-hidden overflow-y-hidden">
+            <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text" name="title"
+                   th:value="${detail.title}">
+            <div class="toast-editor-container">
+                <div id="editor" class="text-red text-left"></div>
+            </div>
+        </div>
     </div>
-</div>
-<div class="foot text-center text-white bg-gray-800 h-[50px]">
-    <h1>footer</h1>
-</div>
+    <div>
+        <input type="hidden" name="targetId" th:value="${detail.id}">
+        <input type="hidden" name="content">
+    </div>
+</form>
+<!--<div class="foot text-center text-white bg-gray-800 h-[50px]">-->
+<!--    <h1>footer</h1>-->
+<!--</div>-->
+<script th:inline="javascript">
+    const Editor = toastui.Editor;
+    const editor = new Editor({
+        el: document.querySelector("#editor"),
+        plugins: [toastui.Editor.plugin.codeSyntaxHighlight],
+        height: "730px",
+        initialEditType: "markdown",
+        previewStyle: "horizontal",
+        hideModeSwitch: true,
+        useCommandShortcut: false,
+        initialValue: [[${detail.content}]]
+    });
+    const wysiwygIframe = document.querySelector('.md-mode .ProseMirror');
+    wysiwygIframe.setAttribute('spellcheck', 'false');
+    document.addEventListener('keydown', handleKeyDown, {capture: true});
+
+    titleInput = document.querySelector("input[name='title']");
+    titleInput.setAttribute('spellcheck', 'false');
+    titleInput.addEventListener('keydown', function (e) {
+        if (e.keyCode === 13) {
+            e.preventDefault();
+            editor.focus();
+        }
+    })
+
+    function handleKeyDown(event) {
+        // Ctrl + K 단축키를 감지
+        if (event.ctrlKey && event.key.toLowerCase() === 's') {
+            event.preventDefault();
+            form = document.querySelector('#updateForm');
+            form.content.value = editor.getMarkdown();
+            console.log(form.content.value);
+            form.submit();
+            event.stopPropagation();  // 이벤트 전파 중지
+            // 원하는 동작을 실행
+        } else if (event.ctrlKey && event.key.toLowerCase() === 'r') {
+            event.preventDefault();
+            if (editor.isWysiwygMode()) {
+                editor.changeMode('markdown');
+                editor.enable();
+            } else {
+                editor.changeMode('wysiwyg');
+                document.querySelector('.ww-mode .toastui-editor-contents').setAttribute('contenteditable', 'false');
+            }
+            event.stopPropagation();  // 이벤트 전파 중지
+        }
+    }
+
+</script>
 </body>
 </html>
