@@ -30,33 +30,34 @@ public class ArticleController {
     }
 
     @RequestMapping("/add")
-    @ResponseBody
-    public String add(String title, String content) {
+    public String add(Model model) {
         Article article = Article.builder()
-                .title(title)
-                .content(content)
+                .title("제목")
+                .content("")
                 .hit(0)
                 .createDate(LocalDateTime.now())
                 .build();
         articleRepository.save(article); // save -> ID가 없으면 insert, ID가 있으면 update
-
-        return "게시물이 등록되었습니다.";
+        return "redirect:/article/list/" + article.getId();
     }
 
 
     @RequestMapping("/list/{id}")
     public String list(Model model, @PathVariable Long id, @RequestParam(defaultValue = "EDIT") DetailMode mode) {
         List<Article> articles = articleRepository.findAll();
-        Article article = articleRepository.findById(id).get();
+        Optional<Article> op = articleRepository.findById(id);
+        if(op.isPresent()) {
+            Article article = op.get();
+            model.addAttribute("detail", article);
+        }
         model.addAttribute("articleList", articles);
-        model.addAttribute("detail", article);
         model.addAttribute("mode", mode);
 
         return "article_list";
     }
 
     @RequestMapping("update")
-    public String update(Long id, String title, String content) {
+    public String update(Long id, String title, @RequestParam(defaultValue = "") String content) {
 
         Optional<Article> op = articleRepository.findById(id);
         Article article = op.get();

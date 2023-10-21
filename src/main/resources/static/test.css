@@ -1,3 +1,21 @@
 .toastui-editor-toolbar {
     display: none;
 }
+@font-face {
+    font-family: 'GowunDodum-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html>body {
+    font-family: 'GowunDodum-Regular', sans-serif;
+}
+
+/* 토스트UI 폰트 적용*/
+html>body, html>body .toastui-editor-contents, html>body .ProseMirror,
+html>body .toastui-editor-md-code, html>body .toastui-editor-md-code-block
+{
+    font-family: 'GowunDodum-Regular', sans-serif;
+    font-size:24px;
+}

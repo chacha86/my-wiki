@@ -22,18 +22,21 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .formLogin((formLogin) -> formLogin
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/user/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
                         .loginPage("/user/login")
-                        .defaultSuccessUrl("/article/list/1"));
-
+                        .permitAll()
+                );
         return http.build();
     }
 
-//    @Bean
+    //    @Bean
 //    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
 //        return authenticationConfiguration.getAuthenticationManager();
 //    }
