@@ -35,13 +35,13 @@
     </div>
     <div class="main h-[750px] overflow-hidden flex">
         <div class="left-side-menu w-[25%] bg-red-300 text-white overflow-hidden">
-            <div class="h-[80%] w-[100%] px-[30px] overflow-y-scroll">
+            <div class="left-side-menu-content h-[80%] w-[100%] px-[30px] overflow-y-scroll">
                 <h1 class="text-[1.5rem] p-[20px] border-b-[1px] font-bold">게시물 목록</h1>
                 <ul th:each="article : ${articleList}">
                     <li th:with="customClass=${article.id == detail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"
                         th:class="|${customClass}|">
                         <a class="block p-[20px] w-[100%]" th:href="@{|/article/list/${article.id}|}"
-                           th:text="${article.title}"></a>
+                           th:text="${article.title}" th:id="|article_${article.id}|" onclick="test();"></a>
                     </li>
                 </ul>
             </div>
@@ -73,7 +73,7 @@
         plugins: [toastui.Editor.plugin.codeSyntaxHighlight],
         height: "730px",
         initialEditType: "markdown",
-        previewStyle: "horizontal",
+        previewStyle: "vertical",
         hideModeSwitch: true,
         initialValue: [[${detail.content}]]
     });
@@ -88,17 +88,43 @@
             e.preventDefault();
             editor.focus();
         }
-    })
+    });
 
-    var sel;
+    // 저장된 스크롤 값을 불러오기
+    const leftSideMenu = document.querySelector('.left-side-menu-content');
+    const savedPosition = localStorage.getItem('scrollPosition');
+    console.log(savedPosition);
+    if(!(savedPosition === 'undefined' || savedPosition == null)) {
+        leftSideMenu.scrollTop = savedPosition;
+    }
 
+    // front에서 스크롤 조정. 너무 번거로움. 그냥 서버에 scroll값 넘겨서 처리하자.
+    // let leftSideMenu = document.querySelector('.left-side-menu-content');
+    // leftSideMenu.scrollTop = 0;
+    // let itemHeight = 70;
+    // console.log(leftSideMenu.clientHeight);
+    // console.log(itemHeight);
+    // console.log(leftSideMenu.clientHeight / itemHeight);
+    //
+    // scrollMoveThresh = Math.floor(leftSideMenu.clientHeight / itemHeight);
+    // let articleId = [[${detail.id + 1}]]; // 게시물 제목 헤더 포함해야 하므로
+    // scrollMoveValue = itemHeight * (articleId - scrollMoveThresh);
+    // console.log(articleId);
+    // console.log(scrollMoveValue);
+    // leftSideMenu.scrollTop = scrollMoveValue;
+
+    function test() {
+        console.log('test');
+        let leftSideMenu = document.querySelector('.left-side-menu-content');
+        console.log(leftSideMenu.scrollTop);
+        localStorage.setItem('scrollPosition', leftSideMenu.scrollTop);
+    }
     function handleKeyDown(event) {
         // Ctrl + K 단축키를 감지
         if (event.ctrlKey && event.key.toLowerCase() === 's') {
             event.preventDefault();
             form = document.querySelector('#updateForm');
             form.content.value = editor.getMarkdown();
-            console.log(form.content.value);
             form.submit();
             event.stopPropagation();  // 이벤트 전파 중지
             // 원하는 동작을 실행
@@ -106,10 +132,12 @@
             event.preventDefault();
             if (editor.isWysiwygMode()) {
                 editor.changeMode('markdown');
+                document.querySelector('input[name="title"]').readOnly = false;
                 editor.blur();
             } else {
                 editor.changeMode('wysiwyg');
                 document.querySelector('.ww-mode .toastui-editor-contents').setAttribute('contenteditable', 'false');
+                document.querySelector('input[name="title"]').readOnly = true;
             }
             event.stopPropagation();  // 이벤트 전파 중지
         }

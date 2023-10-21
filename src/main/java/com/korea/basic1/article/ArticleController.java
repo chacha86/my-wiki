@@ -38,7 +38,7 @@ public class ArticleController {
                 .createDate(LocalDateTime.now())
                 .build();
         articleRepository.save(article); // save -> ID가 없으면 insert, ID가 있으면 update
-        return "redirect:/article/list/" + article.getId();
+        return "redirect:/article/list/" + article.getId() + "#article_13";
     }
 
 
