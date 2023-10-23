@@ -36,25 +36,28 @@
     <div class="main h-[750px] overflow-hidden flex">
         <div class="left-side-menu w-[15%] bg-red-300 text-white overflow-hidden">
             <div class="left-side-menu-content h-[80%] w-[100%] px-[30px] overflow-y-scroll">
-                <h1 class="text-[1.5rem] p-[20px] border-b-[1px] font-bold">게시물 목록</h1>
-                <ul th:each="notePage : ${notePageList}">
-                    <li th:with="customClass=${notePage.id == detail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"
+                <h1 class="text-[1.5rem] p-[20px] border-b-[1px] font-bold">노트 목록</h1>
+                <ul th:each="notePage : ${noteList}">
+                    <li th:with="customClass=${notePage.id == noteDetail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"
                         th:class="|${customClass}|">
                         <a class="block p-[10px] w-[100%]" th:href="@{|/notePage/list/${notePage.id}|}"
-                           th:text="${notePage.title}" th:id="|article_${notePage.id}|" onclick="setScroll();"></a>
+                           th:text="${notePage.name}" th:id="|article_${notePage.id}|" onclick="setScroll();"></a>
                     </li>
                 </ul>
             </div>
             <div>
                 <a class="block bg-gray-100 p-[10px] text-black border-[2px] border-gray-300 hover:bg-gray-800 hover:text-white"
-                   th:href="@{/note/page/add}">+ 노트 추가</a>
+                   th:href="@{/note/add}">+ 노트 추가</a>
+<!--                <form th:action="@{/note/add}">-->
+<!--                    <input type="button" value="+ 노트 추가">-->
+<!--                </form>-->
             </div>
         </div>
         <div class="content w-[85%] overflow-x-hidden overflow-y-hidden">
             <div class="flex justify-between">
                 <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
                        name="title"
-                       th:value="${detail.title}">
+                       th:value="${pageDetail.title}">
                 <div class="mr-[20px] mt-[15px]"><a href="#" class="font-bold text-red-500" onclick="confirmDelete()">X</a></div>
             </div>
             <div class="toast-editor-container">
@@ -63,7 +66,7 @@
         </div>
     </div>
     <div>
-        <input type="hidden" name="noteId" th:value="${detail.id}">
+        <input type="hidden" name="noteId" th:value="${pageDetail.id}">
         <input type="hidden" name="content">
     </div>
 </form>
@@ -102,7 +105,7 @@
         initialEditType: "markdown",
         previewStyle: "vertical",
         hideModeSwitch: true,
-        initialValue: [[${detail.content}]]
+        initialValue: [[${pageDetail.content}]]
     });
     const wysiwygIframe = document.querySelector('.md-mode .ProseMirror');
     wysiwygIframe.setAttribute('spellcheck', 'false');
@@ -134,7 +137,6 @@
     // console.log(leftSideMenu.clientHeight / itemHeight);
     //
     // scrollMoveThresh = Math.floor(leftSideMenu.clientHeight / itemHeight);
-    // let articleId = [[${detail.id + 1}]]; // 게시물 제목 헤더 포함해야 하므로
     // scrollMoveValue = itemHeight * (articleId - scrollMoveThresh);
     // console.log(articleId);
     // console.log(scrollMoveValue);
