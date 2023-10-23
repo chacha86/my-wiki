@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-theme="light" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -29,43 +29,70 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/sql.min.js"></script>
 <!-- 토스트 UI 에디터, 신택스 하이라이트 플러그인 추가 -->
 <script src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
-<form id="updateForm" th:action="@{/article/update}" method="post" onsubmit="return false">
+<form id="updateForm" th:action="@{/notePage/update}" method="post" onsubmit="return false">
     <div class="header bg-gray-800">
         <h1 class="text-white text-[2rem] p-[20px]">logo</h1>
     </div>
     <div class="main h-[750px] overflow-hidden flex">
-        <div class="left-side-menu w-[25%] bg-red-300 text-white overflow-hidden">
+        <div class="left-side-menu w-[15%] bg-red-300 text-white overflow-hidden">
             <div class="left-side-menu-content h-[80%] w-[100%] px-[30px] overflow-y-scroll">
                 <h1 class="text-[1.5rem] p-[20px] border-b-[1px] font-bold">게시물 목록</h1>
-                <ul th:each="article : ${articleList}">
-                    <li th:with="customClass=${article.id == detail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"
+                <ul th:each="notePage : ${notePageList}">
+                    <li th:with="customClass=${notePage.id == detail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"
                         th:class="|${customClass}|">
-                        <a class="block p-[20px] w-[100%]" th:href="@{|/article/list/${article.id}|}"
-                           th:text="${article.title}" th:id="|article_${article.id}|" onclick="test();"></a>
+                        <a class="block p-[10px] w-[100%]" th:href="@{|/notePage/list/${notePage.id}|}"
+                           th:text="${notePage.title}" th:id="|article_${notePage.id}|" onclick="setScroll();"></a>
                     </li>
                 </ul>
             </div>
             <div>
                 <a class="block bg-gray-100 p-[10px] text-black border-[2px] border-gray-300 hover:bg-gray-800 hover:text-white"
-                   th:href="@{/article/add}">+ 페이지 추가</a>
+                   th:href="@{/note/page/add}">+ 노트 추가</a>
             </div>
         </div>
-        <div class="content w-[75%] overflow-x-hidden overflow-y-hidden">
-            <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text" name="title"
-                   th:value="${detail.title}">
+        <div class="content w-[85%] overflow-x-hidden overflow-y-hidden">
+            <div class="flex justify-between">
+                <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
+                       name="title"
+                       th:value="${detail.title}">
+                <div class="mr-[20px] mt-[15px]"><a href="#" class="font-bold text-red-500" onclick="confirmDelete()">X</a></div>
+            </div>
             <div class="toast-editor-container">
                 <div id="editor" class="text-red text-left"></div>
             </div>
         </div>
     </div>
     <div>
-        <input type="hidden" name="id" th:value="${detail.id}">
+        <input type="hidden" name="noteId" th:value="${detail.id}">
         <input type="hidden" name="content">
     </div>
 </form>
+<form th:action="@{/note/page/delete}" id="delete" method="post"></form>
 <!--<div class="foot text-center text-white bg-gray-800 h-[50px]">-->
 <!--    <h1>footer</h1>-->
 <!--</div>-->
+<ul class="menu bg-base-200 w-56 rounded-box">
+    <li><a>Item 1</a></li>
+    <li>
+        <details open>
+            <summary>Parent</summary>
+            <ul>
+                <li><a>level 2 item 1</a></li>
+                <li><a>level 2 item 2</a></li>
+                <li>
+                    <details open>
+                        <summary>Parent</summary>
+                        <ul>
+                            <li><a>level 3 item 1</a></li>
+                            <li><a>level 3 item 2</a></li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
+        </details>
+    </li>
+    <li><a>Item 3</a></li>
+</ul>
 <script th:inline="javascript">
     const Editor = toastui.Editor;
     const editor = new Editor({
@@ -94,7 +121,7 @@
     const leftSideMenu = document.querySelector('.left-side-menu-content');
     const savedPosition = localStorage.getItem('scrollPosition');
     console.log(savedPosition);
-    if(!(savedPosition === 'undefined' || savedPosition == null)) {
+    if (!(savedPosition === 'undefined' || savedPosition == null)) {
         leftSideMenu.scrollTop = savedPosition;
     }
 
@@ -112,13 +139,22 @@
     // console.log(articleId);
     // console.log(scrollMoveValue);
     // leftSideMenu.scrollTop = scrollMoveValue;
+    function confirmDelete() {
+        if (confirm('정말 삭제하시겠습니까?')) {
+            let input = document.querySelector('#updateForm [name="noteId"]');
+            let deleteForm = document.querySelector('#delete');
+            deleteForm.appendChild(input);
+            deleteForm.submit();
+        }
+    }
 
-    function test() {
+    function setScroll() {
         console.log('test');
         let leftSideMenu = document.querySelector('.left-side-menu-content');
         console.log(leftSideMenu.scrollTop);
         localStorage.setItem('scrollPosition', leftSideMenu.scrollTop);
     }
+
     function handleKeyDown(event) {
         // Ctrl + K 단축키를 감지
         if (event.ctrlKey && event.key.toLowerCase() === 's') {
