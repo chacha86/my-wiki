@@ -20,6 +20,6 @@ public class NotePageService {
         if(optional.isPresent()) {
             return optional.get();
         }
-        throw new IllegalArgumentException("해당 노트페이지가 존재하지 않습니다. id=" + id);
+        return null;
     }
 }

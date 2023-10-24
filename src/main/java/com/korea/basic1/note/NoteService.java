@@ -21,7 +21,7 @@ public class NoteService {
         if(optional.isPresent()) {
             return optional.get();
         }
-        throw new IllegalArgumentException("해당 노트가 존재하지 않습니다. id=" + id);
+        return null;
     }
 
     public void save(Note note) {

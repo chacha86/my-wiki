@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/note/page")
+@RequestMapping("/note/{noteId}/page")
 public class NotePageController {
 
     private enum DetailMode {
@@ -26,29 +26,34 @@ public class NotePageController {
     @Autowired
     NotePageRepository notePageRepository;
 
+    @Autowired
+    NoteRepository noteRepository;
     @RequestMapping("/test")
     public String test() {
         return "ttt";
     }
 
     @RequestMapping("/add")
-    public String add(Model model) {
+    public String add(Model model, @PathVariable("noteId") Long noteId) {
+
+        Note note = noteRepository.findById(noteId).get();
         NotePage notePage = NotePage.builder()
                 .title("제목")
                 .content("")
                 .hit(0)
                 .createDate(LocalDateTime.now())
+                .note(note)
                 .build();
         notePageRepository.save(notePage); // save -> ID가 없으면 insert, ID가 있으면 update
-        return "redirect:/note/page/" + notePage.getId();
+        return String.format("redirect:/note/%d/page/%d", noteId, notePage.getId());
     }
 
     @RequestMapping("/{pageId}")
-    public String list(Model model, @PathVariable Long pageId) {
+    public String list(Model model, @PathVariable("noteId") Long noteId, @PathVariable("pageId") Long pageId) {
         List<NotePage> notePageList = notePageRepository.findAll();
 
         if(notePageList.isEmpty()) {
-            return "redirect:/note/page/add";
+            return String.format("redirect:/note/%d/page/add", noteId);
         }
 
         Optional<NotePage> op = notePageRepository.findById(pageId);
@@ -58,7 +63,7 @@ public class NotePageController {
         } else {
             notePage = notePageList.get(0);
         }
-        model.addAttribute("detail", notePage);
+        model.addAttribute("pageDetail", notePage);
         model.addAttribute("notePageList", notePageList);
 
         return "note_list";

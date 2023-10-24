@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
@@ -26,4 +28,7 @@ public class Note {
     private Note parent;
     @Column(columnDefinition = "tinyint default -1")
     private int depth;
+
+    @OneToMany(mappedBy = "note")
+    List<NotePage> pageList = new ArrayList<>();
 }

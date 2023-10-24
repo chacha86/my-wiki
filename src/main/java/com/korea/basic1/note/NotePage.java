@@ -23,4 +23,6 @@ public class NotePage {
     private int hit;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
+    @ManyToOne
+    private Note note;
 }

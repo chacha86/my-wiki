@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -27,25 +28,28 @@ public class NoteController {
 
         noteService.save(note);
 
-        return "redirect:/note/list";
+        return String.format("redirect:/note/%d/page/add", note.getId());
     }
 
-    @GetMapping("/list")
-    public String list(Model model) {
+    @GetMapping("{noteId}/page/{pageId}")
+    public String view(Model model, @PathVariable Long noteId, @PathVariable Long pageId) {
+
         List<Note> noteList = noteService.getNoteList();
+        Note noteDetail = noteService.getNoteById(noteId);
+        NotePage pageDetail = notePageService.getNotePageById(pageId);
+
         if(noteList.isEmpty()) {
             return "redirect:/note/add";
         }
-        List<NotePage> notePageList = notePageService.getNotePageList();
 
-        if(notePageList.isEmpty()) {
-            return "redirect:/note/page/add";
+        if(pageDetail == null) {
+            return "redirect:/note/" + noteId + "/page/add";
         }
-        model.addAttribute("notePageList", notePageList);
+
         model.addAttribute("noteList", noteList);
-        model.addAttribute("noteDetail", noteList.get(0));
-        model.addAttribute("pageDetail", notePageList.get(0));
-        System.out.println("hihih");
+        model.addAttribute("noteDetail", noteDetail);
+        model.addAttribute("notePageList", noteDetail.getPageList());
+        model.addAttribute("pageDetail", pageDetail);
 
         return "note_list";
     }
