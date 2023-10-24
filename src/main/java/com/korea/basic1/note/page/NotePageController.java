@@ -1,68 +1,48 @@
-package com.korea.basic1.note;
+package com.korea.basic1.note.page;
 
-import com.korea.basic1.note.NotePage;
-import com.korea.basic1.note.NotePageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.korea.basic1.note.Note;
+import com.korea.basic1.note.NoteService;
+import com.korea.basic1.note.pageDetail.NotePageDetailService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/note/{noteId}/page")
+@RequiredArgsConstructor
 public class NotePageController {
 
-    private enum DetailMode {
-        EDIT,
-        VIEW
-    }
-
-
-    @Autowired
-    NotePageRepository notePageRepository;
-
-    @Autowired
-    NoteRepository noteRepository;
-    @RequestMapping("/test")
-    public String test() {
-        return "ttt";
-    }
+    private final NotePageService notePageService;
+    private final NoteService noteService;
+    private final NotePageDetailService notePageDetailService;
 
     @RequestMapping("/add")
     public String add(Model model, @PathVariable("noteId") Long noteId) {
 
-        Note note = noteRepository.findById(noteId).get();
-        NotePage notePage = NotePage.builder()
-                .title("제목")
-                .content("")
-                .hit(0)
-                .createDate(LocalDateTime.now())
-                .note(note)
-                .build();
-        notePageRepository.save(notePage); // save -> ID가 없으면 insert, ID가 있으면 update
+        Note note = noteService.getNoteById(noteId);
+        NotePage notePage = notePageService.saveAndGet(note);
+        notePage = notePageDetailService.saveAndGet(notePage);
         return String.format("redirect:/note/%d/page/%d", noteId, notePage.getId());
     }
 
     @RequestMapping("/{pageId}")
     public String list(Model model, @PathVariable("noteId") Long noteId, @PathVariable("pageId") Long pageId) {
-        List<NotePage> notePageList = notePageRepository.findAll();
+        List<NotePage> notePageList = notePageService.getNotePageList();
 
         if(notePageList.isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);
         }
 
-        Optional<NotePage> op = notePageRepository.findById(pageId);
-        NotePage notePage = null;
-        if (op.isPresent()) {
-            notePage = op.get();
-        } else {
+        NotePage notePage = notePageService.getNotePageById(pageId);
+        if(notePage == null) {
             notePage = notePageList.get(0);
         }
+
         model.addAttribute("pageDetail", notePage);
         model.addAttribute("notePageList", notePageList);
 
@@ -70,36 +50,18 @@ public class NotePageController {
     }
 
     @RequestMapping("update")
-    public String update(Long pageId, String title, @RequestParam(defaultValue = "") String content) {
-
-        Optional<NotePage> op = notePageRepository.findById(pageId);
-        NotePage notePage = op.get();
-        if (notePage == null) {
-            new IllegalArgumentException("해당 게시물은 존재하지 않습니다.");
-        } else {
-            notePage.setTitle(title);
-            notePage.setContent(content);
-            notePageRepository.save(notePage); // save는 ID가 있으면 update, ID가 없으면 insert
-        }
-
-        return String.format("redirect:/note/page/%d", pageId);
+    public String update(@PathVariable("noteId") Long noteId, Long pageId, String title, @RequestParam(defaultValue = "") String content) {
+        notePageService.updateNotePage(pageId, title, content);
+        return String.format("redirect:/note/%d/page/%d",noteId, pageId);
     }
 
     //
 //
     @RequestMapping("delete")
-    public String delete(Long pageId) {
-        System.out.println("pageId = " + pageId);
-        Optional<NotePage> op = notePageRepository.findById(pageId);
-        NotePage notePage = null;
-        if (op.isPresent()) {
-            notePage = op.get();
-        } else {
-            throw new RuntimeException();
-        }
-        notePageRepository.delete(notePage);
+    public String delete(@PathVariable("noteId") Long noteId, Long pageId) {
 
-        return "redirect:/note/page/" + pageId;
+        notePageService.delete(pageId);
+        return String.format("redirect:/note/%d/page/%d",noteId, pageId);
     }
 //
 //    @RequestMapping("detail")

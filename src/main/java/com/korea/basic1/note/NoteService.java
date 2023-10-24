@@ -3,6 +3,7 @@ package com.korea.basic1.note;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,9 @@ public class NoteService {
         return noteRepository.findAll();
     }
 
+    public List<Note> getParentNoteList() {
+        return noteRepository.findByParentId(null);
+    }
     public Note getNoteById(Long id) {
         Optional<Note> optional = noteRepository.findById(id);
         if(optional.isPresent()) {
@@ -23,8 +27,15 @@ public class NoteService {
         }
         return null;
     }
+    public Note saveAndGet() {
+        Note note = Note.builder()
+                .name("새노트")
+                .createDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .parent(null)
+                .build();
 
-    public void save(Note note) {
         noteRepository.save(note);
+        return note;
     }
 }

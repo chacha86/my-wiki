@@ -1,11 +1,12 @@
 package com.korea.basic1.note;
 
+import com.korea.basic1.note.page.NotePage;
+import com.korea.basic1.note.page.NotePageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
@@ -20,21 +21,25 @@ public class NoteController {
     private final NotePageService notePageService;
     @GetMapping("/add")
     public String add() {
-        Note note = Note.builder()
-                .name("새노트")
-                .createDate(LocalDateTime.now())
-                .updateDate(LocalDateTime.now())
-                .build();
-
-        noteService.save(note);
-
+        Note note = noteService.saveAndGet();
         return String.format("redirect:/note/%d/page/add", note.getId());
     }
 
+    @GetMapping("{noteId}")
+    public String intro(Model model, @PathVariable("noteId") Long noteId) {
+        Note note = noteService.getNoteById(noteId);
+        if(note.getPageList().isEmpty()) {
+            return String.format("redirect:/note/%d/page/add", noteId);
+        }
+        NotePage firstNotePage = note.getPageList().get(0);
+
+        return String.format("redirect:/note/%d/page/%d", noteId, firstNotePage.getId());
+
+    }
     @GetMapping("{noteId}/page/{pageId}")
     public String view(Model model, @PathVariable Long noteId, @PathVariable Long pageId) {
 
-        List<Note> noteList = noteService.getNoteList();
+        List<Note> noteList = noteService.getParentNoteList();
         Note noteDetail = noteService.getNoteById(noteId);
         NotePage pageDetail = notePageService.getNotePageById(pageId);
 

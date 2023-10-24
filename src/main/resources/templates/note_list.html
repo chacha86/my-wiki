@@ -5,6 +5,7 @@
     <title>Title</title>
     <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
     <link rel="stylesheet" href="/test.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.3/dist/full.css" rel="stylesheet" type="text/css"/>
     <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css"
@@ -29,28 +30,60 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/sql.min.js"></script>
 <!-- 토스트 UI 에디터, 신택스 하이라이트 플러그인 추가 -->
 <script src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
-<form id="updateForm" th:action="@{/notePage/update}" method="post" onsubmit="return false">
+<form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
     <div class="header bg-gray-800">
-        <h1 class="text-white text-[2rem] p-[20px]">logo</h1>
+        <h1 class="text-white text-[2rem] p-[20px]">CNote</h1>
     </div>
     <div class="main h-[750px] overflow-hidden flex">
-        <div class="left-side-menu w-[10%] bg-red-300 text-white overflow-hidden">
-            <div class="left-side-menu-content h-[80%] w-[100%] px-[30px] overflow-y-scroll">
-                <h1 class="text-[1.5rem] p-[20px] border-b-[1px] font-bold">노트 목록</h1>
-                <ul th:each="note : ${noteList}">
-                    <li th:with="customClass=${note.id == noteDetail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"
-                        th:class="|${customClass}|">
-                        <a class="block p-[10px] w-[100%]" th:href="@{|/note/${note.id}/page/${pageDetail.id}|}"
-                           th:text="${note.name}" th:id="|article_${note.id}|" onclick="setScroll();"></a>
-                    </li>
+        <div class="left-side-menu min-w-[10%] bg-red-300 text-white overflow-hidden">
+            <div class="left-side-menu-content text-left h-[80%] w-[100%] px-[5px] overflow-y-scroll">
+                <h1 class="text-[1rem] p-[20px] border-b-[1px] font-bold">노트 목록</h1>
+                <ul class="menu bg-red-300 w-56 rounded-box">
+                    <li th:replace="fragments/note_fragment::note_tree(${noteList})"></li>
+
+                        <!--                        <a th:if="${#lists.isEmpty(note.children)}" th:href="@{|/note/${note.id}|}" th:text="${note.name}" th:id="|article_${note.id}|"-->
+<!--                           onclick="setScroll();">Item 1</a>-->
+
+<!--                        <details th:unless="${#lists.isEmpty(note.children)}">-->
+<!--                            <summary th:text="${note.name}"></summary>-->
+<!--                            <ul>-->
+<!--                                <li th:each="note2 : ${note.children}"><a th:text="${note2.name}"></a></li>-->
+<!--                            </ul>-->
+<!--                        </details>-->
+
+                    <!--                    <li>-->
+                    <!--                        <details open>-->
+                    <!--                            <summary>Parent</summary>-->
+                    <!--                            <ul>-->
+                    <!--                                <li><a>level 2 item 1</a></li>-->
+                    <!--                                <li><a>level 2 item 2</a></li>-->
+                    <!--                                <li>-->
+                    <!--                                    <details open>-->
+                    <!--                                        <summary>Parent</summary>-->
+                    <!--                                        <ul>-->
+                    <!--                                            <li><a>level 3 item 1</a></li>-->
+                    <!--                                            <li><a>level 3 item 2</a></li>-->
+                    <!--                                        </ul>-->
+                    <!--                                    </details>-->
+                    <!--                                </li>-->
+                    <!--                            </ul>-->
+                    <!--                        </details>-->
+                    <!--                    </li>-->
                 </ul>
+                <!--                <ul class="text-[1rem]">-->
+                <!--                    <li th:each="note : ${noteList}" th:with="customClass=${note.id == noteDetail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"-->
+                <!--                        th:class="|${customClass + ' flex items-center'}|">-->
+                <!--                        <a class="block p-[10px] w-[100%]" th:href="@{|/note/${note.id}|}"-->
+                <!--                           th:text="${note.name}" th:id="|article_${note.id}|" onclick="setScroll();"></a>-->
+                <!--                    </li>-->
+                <!--                </ul>-->
             </div>
             <div>
                 <a class="block bg-gray-100 p-[10px] text-black border-[2px] border-gray-300 hover:bg-gray-800 hover:text-white"
                    th:href="@{/note/add}">+ 노트 추가</a>
-<!--                <form th:action="@{/note/add}">-->
-<!--                    <input type="button" value="+ 노트 추가">-->
-<!--                </form>-->
+                <!--                <form th:action="@{/note/add}">-->
+                <!--                    <input type="button" value="+ 노트 추가">-->
+                <!--                </form>-->
             </div>
         </div>
         <div class="left-second-menu w-[10%] bg-blue-300">
@@ -68,7 +101,8 @@
                 <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
                        name="title"
                        th:value="${pageDetail.title}">
-                <div class="mr-[20px] mt-[15px]"><a href="#" class="font-bold text-red-500" onclick="confirmDelete()">X</a></div>
+                <div class="mr-[20px] mt-[15px]"><a href="#" class="font-bold text-red-500"
+                                                    onclick="confirmDelete()">X</a></div>
             </div>
             <div class="toast-editor-container">
                 <div id="editor" class="text-red text-left"></div>
@@ -76,36 +110,14 @@
         </div>
     </div>
     <div>
-        <input type="hidden" name="noteId" th:value="${pageDetail.id}">
+        <input type="hidden" name="pageId" th:value="${pageDetail.id}">
         <input type="hidden" name="content">
     </div>
 </form>
-<form th:action="@{/note/page/delete}" id="delete" method="post"></form>
+<form th:action="@{/note/${noteDetail.id}/page/delete}" id="delete" method="post"></form>
 <!--<div class="foot text-center text-white bg-gray-800 h-[50px]">-->
 <!--    <h1>footer</h1>-->
 <!--</div>-->
-<ul class="menu bg-base-200 w-56 rounded-box">
-    <li><a>Item 1</a></li>
-    <li>
-        <details open>
-            <summary>Parent</summary>
-            <ul>
-                <li><a>level 2 item 1</a></li>
-                <li><a>level 2 item 2</a></li>
-                <li>
-                    <details open>
-                        <summary>Parent</summary>
-                        <ul>
-                            <li><a>level 3 item 1</a></li>
-                            <li><a>level 3 item 2</a></li>
-                        </ul>
-                    </details>
-                </li>
-            </ul>
-        </details>
-    </li>
-    <li><a>Item 3</a></li>
-</ul>
 <script th:inline="javascript">
     const Editor = toastui.Editor;
     const editor = new Editor({
@@ -115,7 +127,7 @@
         initialEditType: "markdown",
         previewStyle: "vertical",
         hideModeSwitch: true,
-        initialValue: [[${pageDetail.content}]]
+        initialValue: [[${pageDetail.notePageDetail.content}]]
     });
     const wysiwygIframe = document.querySelector('.md-mode .ProseMirror');
     wysiwygIframe.setAttribute('spellcheck', 'false');
