@@ -33,6 +33,8 @@ public class NotePageController {
     @RequestMapping("/{pageId}")
     public String list(Model model, @PathVariable("noteId") Long noteId, @PathVariable("pageId") Long pageId) {
         List<NotePage> notePageList = notePageService.getNotePageList();
+        List<Note> noteList = noteService.getParentNoteList();
+        Note note = noteService.getNoChildNote(noteId);
 
         if(notePageList.isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);
@@ -44,7 +46,9 @@ public class NotePageController {
         }
 
         model.addAttribute("pageDetail", notePage);
+        model.addAttribute("noteList", noteList);
         model.addAttribute("notePageList", notePageList);
+        model.addAttribute("noteDetail", note);
 
         return "note_list";
     }

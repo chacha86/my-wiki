@@ -36,54 +36,15 @@
     </div>
     <div class="main h-[750px] overflow-hidden flex">
         <div class="left-side-menu min-w-[10%] bg-red-300 text-white overflow-hidden">
-            <div class="left-side-menu-content text-left h-[80%] w-[100%] px-[5px] overflow-y-scroll">
+            <div class="left-side-menu-content h-[80%] w-[100%] px-[5px] overflow-y-scroll">
                 <h1 class="text-[1rem] p-[20px] border-b-[1px] font-bold">노트 목록</h1>
                 <ul class="menu bg-red-300 w-56 rounded-box">
-                    <li th:replace="fragments/note_fragment::note_tree(${noteList})"></li>
-
-                        <!--                        <a th:if="${#lists.isEmpty(note.children)}" th:href="@{|/note/${note.id}|}" th:text="${note.name}" th:id="|article_${note.id}|"-->
-<!--                           onclick="setScroll();">Item 1</a>-->
-
-<!--                        <details th:unless="${#lists.isEmpty(note.children)}">-->
-<!--                            <summary th:text="${note.name}"></summary>-->
-<!--                            <ul>-->
-<!--                                <li th:each="note2 : ${note.children}"><a th:text="${note2.name}"></a></li>-->
-<!--                            </ul>-->
-<!--                        </details>-->
-
-                    <!--                    <li>-->
-                    <!--                        <details open>-->
-                    <!--                            <summary>Parent</summary>-->
-                    <!--                            <ul>-->
-                    <!--                                <li><a>level 2 item 1</a></li>-->
-                    <!--                                <li><a>level 2 item 2</a></li>-->
-                    <!--                                <li>-->
-                    <!--                                    <details open>-->
-                    <!--                                        <summary>Parent</summary>-->
-                    <!--                                        <ul>-->
-                    <!--                                            <li><a>level 3 item 1</a></li>-->
-                    <!--                                            <li><a>level 3 item 2</a></li>-->
-                    <!--                                        </ul>-->
-                    <!--                                    </details>-->
-                    <!--                                </li>-->
-                    <!--                            </ul>-->
-                    <!--                        </details>-->
-                    <!--                    </li>-->
+                    <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
                 </ul>
-                <!--                <ul class="text-[1rem]">-->
-                <!--                    <li th:each="note : ${noteList}" th:with="customClass=${note.id == noteDetail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"-->
-                <!--                        th:class="|${customClass + ' flex items-center'}|">-->
-                <!--                        <a class="block p-[10px] w-[100%]" th:href="@{|/note/${note.id}|}"-->
-                <!--                           th:text="${note.name}" th:id="|article_${note.id}|" onclick="setScroll();"></a>-->
-                <!--                    </li>-->
-                <!--                </ul>-->
             </div>
             <div>
                 <a class="block bg-gray-100 p-[10px] text-black border-[2px] border-gray-300 hover:bg-gray-800 hover:text-white"
                    th:href="@{/note/add}">+ 노트 추가</a>
-                <!--                <form th:action="@{/note/add}">-->
-                <!--                    <input type="button" value="+ 노트 추가">-->
-                <!--                </form>-->
             </div>
         </div>
         <div class="left-second-menu w-[10%] bg-blue-300">
@@ -119,6 +80,7 @@
 <!--    <h1>footer</h1>-->
 <!--</div>-->
 <script th:inline="javascript">
+
     const Editor = toastui.Editor;
     const editor = new Editor({
         el: document.querySelector("#editor"),
@@ -149,6 +111,12 @@
     if (!(savedPosition === 'undefined' || savedPosition == null)) {
         leftSideMenu.scrollTop = savedPosition;
     }
+
+    // 노트 트리에서 열려있는 노트 재현
+    if(localStorage.getItem('openList') !== null) {
+        reproduce();
+    }
+
 
     // front에서 스크롤 조정. 너무 번거로움. 그냥 서버에 scroll값 넘겨서 처리하자.
     // let leftSideMenu = document.querySelector('.left-side-menu-content');
@@ -200,6 +168,26 @@
                 document.querySelector('input[name="title"]').readOnly = true;
             }
             event.stopPropagation();  // 이벤트 전파 중지
+        }
+    }
+
+    function setCollapse() {
+        let tagList = document.querySelectorAll("details");
+        let openList = [];
+        for (let i = 0; i < tagList.length; i++) {
+            result = tagList[i].getAttribute('open');
+            if(result !== null) {
+                openList.push(tagList[i].id);
+            }
+        }
+        localStorage.setItem('openList', JSON.stringify(openList));
+    }
+
+    function reproduce() {
+        let openList = JSON.parse(localStorage.getItem('openList'));
+        for (let i = 0; i < openList.length; i++) {
+            let tag = document.querySelector('#' + openList[i]);
+            tag.setAttribute('open', '');
         }
     }
 

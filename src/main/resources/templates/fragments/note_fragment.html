@@ -5,12 +5,14 @@
     <title>Title</title>
 </head>
 <body>
-<li th:fragment="note_tree(noteList)" th:each="note : ${noteList}">
-    <a th:if="${#lists.isEmpty(note.children)}" th:text="${note.name}"></a>
-    <details th:unless="${#lists.isEmpty(note.children)}">
+<li th:fragment="note_tree(noteDetail, noteList)" th:each="note : ${noteList}" th:classappend="${noteDetail.id == note.id} ? 'bg-gray-800' : '' ">
+    <a th:if="${#lists.isEmpty(note.children)}" th:href="@{|/note/${note.id}|}" th:text="${note.name}" onclick="setCollapse();"></a>
+    <span th:text="${noteDetail.id}"></span>
+    <span th:text="${note.id}"></span>
+    <details th:id="${'n_' + note.id}" th:unless="${#lists.isEmpty(note.children)}">
         <summary th:text="${note.name}"></summary>
         <ul>
-            <li th:unless="${#lists.isEmpty(note.children)}" th:replace="fragments/note_fragment::note_tree(${note.children})">
+            <li th:unless="${#lists.isEmpty(note.children)}" th:replace="fragments/note_fragment::note_tree(${note}, ${note.children})">
             </li>
         </ul>
     </details>

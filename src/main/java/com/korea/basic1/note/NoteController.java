@@ -36,26 +36,26 @@ public class NoteController {
         return String.format("redirect:/note/%d/page/%d", noteId, firstNotePage.getId());
 
     }
-    @GetMapping("{noteId}/page/{pageId}")
-    public String view(Model model, @PathVariable Long noteId, @PathVariable Long pageId) {
-
-        List<Note> noteList = noteService.getParentNoteList();
-        Note noteDetail = noteService.getNoteById(noteId);
-        NotePage pageDetail = notePageService.getNotePageById(pageId);
-
-        if(noteList.isEmpty()) {
-            return "redirect:/note/add";
-        }
-
-        if(pageDetail == null) {
-            return "redirect:/note/" + noteId + "/page/add";
-        }
-
-        model.addAttribute("noteList", noteList);
-        model.addAttribute("noteDetail", noteDetail);
-        model.addAttribute("notePageList", noteDetail.getPageList());
-        model.addAttribute("pageDetail", pageDetail);
-
-        return "note_list";
-    }
+//    @GetMapping("{noteId}/page/{pageId}")
+//    public String view(Model model, @PathVariable Long noteId, @PathVariable Long pageId) {
+//
+//        List<Note> noteList = noteService.getParentNoteList();
+//        Note noteDetail = noteService.getNoteById(noteId);
+//        NotePage pageDetail = notePageService.getNotePageById(pageId);
+//
+//        if(noteList.isEmpty()) {
+//            return "redirect:/note/add";
+//        }
+//
+//        if(pageDetail == null) {
+//            return "redirect:/note/" + noteId + "/page/add";
+//        }
+//
+//        model.addAttribute("noteList", noteList);
+//        model.addAttribute("noteDetail", noteDetail);
+//        model.addAttribute("notePageList", noteDetail.getPageList());
+//        model.addAttribute("pageDetail", pageDetail);
+//
+//        return "note_list";
+//    }
 }

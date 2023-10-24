@@ -27,6 +27,14 @@ public class NoteService {
         }
         return null;
     }
+    public Note getNoChildNote(Long id) {
+        Note note = getNoteById(id);
+        if(note.getChildren().isEmpty()) {
+            return note;
+        }
+
+        return getNoteById(id + 1);
+    }
     public Note saveAndGet() {
         Note note = Note.builder()
                 .name("새노트")
