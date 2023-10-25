@@ -38,7 +38,7 @@
         <div class="left-side-menu min-w-[10%] bg-red-300 text-white overflow-hidden">
             <div class="left-side-menu-content h-[80%] w-[100%] px-[5px] overflow-y-scroll">
                 <h1 class="text-[1rem] p-[20px] border-b-[1px] font-bold">노트 목록</h1>
-                <ul class="menu bg-red-300 w-56 rounded-box">
+                <ul class="menu bg-red-300 w-56">
                     <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
                 </ul>
             </div>
@@ -47,13 +47,13 @@
                    th:href="@{/note/add}">+ 노트 추가</a>
             </div>
         </div>
-        <div class="left-second-menu w-[10%] bg-blue-300">
+        <div class="left-second-menu-content w-[10%] bg-blue-300">
             <h1 class="text-[1.5rem] p-[20px] border-b-[1px] font-bold">페이지 목록</h1>
             <ul th:each="notePage : ${notePageList}">
                 <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"
                     th:class="|${customClass}|">
                     <a class="block p-[10px] w-[100%]" th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"
-                       th:text="${notePage.title}" th:id="|article_${notePage.id}|" onclick="setScroll();"></a>
+                       th:text="${notePage.title}" th:id="|article_${notePage.id}|" onclick="setScroll('left-second-menu-content');"></a>
                 </li>
             </ul>
         </div>
@@ -91,6 +91,7 @@
         hideModeSwitch: true,
         initialValue: [[${pageDetail.notePageDetail.content}]]
     });
+
     const wysiwygIframe = document.querySelector('.md-mode .ProseMirror');
     wysiwygIframe.setAttribute('spellcheck', 'false');
     document.addEventListener('keydown', handleKeyDown, {capture: true});
@@ -104,19 +105,27 @@
         }
     });
 
-    // 저장된 스크롤 값을 불러오기
-    const leftSideMenu = document.querySelector('.left-side-menu-content');
-    const savedPosition = localStorage.getItem('scrollPosition');
-    console.log(savedPosition);
-    if (!(savedPosition === 'undefined' || savedPosition == null)) {
-        leftSideMenu.scrollTop = savedPosition;
-    }
+    editor.on('change', () => {
+        document.querySelectorAll(".toast-editor-container a").forEach((item) => {
+            item.setAttribute('target', '_blank');
+        });
+    });
+
+    // 페이지 목록 저장된 스크롤 값을 불러오기
+    // const leftSideMenu = document.querySelector('.left-side-menu-content');
+    // const savedPosition = localStorage.getItem('scrollPosition');
+    // console.log(savedPosition);
+    // if (!(savedPosition === 'undefined' || savedPosition == null)) {
+    //     leftSideMenu.scrollTop = savedPosition;
+    // }
 
     // 노트 트리에서 열려있는 노트 재현
     if(localStorage.getItem('openList') !== null) {
         reproduce();
     }
 
+    initScrollPosition('left-side-menu-content');
+    initScrollPosition('left-second-menu-content');
 
     // front에서 스크롤 조정. 너무 번거로움. 그냥 서버에 scroll값 넘겨서 처리하자.
     // let leftSideMenu = document.querySelector('.left-side-menu-content');
@@ -140,12 +149,25 @@
         }
     }
 
-    function setScroll() {
-        console.log('test');
-        let leftSideMenu = document.querySelector('.left-side-menu-content');
-        console.log(leftSideMenu.scrollTop);
-        localStorage.setItem('scrollPosition', leftSideMenu.scrollTop);
+    function initScrollPosition(className) {
+        const element = document.querySelector('.' + className);
+        const savedPosition = localStorage.getItem(className + '_scrollPosition');
+        if (!(savedPosition === 'undefined' || savedPosition == null)) {
+            element.scrollTop = savedPosition;
+        }
     }
+
+    function setScroll(className) {
+        let element = document.querySelector('.' + className);
+        localStorage.setItem(className + '_scrollPosition', element.scrollTop);
+    }
+
+    // function setScroll() {
+    //     console.log('test');
+    //     let leftSideMenu = document.querySelector('.left-side-menu-content');
+    //     console.log(leftSideMenu.scrollTop);
+    //     localStorage.setItem('scrollPosition', leftSideMenu.scrollTop);
+    // }
 
     function handleKeyDown(event) {
         // Ctrl + K 단축키를 감지
@@ -170,7 +192,10 @@
             event.stopPropagation();  // 이벤트 전파 중지
         }
     }
-
+    function noteEventHandle(className) {
+        setCollapse();
+        setScroll(className);
+    }
     function setCollapse() {
         let tagList = document.querySelectorAll("details");
         let openList = [];
