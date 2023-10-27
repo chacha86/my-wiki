@@ -1,5 +1,6 @@
 package com.korea.basic1.note;
 
+import com.korea.basic1.note.group.NoteGroup;
 import com.korea.basic1.note.page.NotePage;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,5 +35,8 @@ public class Note {
 
     @OneToMany(mappedBy = "note")
     private List<NotePage> pageList = new ArrayList<>();
+
+    @ManyToOne
+    private NoteGroup noteGroup;
 
 }

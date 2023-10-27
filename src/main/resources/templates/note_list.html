@@ -17,7 +17,7 @@
     <!--    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.3/dist/full.css" rel="stylesheet" type="text/css"/>-->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="text-center">
+<body>
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
 <!-- 하이라이트 라이브러리, 언어 -->
@@ -31,14 +31,37 @@
 <!-- 토스트 UI 에디터, 신택스 하이라이트 플러그인 추가 -->
 <script src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
 <form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
-    <div class="header bg-gray-800">
-        <h1 class="text-white text-[2rem] p-[20px]">CNote</h1>
+    <!--    <div class="header bg-gray-800">-->
+    <!--        <h1 class="text-white text-[2rem] p-[20px]">CNote</h1>-->
+    <!--        <div>-->
+    <!--        </div>-->
+    <!--    </div>-->
+    <div class="navbar bg-gray-800 text-white py-[20px] border-b-[3px] border-white">
+        <div class="flex-1">
+            <a class="btn btn-ghost normal-case text-[30px]">CNote</a>
+        </div>
+        <div class="flex-none">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="#">login</a></li>
+<!--                <li>-->
+<!--                    <details>-->
+<!--                        <summary>-->
+<!--                            Parent-->
+<!--                        </summary>-->
+<!--                        <ul class="p-2 bg-base-100">-->
+<!--                            <li><a>Link 1</a></li>-->
+<!--                            <li><a>Link 2</a></li>-->
+<!--                        </ul>-->
+<!--                    </details>-->
+<!--                </li>-->
+            </ul>
+        </div>
     </div>
     <div class="main h-[750px] overflow-hidden flex">
-        <div class="left-side-menu min-w-[10%] bg-red-300 text-white overflow-hidden">
+        <div class="left-side-menu min-w-[10%] bg-gray-800 text-white overflow-hidden">
             <div class="left-side-menu-content h-[80%] w-[100%] px-[5px] overflow-y-scroll">
                 <h1 class="text-[1rem] p-[20px] border-b-[1px] font-bold">노트 목록</h1>
-                <ul class="menu bg-red-300 w-56">
+                <ul class="menu bg-gray-800 w-56">
                     <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
                 </ul>
             </div>
@@ -53,7 +76,8 @@
                 <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-green-200 border-b-[3px] border-red-400' : 'border-b-[1px]'"
                     th:class="|${customClass}|">
                     <a class="block p-[10px] w-[100%]" th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"
-                       th:text="${notePage.title}" th:id="|article_${notePage.id}|" onclick="setScroll('left-second-menu-content');"></a>
+                       th:text="${notePage.title}" th:id="|article_${notePage.id}|"
+                       onclick="setScroll('left-second-menu-content');"></a>
                 </li>
             </ul>
         </div>
@@ -120,7 +144,7 @@
     // }
 
     // 노트 트리에서 열려있는 노트 재현
-    if(localStorage.getItem('openList') !== null) {
+    if (localStorage.getItem('openList') !== null) {
         reproduce();
     }
 
@@ -192,16 +216,18 @@
             event.stopPropagation();  // 이벤트 전파 중지
         }
     }
+
     function noteEventHandle(className) {
         setCollapse();
         setScroll(className);
     }
+
     function setCollapse() {
         let tagList = document.querySelectorAll("details");
         let openList = [];
         for (let i = 0; i < tagList.length; i++) {
             result = tagList[i].getAttribute('open');
-            if(result !== null) {
+            if (result !== null) {
                 openList.push(tagList[i].id);
             }
         }

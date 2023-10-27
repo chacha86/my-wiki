@@ -5,7 +5,7 @@
     <title>Title</title>
 </head>
 <body>
-<li th:fragment="note_tree(noteDetail, noteList)" th:each="note : ${noteList}" th:classappend="${noteDetail.id == note.id} ? 'bg-gray-800 rounded-md' : '' ">
+<li class="hover:bg-gray-500 text-white" th:fragment="note_tree(noteDetail, noteList)" th:each="note : ${noteList}" th:classappend="${noteDetail.id == note.id} ? 'bg-gray-700 rounded-md' : '' ">
     <a th:if="${#lists.isEmpty(note.children)}" th:href="@{|/note/${note.id}|}" th:text="${note.name}" onclick="noteEventHandle('left-side-menu-content');"></a>
     <details th:id="${'n_' + note.id}" th:unless="${#lists.isEmpty(note.children)}">
         <summary th:text="${note.name}"></summary>
