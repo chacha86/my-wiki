@@ -35,12 +35,13 @@ public class NoteService {
 
         return getNoteById(id + 1);
     }
-    public Note saveAndGet() {
+    public Note saveAndGet(int gb) {
         Note note = Note.builder()
                 .name("새노트")
                 .createDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .parent(null)
+                .groupYn(gb)
                 .build();
 
         noteRepository.save(note);

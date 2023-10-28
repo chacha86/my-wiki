@@ -20,8 +20,8 @@ public class NoteController {
     private final NoteService noteService;
     private final NotePageService notePageService;
     @GetMapping("/add")
-    public String add() {
-        Note note = noteService.saveAndGet();
+    public String add(int gb) {
+        Note note = noteService.saveAndGet(gb);
         return String.format("redirect:/note/%d/page/add", note.getId());
     }
 

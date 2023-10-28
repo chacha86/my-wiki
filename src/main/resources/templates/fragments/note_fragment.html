@@ -5,12 +5,14 @@
     <title>Title</title>
 </head>
 <body>
-<li class="hover:bg-gray-500 text-white" th:fragment="note_tree(noteDetail, noteList)" th:each="note : ${noteList}" th:classappend="${noteDetail.id == note.id} ? 'bg-gray-700 rounded-md' : '' ">
-    <a th:if="${#lists.isEmpty(note.children)}" th:href="@{|/note/${note.id}|}" th:text="${note.name}" onclick="noteEventHandle('left-side-menu-content');"></a>
-    <details th:id="${'n_' + note.id}" th:unless="${#lists.isEmpty(note.children)}">
-        <summary th:text="${note.name}"></summary>
+<li th:fragment="note_tree(noteDetail, noteList)" th:each="note : ${noteList}" th:class="${#lists.isEmpty(note.children)} ? 'hover:bg-gray-500 hover:text-white': ''" th:classappend="${noteDetail.id == note.id and noteDetail.groupYn == 0} ? 'bg-gray-700 rounded-md' : '' ">
+<!--    <div th:text="${'target : ' + noteDetail.id}"></div>-->
+<!--    <div th:text="${'current : ' + note.id}"></div>-->
+    <a th:if="${#lists.isEmpty(note.children) and note.groupYn == 0}" th:href="@{|/note/${note.id}|}" th:text="${note.name}" onclick="noteEventHandle('left-side-menu-content');"></a>
+    <details th:id="${'n_' + note.id}" th:if="${note.groupYn == 1}">
+        <summary class="hover:text-white" th:text="${note.name}"></summary>
         <ul>
-            <li th:unless="${#lists.isEmpty(note.children)}" th:replace="fragments/note_fragment::note_tree(${note}, ${note.children})">
+            <li th:unless="${#lists.isEmpty(note.children)}" th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${note.children})">
             </li>
         </ul>
     </details>
