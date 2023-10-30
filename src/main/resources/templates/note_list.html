@@ -43,6 +43,20 @@
         <div class="flex-none">
             <ul class="menu menu-horizontal px-1">
                 <li><a href="#">login</a></li>
+                <li>
+                    <label class="swap swap-rotate">
+                        <input type="checkbox" id="nav-toggle"/>
+                        <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                             viewBox="0 0 512 512">
+                            <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/>
+                        </svg>
+                        <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                             viewBox="0 0 512 512">
+                            <polygon
+                                    points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/>
+                        </svg>
+                    </label>
+                </li>
                 <!--                <li>-->
                 <!--                    <details>-->
                 <!--                        <summary>-->
@@ -57,55 +71,45 @@
             </ul>
         </div>
     </div>
-    <div class="main h-[750px] overflow-hidden flex">
-        <label class="absolute left-[20px] w-[10px] h-[10px] swap swap-rotate">
-            <input type="checkbox" id="navToggle"/>
-            <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                 viewBox="0 0 512 512">
-                <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/>
-            </svg>
-            <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                 viewBox="0 0 512 512">
-                <polygon
-                        points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/>
-            </svg>
-        </label>
-        <div class="left-side-wrap w-[30%] flex">
-            <div class="left-side-menu bg-gray-800 text-white overflow-hidden">
-                <div class="flex items-center justify-around border-r-[1px] border-b-[1px] font-bold">
-                    <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
+    <!--    <div class="main h-[750px] overflow-hidden">-->
+    <div class="main overflow-hidden flex relative">
+        <div class="left-side-wrap min-w-[300px] h-[calc(100vh-95px)] w-[35%] flex relative">
+            <div class="flex w-[100%]">
+                <div class="left-side-menu w-[60%] bg-gray-800 text-white overflow-hidden">
+                    <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
+                        <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
+                    </div>
+                    <div class="left-side-menu-content w-[100%] h-[83%] px-[5px] overflow-y-scroll">
+                        <ul class="menu bg-gray-800">
+                            <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
+                        </ul>
+                    </div>
+                    <div class="h-[7%] flex justify-center items-center border border-gray-300 ">
+                        <a class="block bg-gray-800 text-[17px] font-bold text-center text-white hover:bg-gray-500"
+                           th:href="@{|/note/add?gb=1|}" onclick="scrollDown()">+ 그룹 추가</a>
+                    </div>
                 </div>
-                <div class="left-side-menu-content h-[80%] w-[100%] px-[5px] overflow-y-scroll">
-                    <ul class="menu bg-gray-800">
-                        <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
+                <div class="left-second-menu-content w-[40%] bg-gray-800 text-white overflow-scroll">
+                    <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
+                    <ul th:each="notePage : ${notePageList}">
+                        <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
+                            th:class="|${customClass}|">
+                            <a class="block p-[10px] text-[15px] border-b-[1px]"
+                               th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"
+                               th:text="${notePage.title}" th:id="|article_${notePage.id}|"
+                               onclick="setScroll('left-second-menu-content');"></a>
+                        </li>
                     </ul>
                 </div>
-                <div>
-                    <a class="block bg-gray-100 p-[10px] text-black border-[2px] border-gray-300 hover:bg-gray-800 hover:text-white"
-                       th:href="@{|/note/add?gb=1|}" onclick="scrollDown()">+ 그룹 추가</a>
-                </div>
-            </div>
-            <div class="left-second-menu-content bg-gray-800 text-white">
-                <h1 class="text-[1rem] p-[20px] border-b-[1px] font-bold">페이지 목록</h1>
-                <ul th:each="notePage : ${notePageList}">
-                    <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
-                        th:class="|${customClass}|">
-                        <a class="block p-[10px] w-[100%] text-[15px]"
-                           th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"
-                           th:text="${notePage.title}" th:id="|article_${notePage.id}|"
-                           onclick="setScroll('left-second-menu-content');"></a>
-                    </li>
-                </ul>
             </div>
         </div>
-        <div class="content w-[70%] overflow-x-hidden overflow-y-hidden">
+        <div class="content w-[100%] overflow-x-hidden overflow-y-hidden">
             <div class="flex justify-between">
                 <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
                        name="title"
                        th:value="${pageDetail.title}">
-                <div class="mr-[20px] mt-[15px]"><a href="#" class="font-bold text-red-500"
+                    <a href="#" class="font-bold text-red-500 p-[10px]"
                                                     onclick="confirmDelete()">X</a></div>
-            </div>
             <div class="toast-editor-container">
                 <div id="editor" class="text-red text-left"></div>
             </div>
@@ -265,14 +269,15 @@
         localStorage.setItem('left-side-menu-content' + '_scrollPosition', element.scrollTop + 100);
     }
 
-    document.querySelector("#navToggle").addEventListener("click", (element) => {
-        console.log(element.target.checked);
-        sideMenu = document.querySelector('.left-side-menu');
-        originClass = sideMenu.getAttribute('class');
+    document.querySelector("#nav-toggle").addEventListener("click", (element) => {
 
         if (element.target.checked == true) {
-            sideMenu.setAttribute('class', 'hidden');
+            sideMenu = document.querySelector('.left-side-wrap');
+            originClass = sideMenu.getAttribute('class');
+            sideMenu.setAttribute('class', 'left-side-wrap hidden');
+            // sideWrap.removeChild(sideMenu);
         } else {
+            sideMenu = document.querySelector('.left-side-wrap');
             sideMenu.setAttribute('class', originClass);
         }
     })
