@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import java.util.List;
 public class NoteController {
 
     private final NoteService noteService;
+    private final NotePageService notePageService;
     @RequestMapping("/")
     public String main(Model model) {
 
@@ -29,16 +31,23 @@ public class NoteController {
         return "main";
     }
 
-    @GetMapping("/add")
+    @PostMapping("/add")
     public String add() {
         Note note = noteService.saveDefaultNote();
         return String.format("redirect:/note/%d/page/add", note.getId());
     }
 
+    @PostMapping("/add-group")
+    public String groupAdd(Long noteId) {
+        Note note = noteService.saveGroupNotebook(noteId);
+        notePageService.saveDefaultNotePage(note);
+        return "redirect:/note/" + note.getId();
+    }
     @GetMapping("{noteId}")
     public String intro(Model model, @PathVariable("noteId") Long noteId) {
 
         Note note = noteService.getNoteById(noteId);
+
         if(note.getPageList().isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);
         }

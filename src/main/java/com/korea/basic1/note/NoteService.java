@@ -46,4 +46,17 @@ public class NoteService {
 
         return noteRepository.save(note);
     }
+    public Note getDefaultNotebook() {
+        Note note = new Note();
+        note.setName("새노트");
+        note.setCreateDate(LocalDateTime.now());
+        note.setUpdateDate(LocalDateTime.now());
+        return noteRepository.save(note);
+    }
+    public Note saveGroupNotebook(Long noteId) {
+        Note parentNotebook = getNoteById(noteId);
+        Note childNotebook = getDefaultNotebook();
+        childNotebook.setParent(parentNotebook);
+        return noteRepository.save(childNotebook);
+    }
 }

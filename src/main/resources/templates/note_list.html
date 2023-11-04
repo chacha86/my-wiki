@@ -30,84 +30,95 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/sql.min.js"></script>
 <!-- 토스트 UI 에디터, 신택스 하이라이트 플러그인 추가 -->
 <script src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
-<form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
-    <!--    <div class="header bg-gray-800">-->
-    <!--        <h1 class="text-white text-[2rem] p-[20px]">CNote</h1>-->
-    <!--        <div>-->
-    <!--        </div>-->
-    <!--    </div>-->
-    <div class="navbar bg-gray-800 text-white py-[20px] border-b-[3px] border-white">
-        <div class="flex-1">
-            <a class="btn btn-ghost normal-case text-[30px]">CNote</a>
-        </div>
-        <div class="flex-none">
-            <div class="text-white"></div>
-
-            <a class="text-[13px] hover:bg-gray-600 p-[5px] rounded-md" sec:authorize="isAnonymous()" href="/user/login">login</a>
-            <a class="text-[13px] hover:bg-gray-600 p-[5px] rounded-md" sec:authorize="isAuthenticated()" href="/user/logout">logout</a>
-
-            <ul class="menu menu-horizontal px-1">
-                <li>
-                    <label class="swap swap-rotate hover:text-white hover:bg-gray-600 p-[5px]">
-                        <input type="checkbox" id="nav-toggle"/>
-                        <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                             viewBox="0 0 512 512">
-                            <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/>
-                        </svg>
-                        <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                             viewBox="0 0 512 512">
-                            <polygon
-                                    points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/>
-                        </svg>
-                    </label>
-                </li>
-            </ul>
-        </div>
+<!--<form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">-->
+<!--    <div class="header bg-gray-800">-->
+<!--        <h1 class="text-white text-[2rem] p-[20px]">CNote</h1>-->
+<!--        <div>-->
+<!--        </div>-->
+<!--    </div>-->
+<div class="navbar bg-gray-800 text-white py-[20px] border-b-[3px] border-white">
+    <div class="flex-1">
+        <a class="btn btn-ghost normal-case text-[30px]">CNote</a>
     </div>
-    <!--    <div class="main h-[750px] overflow-hidden">-->
-    <div class="main overflow-hidden flex relative">
-        <div class="left-side-wrap min-w-[300px] h-[calc(100vh-95px)] w-[35%] flex relative">
-            <div class="flex w-[100%]">
-                <div class="left-side-menu w-[60%] bg-gray-800 text-white overflow-hidden">
-                    <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
-                        <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
-                    </div>
-                    <div class="left-side-menu-content w-[100%] h-[83%] px-[5px] overflow-y-scroll">
-                        <ul class="menu bg-gray-800">
-                            <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
-                        </ul>
-                    </div>
-                    <div class="h-[7%] flex justify-center items-center border border-gray-300 ">
-                        <a class="block bg-gray-800 text-[17px] font-bold text-center text-white hover:bg-gray-500"
-                           th:href="@{|/note/add?gb=1|}" onclick="scrollDown()">+ 그룹 추가</a>
-                    </div>
+    <div class="flex-none">
+        <div class="text-white"></div>
+
+        <a class="text-[13px] hover:bg-gray-600 p-[5px] rounded-md" sec:authorize="isAnonymous()" href="/user/login">login</a>
+        <a class="text-[13px] hover:bg-gray-600 p-[5px] rounded-md" sec:authorize="isAuthenticated()"
+           href="/user/logout">logout</a>
+
+        <ul class="menu menu-horizontal px-1">
+            <li>
+                <label class="swap swap-rotate hover:text-white hover:bg-gray-600 p-[5px]">
+                    <input type="checkbox" id="nav-toggle"/>
+                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                         viewBox="0 0 512 512">
+                        <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/>
+                    </svg>
+                    <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                         viewBox="0 0 512 512">
+                        <polygon
+                                points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/>
+                    </svg>
+                </label>
+            </li>
+        </ul>
+    </div>
+</div>
+<!--    <div class="main h-[750px] overflow-hidden">-->
+<div class="main overflow-hidden flex relative">
+    <div class="left-side-wrap min-w-[300px] h-[calc(100vh-95px)] w-[35%] flex relative">
+        <div class="flex w-[100%]">
+            <div class="left-side-menu w-[60%] bg-gray-800 text-white overflow-hidden">
+                <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
+                    <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
                 </div>
-                <div class="left-second-menu-content w-[40%] bg-gray-800 text-white overflow-scroll">
-                    <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
-                    <ul th:each="notePage : ${notePageList}">
-                        <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
-                            th:class="|${customClass}|">
-                            <a class="block p-[10px] text-[15px] border-b-[1px]"
-                               th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"
-                               th:text="${notePage.title}" th:id="|article_${notePage.id}|"
-                               onclick="setScroll('left-second-menu-content');"></a>
-                        </li>
+                <div class="left-side-menu-content w-[100%] h-[83%] px-[5px] overflow-y-scroll">
+                    <ul class="menu bg-gray-800">
+                        <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
                     </ul>
                 </div>
+
+                <div class="h-[7%] flex justify-around items-center border border-gray-300 ">
+                    <form th:action="@{/note/add}" method="post" class="w-[33%]">
+                        <input type="submit" value="추가">
+                    </form>
+                    <form th:action="@{/note/add-group}" method="post" class="w-[33%]">
+                        <input type="hidden" name="noteId" th:value="${noteDetail.id}">
+                        <input type="submit" value="하위노트추가">
+                    </form>
+                    <!--                        <a class="block bg-gray-800 text-[17px] font-bold text-center text-white hover:bg-gray-500"-->
+                    <!--                           th:href="@{|/note/add|}" onclick="scrollDown()">+ 하위노트 추가</a>-->
+                </div>
             </div>
-        </div>
-        <div class="content h-[100vh-94px] w-[100%] overflow-x-hidden overflow-y-hidden">
-            <div class="flex justify-between">
-                <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
-                       name="title"
-                       th:value="${pageDetail.title}">
-                <a href="#" class="font-bold text-red-500 p-[10px]"
-                   onclick="confirmDelete()">X</a></div>
-            <div class="toast-editor-container">
-                <div id="editor" class="text-red text-left"></div>
+            <div class="left-second-menu-content w-[40%] bg-gray-800 text-white overflow-scroll">
+                <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
+                <ul th:each="notePage : ${notePageList}">
+                    <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
+                        th:class="|${customClass}|">
+                        <a class="block p-[10px] text-[15px] border-b-[1px]"
+                           th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"
+                           th:text="${notePage.title}" th:id="|article_${notePage.id}|"
+                           onclick="setScroll('left-second-menu-content');"></a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
+    <div class="content h-[100vh-94px] w-[100%] overflow-x-hidden overflow-y-hidden">
+        <div class="flex justify-between">
+            <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
+                   name="title"
+                   th:value="${pageDetail.title}">
+            <a href="#" class="font-bold text-red-500 p-[10px]"
+               onclick="confirmDelete()">X</a></div>
+        <div class="toast-editor-container">
+            <div id="editor" class="text-red text-left"></div>
+        </div>
+    </div>
+</div>
+
+<form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
     <div>
         <input type="hidden" name="pageId" th:value="${pageDetail.id}">
         <input type="hidden" name="content">

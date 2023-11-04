@@ -29,7 +29,7 @@ public class NotePageService {
         notePageRepository.deleteById(pageId);
     }
 
-    public NotePage saveAndGet(Note note) {
+    public NotePage saveDefaultNotePage(Note note) {
         NotePage notePage = NotePage.builder()
                 .title("제목")
                 .hit(0)
