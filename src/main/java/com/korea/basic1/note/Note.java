@@ -35,7 +35,4 @@ public class Note {
     @OneToMany(mappedBy = "note")
     private List<NotePage> pageList = new ArrayList<>();
 
-    @Column(nullable = false, columnDefinition = "tinyint unsigned default 0")
-    private int groupYn;
-
 }

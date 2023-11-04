@@ -25,7 +25,7 @@ public class NoteService {
         if(optional.isPresent()) {
             return optional.get();
         }
-        return null;
+        throw new IllegalArgumentException("해당 노트는 존재하지 않습니다.");
     }
     public Note getNoChildNote(Long id) {
         Note note = getNoteById(id);
@@ -35,16 +35,15 @@ public class NoteService {
 
         return getNoteById(id + 1);
     }
-    public Note saveAndGet(int gb) {
+
+    public Note saveDefaultNote() {
         Note note = Note.builder()
                 .name("새노트")
                 .createDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .parent(null)
-                .groupYn(gb)
                 .build();
 
-        noteRepository.save(note);
-        return note;
+        return noteRepository.save(note);
     }
 }

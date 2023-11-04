@@ -3,6 +3,7 @@ package com.korea.basic1.note;
 import com.korea.basic1.note.page.NotePage;
 import com.korea.basic1.note.page.NotePageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,15 +19,25 @@ import java.util.List;
 public class NoteController {
 
     private final NoteService noteService;
-    private final NotePageService notePageService;
+    @RequestMapping("/")
+    public String main(Model model) {
+
+        List<Note> noteList = noteService.getParentNoteList();
+        if(noteList.isEmpty()) {
+            return "redirect:add";
+        }
+        return "main";
+    }
+
     @GetMapping("/add")
-    public String add(int gb) {
-        Note note = noteService.saveAndGet(gb);
+    public String add() {
+        Note note = noteService.saveDefaultNote();
         return String.format("redirect:/note/%d/page/add", note.getId());
     }
 
     @GetMapping("{noteId}")
     public String intro(Model model, @PathVariable("noteId") Long noteId) {
+
         Note note = noteService.getNoteById(noteId);
         if(note.getPageList().isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);
