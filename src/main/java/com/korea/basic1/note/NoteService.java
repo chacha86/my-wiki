@@ -53,10 +53,25 @@ public class NoteService {
         note.setUpdateDate(LocalDateTime.now());
         return noteRepository.save(note);
     }
-    public Note saveGroupNotebook(Long noteId) {
-        Note parentNotebook = getNoteById(noteId);
-        Note childNotebook = getDefaultNotebook();
-        childNotebook.setParent(parentNotebook);
-        return noteRepository.save(childNotebook);
+    public Note saveGroupNotebook(Note parent) {
+        Note child = getDefaultNotebook();
+        child.setParent(parent);
+        return noteRepository.save(child);
+    }
+
+    public void delete(Note note) {
+        noteRepository.delete(note);
+    }
+
+    public Note save(Note note) {
+        return noteRepository.save(note);
+    }
+
+    public void deleteChild(Note note) {
+        List<Note> children = note.getChildren();
+        for (Note child : children) {
+            deleteChild(child);
+            delete(child);
+        }
     }
 }

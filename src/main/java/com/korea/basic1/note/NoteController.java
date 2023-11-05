@@ -2,6 +2,8 @@ package com.korea.basic1.note;
 
 import com.korea.basic1.note.page.NotePage;
 import com.korea.basic1.note.page.NotePageService;
+import com.korea.basic1.note.pageDetail.NotePageDetail;
+import com.korea.basic1.note.pageDetail.NotePageDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -20,7 +22,7 @@ import java.util.List;
 public class NoteController {
 
     private final NoteService noteService;
-    private final NotePageService notePageService;
+    private final NoteProcessingService noteProcessingService;
     @RequestMapping("/")
     public String main(Model model) {
 
@@ -28,7 +30,7 @@ public class NoteController {
         if(noteList.isEmpty()) {
             return "redirect:add";
         }
-        return "main";
+        return "redirect:/note/" + noteList.get(0).getId();
     }
 
     @PostMapping("/add")
@@ -39,8 +41,7 @@ public class NoteController {
 
     @PostMapping("/add-group")
     public String groupAdd(Long noteId) {
-        Note note = noteService.saveGroupNotebook(noteId);
-        notePageService.saveDefaultNotePage(note);
+        Note note = noteProcessingService.saveGroupNotebook(noteId);
         return "redirect:/note/" + note.getId();
     }
     @GetMapping("{noteId}")
@@ -56,6 +57,13 @@ public class NoteController {
         return String.format("redirect:/note/%d/page/%d", noteId, firstNotePage.getId());
 
     }
+
+    @GetMapping("delete/{noteId}")
+    public String delete(@PathVariable Long noteId) {
+        noteProcessingService.deleteNote(noteId);
+        return "redirect:/note/";
+    }
+
 //    @GetMapping("{noteId}/page/{pageId}")
 //    public String view(Model model, @PathVariable Long noteId, @PathVariable Long pageId) {
 //

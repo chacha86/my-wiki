@@ -2,6 +2,7 @@ package com.korea.basic1.note.page;
 
 import com.korea.basic1.note.Note;
 import com.korea.basic1.note.NoteService;
+import com.korea.basic1.note.pageDetail.NotePageDetail;
 import com.korea.basic1.note.pageDetail.NotePageDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -25,8 +26,8 @@ public class NotePageController {
     public String add(Model model, @PathVariable("noteId") Long noteId) {
 
         Note note = noteService.getNoteById(noteId);
-        NotePage notePage = notePageService.saveDefaultNotePage(note);
-        notePage = notePageDetailService.saveAndGet(notePage);
+        NotePageDetail notePageDetail = notePageDetailService.saveDefaultPageDetail();
+        NotePage notePage = notePageService.saveDefaultNotePage(note, notePageDetail);
         return String.format("redirect:/note/%d/page/%d", noteId, notePage.getId());
     }
 
