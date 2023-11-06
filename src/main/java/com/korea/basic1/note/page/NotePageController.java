@@ -2,6 +2,7 @@ package com.korea.basic1.note.page;
 
 import com.korea.basic1.note.Note;
 import com.korea.basic1.note.NoteService;
+import com.korea.basic1.note.pageDetail.NotePageDetail;
 import com.korea.basic1.note.pageDetail.NotePageDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -25,15 +26,16 @@ public class NotePageController {
     public String add(Model model, @PathVariable("noteId") Long noteId) {
 
         Note note = noteService.getNoteById(noteId);
-        NotePage notePage = notePageService.saveAndGet(note);
-        notePage = notePageDetailService.saveAndGet(notePage);
+        NotePageDetail notePageDetail = notePageDetailService.saveDefaultPageDetail();
+        NotePage notePage = notePageService.saveDefaultNotePage(note, notePageDetail);
         return String.format("redirect:/note/%d/page/%d", noteId, notePage.getId());
     }
 
     @RequestMapping("/{pageId}")
     public String list(Model model, @PathVariable("noteId") Long noteId, @PathVariable("pageId") Long pageId) {
         List<Note> noteList = noteService.getParentNoteList();
-        Note note = noteService.getNoChildNote(noteId);
+//        Note note = noteService.getNoChildNote(noteId);
+        Note note = noteService.getNoteById(noteId);
         List<NotePage> notePageList = note.getPageList();
 
         if(notePageList.isEmpty()) {
@@ -54,7 +56,8 @@ public class NotePageController {
     }
 
     @RequestMapping("update")
-    public String update(@PathVariable("noteId") Long noteId, Long pageId, String title, @RequestParam(defaultValue = "") String content) {
+    public String update(@PathVariable("noteId") Long noteId, Long pageId, String noteName, String title, @RequestParam(defaultValue = "") String content) {
+        noteService.updateNoteName(noteId, noteName);
         notePageService.updateNotePage(pageId, title, content);
         return String.format("redirect:/note/%d/page/%d",noteId, pageId);
     }

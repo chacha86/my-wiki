@@ -25,7 +25,7 @@ public class NoteService {
         if(optional.isPresent()) {
             return optional.get();
         }
-        return null;
+        throw new IllegalArgumentException("해당 노트는 존재하지 않습니다.");
     }
     public Note getNoChildNote(Long id) {
         Note note = getNoteById(id);
@@ -35,16 +35,53 @@ public class NoteService {
 
         return getNoteById(id + 1);
     }
-    public Note saveAndGet(int gb) {
+
+    public Note saveDefaultNote() {
         Note note = Note.builder()
                 .name("새노트")
                 .createDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .parent(null)
-                .groupYn(gb)
                 .build();
 
-        noteRepository.save(note);
-        return note;
+        return noteRepository.save(note);
+    }
+    public Note getDefaultNotebook() {
+        Note note = new Note();
+        note.setName("새노트");
+        note.setCreateDate(LocalDateTime.now());
+        note.setUpdateDate(LocalDateTime.now());
+        return noteRepository.save(note);
+    }
+    public Note saveGroupNotebook(Note parent) {
+        Note child = getDefaultNotebook();
+        child.setParent(parent);
+        return noteRepository.save(child);
+    }
+
+    public void delete(Note note) {
+        noteRepository.delete(note);
+    }
+
+    public Note save(Note note) {
+        return noteRepository.save(note);
+    }
+
+    public void deleteChild(Note note) {
+        List<Note> children = note.getChildren();
+        for (Note child : children) {
+            deleteChild(child);
+            delete(child);
+        }
+    }
+
+    public void updateNoteName(Long noteId, String noteName) {
+        Note note = getNoteById(noteId);
+        if (note == null) {
+            new IllegalArgumentException("해당 노트는 존재하지 않습니다.");
+        } else {
+            note.setName(noteName);
+            noteRepository.save(note); // save는 ID가 있으면 update, ID가 없으면 insert
+        }
     }
 }

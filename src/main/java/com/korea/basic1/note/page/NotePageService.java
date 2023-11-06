@@ -1,6 +1,7 @@
 package com.korea.basic1.note.page;
 
 import com.korea.basic1.note.Note;
+import com.korea.basic1.note.pageDetail.NotePageDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,15 +30,15 @@ public class NotePageService {
         notePageRepository.deleteById(pageId);
     }
 
-    public NotePage saveAndGet(Note note) {
+    public NotePage saveDefaultNotePage(Note note, NotePageDetail notePageDetail) {
         NotePage notePage = NotePage.builder()
                 .title("제목")
                 .hit(0)
                 .createDate(LocalDateTime.now())
                 .note(note)
+                .notePageDetail(notePageDetail)
                 .build();
-        notePageRepository.save(notePage);
-        return notePage;
+        return notePageRepository.save(notePage);
     }
 
     public void updateNotePage(Long pageId, String title, String content) {
@@ -49,5 +50,9 @@ public class NotePageService {
             notePage.getNotePageDetail().setContent(content);
             notePageRepository.save(notePage); // save는 ID가 있으면 update, ID가 없으면 insert
         }
+    }
+
+    public void deleteAll(List<NotePage> notePageList) {
+        notePageRepository.deleteAll(notePageList);
     }
 }

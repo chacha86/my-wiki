@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
-    <link rel="stylesheet" href="/test.css"/>
+    <link rel="stylesheet" href="/global.css"/>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.3/dist/full.css" rel="stylesheet" type="text/css"/>
     <link
             rel="stylesheet"
@@ -30,258 +30,113 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/sql.min.js"></script>
 <!-- 토스트 UI 에디터, 신택스 하이라이트 플러그인 추가 -->
 <script src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
-<form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
-    <!--    <div class="header bg-gray-800">-->
-    <!--        <h1 class="text-white text-[2rem] p-[20px]">CNote</h1>-->
-    <!--        <div>-->
-    <!--        </div>-->
-    <!--    </div>-->
-    <div class="navbar bg-gray-800 text-white py-[20px] border-b-[3px] border-white">
-        <div class="flex-1">
-            <a class="btn btn-ghost normal-case text-[30px]">CNote</a>
-            <span th:text="${#authentication.getPrincipal().getUsername()}"></span>
-        </div>
-        <div class="flex-none">
-            <ul class="menu menu-horizontal px-1">
-                <li><a href="#">login</a></li>
-                <li>
-                    <label class="swap swap-rotate">
-                        <input type="checkbox" id="nav-toggle"/>
-                        <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                             viewBox="0 0 512 512">
-                            <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/>
-                        </svg>
-                        <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                             viewBox="0 0 512 512">
-                            <polygon
-                                    points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/>
-                        </svg>
-                    </label>
-                </li>
-                <!--                <li>-->
-                <!--                    <details>-->
-                <!--                        <summary>-->
-                <!--                            Parent-->
-                <!--                        </summary>-->
-                <!--                        <ul class="p-2 bg-base-100">-->
-                <!--                            <li><a>Link 1</a></li>-->
-                <!--                            <li><a>Link 2</a></li>-->
-                <!--                        </ul>-->
-                <!--                    </details>-->
-                <!--                </li>-->
-            </ul>
-        </div>
+<!--<form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">-->
+<!--    <div class="header bg-gray-800">-->
+<!--        <h1 class="text-white text-[2rem] p-[20px]">CNote</h1>-->
+<!--        <div>-->
+<!--        </div>-->
+<!--    </div>-->
+<div class="navbar bg-gray-800 text-white py-[20px] border-b-[3px] border-white">
+    <div class="flex-1">
+        <a class="btn btn-ghost normal-case text-[30px]">CNote</a>
     </div>
-    <!--    <div class="main h-[750px] overflow-hidden">-->
-    <div class="main overflow-hidden flex relative">
-        <div class="left-side-wrap min-w-[300px] h-[calc(100vh-95px)] w-[35%] flex relative">
-            <div class="flex w-[100%]">
-                <div class="left-side-menu w-[60%] bg-gray-800 text-white overflow-hidden">
-                    <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
-                        <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
-                    </div>
-                    <div class="left-side-menu-content w-[100%] h-[83%] px-[5px] overflow-y-scroll">
-                        <ul class="menu bg-gray-800">
-                            <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
-                        </ul>
-                    </div>
-                    <div class="h-[7%] flex justify-center items-center border border-gray-300 ">
-                        <a class="block bg-gray-800 text-[17px] font-bold text-center text-white hover:bg-gray-500"
-                           th:href="@{|/note/add?gb=1|}" onclick="scrollDown()">+ 그룹 추가</a>
-                    </div>
+    <div class="flex-none">
+        <div class="text-white"></div>
+
+        <a class="text-[13px] hover:bg-gray-600 p-[5px] rounded-md" sec:authorize="isAnonymous()" href="/user/login">login</a>
+        <a class="text-[13px] hover:bg-gray-600 p-[5px] rounded-md" sec:authorize="isAuthenticated()"
+           href="/user/logout">logout</a>
+
+        <ul class="menu menu-horizontal px-1">
+            <li>
+                <label class="swap swap-rotate hover:text-white hover:bg-gray-600 p-[5px]">
+                    <input type="checkbox" id="nav-toggle"/>
+                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                         viewBox="0 0 512 512">
+                        <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/>
+                    </svg>
+                    <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                         viewBox="0 0 512 512">
+                        <polygon
+                                points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/>
+                    </svg>
+                </label>
+            </li>
+        </ul>
+    </div>
+</div>
+<!--    <div class="main h-[750px] overflow-hidden">-->
+<div class="main overflow-hidden flex relative">
+    <div class="left-side-wrap min-w-[300px] h-[calc(100vh-95px)] w-[35%] flex relative">
+        <div class="flex w-[100%]">
+            <div class="left-side-menu w-[60%] bg-gray-800 text-white overflow-hidden">
+                <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
+                    <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
                 </div>
-                <div class="left-second-menu-content w-[40%] bg-gray-800 text-white overflow-scroll">
-                    <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
-                    <ul th:each="notePage : ${notePageList}">
-                        <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
-                            th:class="|${customClass}|">
-                            <a class="block p-[10px] text-[15px] border-b-[1px]"
-                               th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"
-                               th:text="${notePage.title}" th:id="|article_${notePage.id}|"
-                               onclick="setScroll('left-second-menu-content');"></a>
-                        </li>
+                <div class="left-side-menu-content w-[100%] h-[83%] px-[5px] overflow-y-scroll">
+                    <ul class="menu bg-gray-800">
+                        <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
                     </ul>
                 </div>
+
+                <div class="h-[7%] w-[100%] flex items-center text-[10px] text-center border border-gray-300 ">
+                    <form th:action="@{/note/add}" method="post" class="w-[20%] mr-[10px] border border-white">
+                        <input type="submit" value="추가" onclick="noteEventHandle()">
+                    </form>
+                    <form th:action="@{/note/add-group}" method="post"
+                          class="w-[20%] mr-[10px] border border-white overflow-hidden">
+                        <input type="hidden" name="noteId" th:value="${noteDetail.id}">
+                        <input type="submit" value="하위노트추가" onclick="noteEventHandle()">
+                    </form>
+                    <a th:href="@{|/note/delete/${noteDetail.id}|}"
+                       class="w-[20%] mr-[10px] border border-white overflow-hidden" onclick="noteEventHandle()">삭제</a>
+                    <!--                        <a class="block bg-gray-800 text-[17px] font-bold text-center text-white hover:bg-gray-500"-->
+                    <!--                           th:href="@{|/note/add|}" onclick="scrollDown()">+ 하위노트 추가</a>-->
+                    <div>
+                        <form th:action="@{|/note/update/${noteDetail.id}|}" method="post">
+                            <input class="text-black" type="text"
+                                   name="noteName"
+                                   th:value="${noteDetail.name}">
+                            <input class="border border-white" type="submit" value="이름변경">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="left-second-menu-content w-[40%] bg-gray-800 text-white overflow-scroll">
+                <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
+                <ul th:each="notePage : ${notePageList}">
+                    <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
+                        th:class="|${customClass}|">
+                        <a class="block p-[10px] text-[15px] border-b-[1px]"
+                           th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"
+                           th:text="${notePage.title}" th:id="|article_${notePage.id}|"
+                           onclick="setScroll('left-second-menu-content');"></a>
+                    </li>
+                </ul>
             </div>
         </div>
-        <div class="content w-[100%] overflow-x-hidden overflow-y-hidden">
+    </div>
+    <div class="content h-[100vh-94px] w-[100%] overflow-x-hidden overflow-y-hidden">
+        <form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
             <div class="flex justify-between">
+
                 <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
                        name="title"
                        th:value="${pageDetail.title}">
-                    <a href="#" class="font-bold text-red-500 p-[10px]"
-                                                    onclick="confirmDelete()">X</a></div>
-            <div class="toast-editor-container">
-                <div id="editor" class="text-red text-left"></div>
+                <a href="#" class="font-bold text-red-500 p-[10px]"
+                   onclick="confirmDelete()">X</a>
             </div>
+            <div>
+                <input type="hidden" name="pageId" th:value="${pageDetail.id}">
+                <input type="hidden" name="content">
+            </div>
+        </form>
+        <div th:replace="/fragments/toast_editor::test">
         </div>
     </div>
-    <div>
-        <input type="hidden" name="pageId" th:value="${pageDetail.id}">
-        <input type="hidden" name="content">
-    </div>
-</form>
+</div>
+
 <form th:action="@{/note/${noteDetail.id}/page/delete}" id="delete" method="post"></form>
-<!--<div class="foot text-center text-white bg-gray-800 h-[50px]">-->
-<!--    <h1>footer</h1>-->
-<!--</div>-->
-<script th:inline="javascript">
-
-    const Editor = toastui.Editor;
-    const editor = new Editor({
-        el: document.querySelector("#editor"),
-        plugins: [toastui.Editor.plugin.codeSyntaxHighlight],
-        height: "730px",
-        initialEditType: "markdown",
-        previewStyle: "vertical",
-        hideModeSwitch: true,
-        initialValue: [[${pageDetail.notePageDetail.content}]]
-    });
-
-    const wysiwygIframe = document.querySelector('.md-mode .ProseMirror');
-    wysiwygIframe.setAttribute('spellcheck', 'false');
-    document.addEventListener('keydown', handleKeyDown, {capture: true});
-
-    titleInput = document.querySelector("input[name='title']");
-    titleInput.setAttribute('spellcheck', 'false');
-    titleInput.addEventListener('keydown', function (e) {
-        if (e.keyCode === 13) {
-            e.preventDefault();
-            editor.focus();
-        }
-    });
-
-    editor.on('change', () => {
-        document.querySelectorAll(".toast-editor-container a").forEach((item) => {
-            item.setAttribute('target', '_blank');
-        });
-    });
-
-    // 페이지 목록 저장된 스크롤 값을 불러오기
-    // const leftSideMenu = document.querySelector('.left-side-menu-content');
-    // const savedPosition = localStorage.getItem('scrollPosition');
-    // console.log(savedPosition);
-    // if (!(savedPosition === 'undefined' || savedPosition == null)) {
-    //     leftSideMenu.scrollTop = savedPosition;
-    // }
-
-    // 노트 트리에서 열려있는 노트 재현
-    if (localStorage.getItem('openList') !== null) {
-        reproduce();
-    }
-
-    initScrollPosition('left-side-menu-content');
-    initScrollPosition('left-second-menu-content');
-
-    // front에서 스크롤 조정. 너무 번거로움. 그냥 서버에 scroll값 넘겨서 처리하자.
-    // let leftSideMenu = document.querySelector('.left-side-menu-content');
-    // leftSideMenu.scrollTop = 0;
-    // let itemHeight = 70;
-    // console.log(leftSideMenu.clientHeight);
-    // console.log(itemHeight);
-    // console.log(leftSideMenu.clientHeight / itemHeight);
-    //
-    // scrollMoveThresh = Math.floor(leftSideMenu.clientHeight / itemHeight);
-    // scrollMoveValue = itemHeight * (articleId - scrollMoveThresh);
-    // console.log(articleId);
-    // console.log(scrollMoveValue);
-    // leftSideMenu.scrollTop = scrollMoveValue;
-    function confirmDelete() {
-        if (confirm('정말 삭제하시겠습니까?')) {
-            let input = document.querySelector('#updateForm [name="noteId"]');
-            let deleteForm = document.querySelector('#delete');
-            deleteForm.appendChild(input);
-            deleteForm.submit();
-        }
-    }
-
-    function initScrollPosition(className) {
-        const element = document.querySelector('.' + className);
-        const savedPosition = localStorage.getItem(className + '_scrollPosition');
-        if (!(savedPosition === 'undefined' || savedPosition == null)) {
-            element.scrollTop = savedPosition;
-        }
-    }
-
-    function setScroll(className) {
-        let element = document.querySelector('.' + className);
-        localStorage.setItem(className + '_scrollPosition', element.scrollTop);
-    }
-
-    // function setScroll() {
-    //     console.log('test');
-    //     let leftSideMenu = document.querySelector('.left-side-menu-content');
-    //     console.log(leftSideMenu.scrollTop);
-    //     localStorage.setItem('scrollPosition', leftSideMenu.scrollTop);
-    // }
-
-    function handleKeyDown(event) {
-        // Ctrl + K 단축키를 감지
-        if (event.ctrlKey && event.key.toLowerCase() === 's') {
-            event.preventDefault();
-            form = document.querySelector('#updateForm');
-            form.content.value = editor.getMarkdown();
-            form.submit();
-            event.stopPropagation();  // 이벤트 전파 중지
-            // 원하는 동작을 실행
-        } else if (event.ctrlKey && event.key.toLowerCase() === 'r') {
-            event.preventDefault();
-            if (editor.isWysiwygMode()) {
-                editor.changeMode('markdown');
-                document.querySelector('input[name="title"]').readOnly = false;
-                editor.blur();
-            } else {
-                editor.changeMode('wysiwyg');
-                document.querySelector('.ww-mode .toastui-editor-contents').setAttribute('contenteditable', 'false');
-                document.querySelector('input[name="title"]').readOnly = true;
-            }
-            event.stopPropagation();  // 이벤트 전파 중지
-        }
-    }
-
-    function noteEventHandle(className) {
-        setCollapse();
-        setScroll(className);
-    }
-
-    function setCollapse() {
-        let tagList = document.querySelectorAll("details");
-        let openList = [];
-        for (let i = 0; i < tagList.length; i++) {
-            result = tagList[i].getAttribute('open');
-            if (result !== null) {
-                openList.push(tagList[i].id);
-            }
-        }
-        localStorage.setItem('openList', JSON.stringify(openList));
-    }
-
-    function reproduce() {
-        let openList = JSON.parse(localStorage.getItem('openList'));
-        for (let i = 0; i < openList.length; i++) {
-            let tag = document.querySelector('#' + openList[i]);
-            tag.setAttribute('open', '');
-        }
-    }
-
-    function scrollDown() {
-        element = document.querySelector('.left-side-menu-content');
-        element.scrollTop = 100000;
-        localStorage.setItem('left-side-menu-content' + '_scrollPosition', element.scrollTop + 100);
-    }
-
-    document.querySelector("#nav-toggle").addEventListener("click", (element) => {
-
-        if (element.target.checked == true) {
-            sideMenu = document.querySelector('.left-side-wrap');
-            originClass = sideMenu.getAttribute('class');
-            sideMenu.setAttribute('class', 'left-side-wrap hidden');
-            // sideWrap.removeChild(sideMenu);
-        } else {
-            sideMenu = document.querySelector('.left-side-wrap');
-            sideMenu.setAttribute('class', originClass);
-        }
-    })
-</script>
+<script src="/note_list_ui.js"></script>
 </body>
 </html>
