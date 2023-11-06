@@ -74,4 +74,14 @@ public class NoteService {
             delete(child);
         }
     }
+
+    public void updateNoteName(Long noteId, String noteName) {
+        Note note = getNoteById(noteId);
+        if (note == null) {
+            new IllegalArgumentException("해당 노트는 존재하지 않습니다.");
+        } else {
+            note.setName(noteName);
+            noteRepository.save(note); // save는 ID가 있으면 update, ID가 없으면 insert
+        }
+    }
 }

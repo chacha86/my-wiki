@@ -64,6 +64,12 @@ public class NoteController {
         return "redirect:/note/";
     }
 
+    @PostMapping("update/{noteId}")
+    public String update(@PathVariable Long noteId, String noteName) {
+        noteService.updateNoteName(noteId, noteName);
+        return "redirect:/note/" + noteId;
+    }
+
 //    @GetMapping("{noteId}/page/{pageId}")
 //    public String view(Model model, @PathVariable Long noteId, @PathVariable Long pageId) {
 //

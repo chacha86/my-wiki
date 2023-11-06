@@ -56,7 +56,8 @@ public class NotePageController {
     }
 
     @RequestMapping("update")
-    public String update(@PathVariable("noteId") Long noteId, Long pageId, String title, @RequestParam(defaultValue = "") String content) {
+    public String update(@PathVariable("noteId") Long noteId, Long pageId, String noteName, String title, @RequestParam(defaultValue = "") String content) {
+        noteService.updateNoteName(noteId, noteName);
         notePageService.updateNotePage(pageId, title, content);
         return String.format("redirect:/note/%d/page/%d",noteId, pageId);
     }
