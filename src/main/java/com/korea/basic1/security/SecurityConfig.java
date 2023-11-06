@@ -38,20 +38,24 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder);
-
-        return new ProviderManager(authenticationProvider);
-    }
+//    @Bean
+//    public AuthenticationManager authenticationManager(
+//            UserDetailsService userDetailsService,
+//            PasswordEncoder passwordEncoder) {
+//        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+//        authenticationProvider.setUserDetailsService(userDetailsService);
+//        authenticationProvider.setPasswordEncoder(passwordEncoder);
+//
+//        return new ProviderManager(authenticationProvider);
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 }

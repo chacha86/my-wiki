@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 @Controller
@@ -26,7 +28,8 @@ public class NoteController {
     }
 
     @GetMapping("{noteId}")
-    public String intro(Model model, @PathVariable("noteId") Long noteId) {
+    public String intro(Model model, @PathVariable("noteId") Long noteId, Principal principal) {
+        System.out.println(principal.getName());
         Note note = noteService.getNoteById(noteId);
         if(note.getPageList().isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);

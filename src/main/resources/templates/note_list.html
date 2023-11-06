@@ -39,6 +39,7 @@
     <div class="navbar bg-gray-800 text-white py-[20px] border-b-[3px] border-white">
         <div class="flex-1">
             <a class="btn btn-ghost normal-case text-[30px]">CNote</a>
+            <span th:text="${#authentication.getPrincipal().getUsername()}"></span>
         </div>
         <div class="flex-none">
             <ul class="menu menu-horizontal px-1">
