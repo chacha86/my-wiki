@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +43,7 @@ public class NoteService {
                 .createDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .parent(null)
+                .depth(0)
                 .build();
 
         return noteRepository.save(note);
@@ -56,6 +58,7 @@ public class NoteService {
     public Note saveGroupNotebook(Note parent) {
         Note child = getDefaultNotebook();
         child.setParent(parent);
+        child.setDepth(parent.getDepth() + 1);
         return noteRepository.save(child);
     }
 
@@ -75,6 +78,15 @@ public class NoteService {
         }
     }
 
+    public List<Note> collecNotCheckableNote(Note standard, List<Note> notCheckableList) {
+        notCheckableList.add(standard);
+        for(Note note : standard.getChildren()) {
+            collecNotCheckableNote(note, notCheckableList);
+        }
+
+        return notCheckableList;
+    }
+
     public void updateNoteName(Long noteId, String noteName) {
         Note note = getNoteById(noteId);
         if (note == null) {
@@ -83,5 +95,11 @@ public class NoteService {
             note.setName(noteName);
             noteRepository.save(note); // save는 ID가 있으면 update, ID가 없으면 insert
         }
+    }
+
+    public void moveNoteTo(Long moveTargetId, Long destinationId) {
+        Note target = getNoteById(moveTargetId);
+        target.setParent(getNoteById(destinationId));
+        noteRepository.save(target);
     }
 }

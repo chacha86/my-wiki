@@ -33,8 +33,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/user/**").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/**").permitAll())
                 .formLogin(form -> form
                         .loginPage("/user/login")
                         .defaultSuccessUrl("/note/1")

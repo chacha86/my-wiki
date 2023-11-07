@@ -50,7 +50,7 @@ public class NoteController {
         return "redirect:/note/" + note.getId();
     }
     @GetMapping("{noteId}")
-    public String intro(Model model, @PathVariable("noteId") Long noteId, RedirectAttributes redirectAttributes) {
+    public String intro(Model model, @PathVariable("noteId") Long noteId) {
         Note note = noteService.getNoteById(noteId);
 
         if(note.getPageList().isEmpty()) {
@@ -77,6 +77,12 @@ public class NoteController {
         session.setAttribute("resultMsg", msg);
 
         return "redirect:/note/" + noteId;
+    }
+
+    @PostMapping("move")
+    public String move(Long moveTargetId, Long destinationId) {
+        noteService.moveNoteTo(moveTargetId, destinationId);
+        return "redirect:/note/" + moveTargetId;
     }
 
 //    @GetMapping("{noteId}/page/{pageId}")

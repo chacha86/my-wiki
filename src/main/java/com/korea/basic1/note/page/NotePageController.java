@@ -1,6 +1,7 @@
 package com.korea.basic1.note.page;
 
 import com.korea.basic1.note.Note;
+import com.korea.basic1.note.NoteDto;
 import com.korea.basic1.note.NoteService;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
 import com.korea.basic1.note.pageDetail.NotePageDetailService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -54,6 +56,16 @@ public class NotePageController {
             model.addAttribute("resultMsg", resultMsg);
             session.removeAttribute("resultMsg");
         }
+
+        NoteDto noteDto = new NoteDto();
+        noteDto.setCurrentNote(note);
+        noteDto.setParentList(noteList);
+        noteDto.setChildren(note.getChildren());
+        noteDto.setPageList(note.getPageList());
+        List<Note> notCheckableList = noteService.collecNotCheckableNote(note, new ArrayList<>());
+        noteDto.setNotCheckableList(notCheckableList);
+
+        model.addAttribute("noteDto", noteDto);
 
         model.addAttribute("pageDetail", notePage);
         model.addAttribute("noteList", noteList);

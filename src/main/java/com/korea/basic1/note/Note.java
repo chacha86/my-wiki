@@ -35,4 +35,6 @@ public class Note {
     @OneToMany(mappedBy = "note")
     private List<NotePage> pageList = new ArrayList<>();
 
+    private Integer depth;
+
 }
