@@ -17,7 +17,7 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 20, nullable = false)
+    @Column(length = 50, nullable = false)
     private String loginId;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String password;

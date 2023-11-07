@@ -4,6 +4,8 @@ import com.korea.basic1.note.Note;
 import com.korea.basic1.note.NoteService;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
 import com.korea.basic1.note.pageDetail.NotePageDetailService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,9 +34,8 @@ public class NotePageController {
     }
 
     @RequestMapping("/{pageId}")
-    public String list(Model model, @PathVariable("noteId") Long noteId, @PathVariable("pageId") Long pageId) {
+    public String list(Model model, @PathVariable("noteId") Long noteId, @PathVariable("pageId") Long pageId, HttpSession session) {
         List<Note> noteList = noteService.getParentNoteList();
-//        Note note = noteService.getNoChildNote(noteId);
         Note note = noteService.getNoteById(noteId);
         List<NotePage> notePageList = note.getPageList();
 
@@ -47,6 +48,13 @@ public class NotePageController {
             notePage = notePageList.get(0);
         }
 
+        String resultMsg = (String)session.getAttribute("resultMsg");
+        if(resultMsg != null) {
+            System.out.println(resultMsg);
+            model.addAttribute("resultMsg", resultMsg);
+            session.removeAttribute("resultMsg");
+        }
+
         model.addAttribute("pageDetail", notePage);
         model.addAttribute("noteList", noteList);
         model.addAttribute("notePageList", notePageList);
@@ -56,8 +64,7 @@ public class NotePageController {
     }
 
     @RequestMapping("update")
-    public String update(@PathVariable("noteId") Long noteId, Long pageId, String noteName, String title, @RequestParam(defaultValue = "") String content) {
-        noteService.updateNoteName(noteId, noteName);
+    public String update(@PathVariable("noteId") Long noteId, Long pageId, String title, @RequestParam(defaultValue = "") String content) {
         notePageService.updateNotePage(pageId, title, content);
         return String.format("redirect:/note/%d/page/%d",noteId, pageId);
     }

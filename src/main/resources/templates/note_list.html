@@ -93,12 +93,38 @@
                     <!--                        <a class="block bg-gray-800 text-[17px] font-bold text-center text-white hover:bg-gray-500"-->
                     <!--                           th:href="@{|/note/add|}" onclick="scrollDown()">+ 하위노트 추가</a>-->
                     <div>
-                        <form th:action="@{|/note/update/${noteDetail.id}|}" method="post">
-                            <input class="text-black" type="text"
-                                   name="noteName"
-                                   th:value="${noteDetail.name}">
-                            <input class="border border-white" type="submit" value="이름변경">
-                        </form>
+<!--                        <form th:action="@{|/note/update/${noteDetail.id}|}" method="post">-->
+<!--                            <input class="text-black" type="text"-->
+<!--                                   name="noteName"-->
+<!--                                   th:value="${noteDetail.name}">-->
+<!--                            <input class="border border-white" type="submit" value="이름변경">-->
+<!--                        </form>-->
+<!--                        <a href="#" class="w-[20%] mr-[10px] border border-white overflow-hidden" onclick="popInput()">이름변경</a>-->
+                        <!-- Open the modal using ID.showModal() method -->
+                        <a href="#" class="w-[20%] mr-[10px] border border-white overflow-hidden" onclick="my_modal_1.showModal(); noteEventHandle('left-side-menu-content')">이름 변경</a>
+                        <dialog id="my_modal_1" class="modal text-black">
+                            <div class="modal-box">
+                                <h3 class="font-bold text-lg">노트 이름 변경</h3>
+                                <div>
+                                    <form th:action="@{|/note/update/${noteDetail.id}|}" method="post">
+                                        <div class="my-[10px]">
+                                            <input type="text" class="input input-bordered w-full max-w-xs" name="noteName" th:value="${noteDetail.name}">
+                                        </div>
+                                        <div>
+                                            <button class="btn">Ok</button>
+                                        </div>
+                                    </form>
+                                    <form method="dialog">
+                                        <button class="btn">Close</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </dialog>
+                        <script th:inline="javascript">
+                            function popInput() {
+                                document.querySelector();
+                            }
+                        </script>
                     </div>
                 </div>
             </div>
@@ -134,9 +160,28 @@
         <div th:replace="/fragments/toast_editor::test">
         </div>
     </div>
+    <div th:if="${resultMsg}" class="toast toast-top toast-center">
+        <div class="alert alert-info">
+            <span th:text="${resultMsg}"></span>
+        </div>
+    </div>
+    <script>
+        setTimeout(function() {
+            if(document.querySelector('.toast')) {
+                document.querySelector('.toast').style.opacity = '0';
+                document.querySelector('.toast').style.transition = '1s';
+                setTimeout(function() {
+                    document.querySelector('.toast').style.display = 'none';
+                }, 1000);
+
+            }
+        }, 2000);
+    </script>
+
 </div>
 
 <form th:action="@{/note/${noteDetail.id}/page/delete}" id="delete" method="post"></form>
 <script src="/note_list_ui.js"></script>
+
 </body>
 </html>
