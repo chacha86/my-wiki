@@ -80,16 +80,16 @@
                 </div>
 
                 <div class="h-[7%] w-[100%] flex items-center text-[10px] text-center border border-gray-300 ">
-                    <form th:action="@{/note/add}" method="post" class="w-[20%] mr-[10px] border border-white">
+                    <form th:action="@{/note/add}" method="post" class="w-[15%] mr-[10px] border border-white">
                         <input type="submit" value="추가" onclick="noteEventHandle()">
                     </form>
                     <form th:action="@{/note/add-group}" method="post"
-                          class="w-[20%] mr-[10px] border border-white overflow-hidden">
+                          class="w-[15%] mr-[10px] border border-white overflow-hidden">
                         <input type="hidden" name="noteId" th:value="${noteDetail.id}">
                         <input type="submit" value="하위노트추가" onclick="noteEventHandle()">
                     </form>
                     <a th:href="@{|/note/delete/${noteDetail.id}|}"
-                       class="w-[20%] mr-[10px] border border-white overflow-hidden" onclick="noteEventHandle()">삭제</a>
+                       class="w-[15%] mr-[10px] border border-white overflow-hidden" onclick="noteEventHandle()">삭제</a>
                     <!--                        <a class="block bg-gray-800 text-[17px] font-bold text-center text-white hover:bg-gray-500"-->
                     <!--                           th:href="@{|/note/add|}" onclick="scrollDown()">+ 하위노트 추가</a>-->
                     <div>
@@ -101,7 +101,7 @@
 <!--                        </form>-->
 <!--                        <a href="#" class="w-[20%] mr-[10px] border border-white overflow-hidden" onclick="popInput()">이름변경</a>-->
                         <!-- Open the modal using ID.showModal() method -->
-                        <a href="#" class="w-[20%] mr-[10px] border border-white overflow-hidden" onclick="my_modal_1.showModal(); noteEventHandle('left-side-menu-content')">이름 변경</a>
+                        <a href="#" class="w-[15%] mr-[10px] border border-white overflow-hidden" onclick="my_modal_1.showModal(); noteEventHandle('left-side-menu-content')">이름 변경</a>
                         <dialog id="my_modal_1" class="modal text-black">
                             <div class="modal-box">
                                 <h3 class="font-bold text-lg">노트 이름 변경</h3>
@@ -125,6 +125,7 @@
                                 document.querySelector();
                             }
                         </script>
+                        <a href="#" class="w-[15%] mr-[10px] border border-white overflow-hidden">노트 이동</a>
                     </div>
                 </div>
             </div>
