@@ -22,9 +22,7 @@ public class MyOauth2Service extends DefaultOAuth2UserService {
     private final MemberRepository memberRepository;
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        System.out.println("hihihihih");
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        System.out.println(oAuth2User.getName());
 
         Member member = memberRepository.findByLoginId(oAuth2User.getName());
         if(member == null) {
@@ -39,11 +37,6 @@ public class MyOauth2Service extends DefaultOAuth2UserService {
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-
-
-//        oAuth2User.getAuthorities().forEach(authority -> {
-//            authorities.add(new SimpleGrantedAuthority(authority.getAuthority()));
-//        });
 
         return new MyOauth2User(oAuth2User.getName(), "", authorities);
     }

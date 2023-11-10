@@ -14,31 +14,69 @@
             rel="stylesheet"
             href="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight.min.css"
     />
-    <!--    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.3/dist/full.css" rel="stylesheet" type="text/css"/>-->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.3/dist/full.css" rel="stylesheet" type="text/css"/>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/995c486c09.js" crossorigin="anonymous"></script>
 </head>
 <body>
-<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
-<!-- 하이라이트 라이브러리, 언어 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/css.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/java.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/javascript.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/xml.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/php.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/php-template.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/sql.min.js"></script>
-<!-- 토스트 UI 에디터, 신택스 하이라이트 플러그인 추가 -->
-<script src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
-<!--<form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">-->
-<!--    <div class="header bg-gray-800">-->
-<!--        <h1 class="text-white text-[2rem] p-[20px]">CNote</h1>-->
-<!--        <div>-->
-<!--        </div>-->
-<!--    </div>-->
 <div class="navbar bg-gray-800 text-white py-[20px] border-b-[3px] border-white">
     <div class="flex-1">
         <a class="btn btn-ghost normal-case text-[30px]">CNote</a>
+        <i class="fa-solid fa-magnifying-glass mr-[10px]"></i>
+        <div class="w-[35%]">
+            <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"
+                  class="flex relative justify-between items-center">
+                <input type="text" placeholder="Search" name="keyword"
+                       class="input input-bordered text-black w-full max-w-xs"
+                       id="search-input" autocomplete="off"
+                       th:if="${searchedResult}"
+                       th:value="${searchedResult.keyword}">
+                <input type="submit" class="btn text-white hover:text-black" value="search">
+                <div class="searchBox hidden absolute z-10 top-[100%] left-[0] bg-gray-600 bg-opacity-[98%] h-[50vh] w-[100%] p-[20px]">
+                    <div class="content border h-[100%] border-white overflow-scroll">
+                        <ul class="m-[10px]" th:if="${searchedResult}">
+                            <li th:each="note : ${searchedResult.searchedNoteList}"
+                                class="hover:bg-gray-400 px-[0.5rem]"><a
+                                    th:href="@{|/note/${note.id}?keyword=${searchedResult.keyword}|}"
+                                    class="inline-block w-[100%]" th:text="${note.name}"
+                                    th:classappend="${note.id == noteDetail.id} ? 'bg-gray-400' : ''"></a></li>
+                            <li th:unless="${#lists.isEmpty(searchedResult.searchedNotePageList)}"
+                                th:each="notePage : ${searchedResult.searchedNotePageList}"
+                                class="hover:bg-gray-400 px-[0.5rem]"><a
+                                    th:href="@{|/note/${notePage.note.id}/page/${notePage.id}?keyword=${searchedResult.keyword}|}"
+                                    class="inline-block w-[100%]"
+                                    th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "
+                                    th:text="${notePage.title}"></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+            <script>
+                let body = document.querySelector("body");
+                let searchBox = document.querySelector(".searchBox");
+                let searchInput = document.querySelector("#search-input");
+
+                searchInput.addEventListener('focusin', function (e) {
+                    console.log('hihi');
+                    searchBox.style.display = 'block';
+                });
+
+                if (searchInput.value !== '') {
+                    searchBox.style.display = 'block';
+                }
+
+                // searchInput.addEventListener('focusout', function (e) {
+                //     searchBox.style.display = 'none';
+                // });
+
+                body.addEventListener('click', function (e) {
+                    console.log('aaa' + e.target.id);
+                    if (e.target.id !== 'search-input') {
+                        searchBox.style.display = 'none';
+                    }
+                });
+            </script>
+        </div>
     </div>
     <div class="flex-none">
         <div class="text-white"></div>
@@ -66,14 +104,14 @@
     </div>
 </div>
 <!--    <div class="main h-[750px] overflow-hidden">-->
-<div class="main overflow-hidden flex relative">
-    <div class="left-side-wrap min-w-[300px] h-[calc(100vh-95px)] w-[35%] flex relative">
-        <div class="flex w-[100%]">
-            <div class="left-side-menu w-[60%] bg-gray-800 text-white overflow-hidden">
+<div class="main h-[calc(100vh-95px)] overflow-hidden flex relative">
+    <div class="left-side-wrap flex relative">
+        <div class="left-side-inner flex w-[100%]">
+            <div class="left-side-menu origin-left bg-gray-800 text-white overflow-hidden">
                 <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
                     <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
                 </div>
-                <div class="left-side-menu-content w-[100%] h-[83%] px-[5px] overflow-y-scroll">
+                <div class="custom-scroll left-side-menu-content w-[100%] h-[83%] px-[5px] overflow-y-scroll">
                     <ul class="menu bg-gray-800">
                         <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
                     </ul>
@@ -85,7 +123,7 @@
                     </form>
                     <form th:action="@{/note/add-group}" method="post"
                           class="w-[15%] mr-[10px] border border-white overflow-hidden">
-                        <input type="hidden" name="noteId" th:value="${noteDetail.id}">
+                        <input type="hidden" name="noteId" th:value="${teDetail.id}">
                         <input type="submit" value="하위노트추가" onclick="noteEventHandle()">
                     </form>
                     <a th:href="@{|/note/delete/${noteDetail.id}|}"
@@ -156,13 +194,25 @@
                                     </form>
                                 </div>
                             </dialog>
-                            <script>my_modal_4.showModal();</script>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="left-second-menu-content w-[40%] bg-gray-800 text-white overflow-scroll">
-                <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
+            <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
+            <div class="left-second-menu-content origin-left custom-scroll bg-gray-800 text-white overflow-scroll">
+                <div class="flex justify-between items-center flex-wrap border-b-[1px]">
+                    <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
+                    <div class="m-[1rem]"
+                         th:with="url=@{|/note/${noteDetail.id}/page/${pageDetail.id}?keyword=${searchedResult.keyword}&sort=|},
+                                 classBtn='btn btn-xs'">
+                        <a th:href="${url+'updateDate'}" th:class="${classBtn}">수정일</a>
+                        <a th:href="${url+'createDate'}" th:class="${classBtn}">작성일</a>
+                        <a th:href="${url+'title'}" th:class="${classBtn}">제목</a>
+                    </div>
+                    <script>
+                        let sortBtn = document.querySelector(".sort");
+                    </script>
+                </div>
                 <ul th:each="notePage : ${notePageList}">
                     <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
                         th:class="|${customClass}|">
@@ -173,7 +223,43 @@
                     </li>
                 </ul>
             </div>
+            <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
         </div>
+        <script>
+            sideControlBars = document.querySelectorAll(".side-control-bar");
+            let isDragging = false;
+            let onDragTarget = null;
+            sideControlBars.forEach(function (item) {
+                item.addEventListener("mousedown", function (e) {
+                    isDragging = true;
+                    onDragTarget = e.target;
+                    console.log(onDragTarget);
+                });
+            });
+
+            document.querySelector(".main").addEventListener("mousemove", function (e) {
+                if (isDragging) {
+                    let target = onDragTarget.previousElementSibling;
+                    let standard = e.pageX + onDragTarget.clientWidth / 2;
+                    if (standard >= e.clientX) {
+                        target.style.transform = "scaleX(0.99)";
+                    } else {
+                        target.style.transform = "scaleX(1.01)";
+                    }
+
+                    target.style.width = e.clientX - target.getBoundingClientRect().x + "px";
+                    target.style.transform = "scaleX(1)";
+                }
+            });
+
+            document.querySelector("body").addEventListener("mouseup", function (e) {
+                if (isDragging) {
+                    // document.querySelector(".main").style.cursor = 'default';
+                    isDragging = false;
+                }
+            });
+        </script>
+
     </div>
     <div class="content h-[100vh-94px] w-[100%] overflow-x-hidden overflow-y-hidden">
         <form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
@@ -182,6 +268,7 @@
                 <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
                        name="title"
                        th:value="${pageDetail.title}">
+                <span th:text="${pageDetail.updateDate + ', ' + pageDetail.createDate}"></span>
                 <a href="#" class="font-bold text-red-500 p-[10px]"
                    onclick="confirmDelete()">X</a>
             </div>
@@ -191,6 +278,20 @@
             </div>
         </form>
         <div th:replace="/fragments/toast_editor::test">
+        </div>
+        <div class="flex w-[100%]">
+            <label>태그</label>
+            <div>
+                <ul class="flex">
+                    <li class="mr-[0.3rem]" th:each="tag : ${pageDetail.tagList}" th:text="${tag.name}"></li>
+                </ul>
+                <form th:action="@{/tag/add}" method="post">
+                    <input type="hidden" name="noteId" th:value="${noteDetail.id}">
+                    <input type="hidden" name="pageId" th:value="${pageDetail.id}">
+                    <input type="text" name="tagName" class="border mt-[10px]">
+                    <input type="submit" value="추가" class="btn btn-md">
+                </form>
+            </div>
         </div>
     </div>
     <div th:if="${resultMsg}" class="toast toast-top toast-center">
@@ -210,11 +311,8 @@
             }
         }, 2000);
     </script>
-
 </div>
-
 <form th:action="@{/note/${noteDetail.id}/page/delete}" id="delete" method="post"></form>
 <script src="/note_list_ui.js"></script>
-<!-- You can open the modal using ID.showModal() method -->
 </body>
 </html>

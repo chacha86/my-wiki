@@ -24,7 +24,6 @@ function noteEventHandle(className) {
     setCollapse();
     setScroll(className);
 }
-
 function initScrollPosition(className) {
     const element = document.querySelector('.' + className);
     const savedPosition = localStorage.getItem(className + '_scrollPosition');

@@ -2,10 +2,13 @@ package com.korea.basic1.note.page;
 
 import com.korea.basic1.note.Note;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
+import com.korea.basic1.note.tag.Tag;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -30,4 +33,7 @@ public class NotePage {
 
     @OneToOne
     private NotePageDetail notePageDetail;
+
+    @OneToMany(mappedBy = "notePage")
+    private List<Tag> tagList = new ArrayList<>();
 }

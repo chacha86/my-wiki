@@ -3,6 +3,7 @@ package com.korea.basic1.note.page;
 import com.korea.basic1.note.Note;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -54,5 +55,13 @@ public class NotePageService {
 
     public void deleteAll(List<NotePage> notePageList) {
         notePageRepository.deleteAll(notePageList);
+    }
+
+    public List<NotePage> getNotePageListByKeyword(String keyword, Sort sort) {
+        return notePageRepository.findByTitleContaining(keyword, sort);
+    }
+
+    public List<NotePage> getNotePageListByNoteId(Long id, Sort sort) {
+        return notePageRepository.findByNoteId(id, sort);
     }
 }

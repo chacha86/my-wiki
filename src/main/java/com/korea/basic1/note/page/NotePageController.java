@@ -1,8 +1,6 @@
 package com.korea.basic1.note.page;
 
-import com.korea.basic1.note.Note;
-import com.korea.basic1.note.NoteDto;
-import com.korea.basic1.note.NoteService;
+import com.korea.basic1.note.*;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
 import com.korea.basic1.note.pageDetail.NotePageDetailService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,6 +23,7 @@ public class NotePageController {
 
     private final NotePageService notePageService;
     private final NoteService noteService;
+    private final NoteProcessingService noteProcessingService;
     private final NotePageDetailService notePageDetailService;
 
     @RequestMapping("/add")
@@ -36,26 +36,22 @@ public class NotePageController {
     }
 
     @RequestMapping("/{pageId}")
-    public String list(Model model, @PathVariable("noteId") Long noteId, @PathVariable("pageId") Long pageId, HttpSession session) {
+    public String list(Model model, @PathVariable("noteId") Long noteId,
+                       @PathVariable("pageId") Long pageId, @ModelAttribute NoteParam noteParam,
+                       HttpSession session) {
+
         List<Note> noteList = noteService.getParentNoteList();
         Note note = noteService.getNoteById(noteId);
-        List<NotePage> notePageList = note.getPageList();
+        noteParam.setNote(note);
+        List<NotePage> notePageList = noteProcessingService.getNotePageListByNoteParam(noteParam);
+//        List<NotePage> notePageList = note.getPageList();
 
-        if(notePageList.isEmpty()) {
+        if (notePageList.isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);
         }
 
         NotePage notePage = notePageService.getNotePageById(pageId);
-        if(notePage == null) {
-            notePage = notePageList.get(0);
-        }
-
-        String resultMsg = (String)session.getAttribute("resultMsg");
-        if(resultMsg != null) {
-            System.out.println(resultMsg);
-            model.addAttribute("resultMsg", resultMsg);
-            session.removeAttribute("resultMsg");
-        }
+        SearchedResult searchedResult = noteProcessingService.getSearchedNoteAndPageList(noteParam);
 
         NoteDto noteDto = new NoteDto();
         noteDto.setCurrentNote(note);
@@ -65,12 +61,20 @@ public class NotePageController {
         List<Note> notCheckableList = noteService.collecNotCheckableNote(note, new ArrayList<>());
         noteDto.setNotCheckableList(notCheckableList);
 
+
+        String resultMsg = (String) session.getAttribute("resultMsg");
+        if (resultMsg != null) {
+            model.addAttribute("resultMsg", resultMsg);
+            session.removeAttribute("resultMsg");
+        }
+
         model.addAttribute("noteDto", noteDto);
 
         model.addAttribute("pageDetail", notePage);
         model.addAttribute("noteList", noteList);
         model.addAttribute("notePageList", notePageList);
         model.addAttribute("noteDetail", note);
+        model.addAttribute("searchedResult", searchedResult);
 
         return "note_list";
     }
@@ -78,7 +82,7 @@ public class NotePageController {
     @RequestMapping("update")
     public String update(@PathVariable("noteId") Long noteId, Long pageId, String title, @RequestParam(defaultValue = "") String content) {
         notePageService.updateNotePage(pageId, title, content);
-        return String.format("redirect:/note/%d/page/%d",noteId, pageId);
+        return String.format("redirect:/note/%d/page/%d", noteId, pageId);
     }
 
     //
@@ -87,7 +91,7 @@ public class NotePageController {
     public String delete(@PathVariable("noteId") Long noteId, Long pageId) {
 
         notePageService.delete(pageId);
-        return String.format("redirect:/note/%d/page/%d",noteId, pageId);
+        return String.format("redirect:/note/%d/page/%d", noteId, pageId);
     }
 //
 //    @RequestMapping("detail")

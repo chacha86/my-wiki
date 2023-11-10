@@ -1,10 +1,10 @@
 package com.korea.basic1.note;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,5 +101,9 @@ public class NoteService {
         Note target = getNoteById(moveTargetId);
         target.setParent(getNoteById(destinationId));
         noteRepository.save(target);
+    }
+
+    public List<Note> getNoteListByKeyword(String keyword) {
+        return noteRepository.findAllByNameContaining(keyword);
     }
 }

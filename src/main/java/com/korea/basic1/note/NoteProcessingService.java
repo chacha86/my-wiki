@@ -4,8 +4,11 @@ import com.korea.basic1.note.page.NotePage;
 import com.korea.basic1.note.page.NotePageService;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
 import com.korea.basic1.note.pageDetail.NotePageDetailService;
+import com.korea.basic1.note.tag.Tag;
+import com.korea.basic1.note.tag.TagService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +19,7 @@ public class NoteProcessingService {
     private final NoteService noteService;
     private final NotePageService notePageService;
     private final NotePageDetailService notePageDetailService;
+    private final TagService tagService;
 
 //    @Transactional
     @Transactional
@@ -45,5 +49,24 @@ public class NoteProcessingService {
         NotePageDetail notePageDetail = notePageDetailService.saveDefaultPageDetail();
         notePageService.saveDefaultNotePage(child, notePageDetail);
         return child;
+    }
+
+    public SearchedResult getSearchedNoteAndPageList(NoteParam noteParam) {
+        String keyword = noteParam.getKeyword();
+        List<Note> noteList = noteService.getNoteListByKeyword(keyword);
+        Sort sort = Sort.by(noteParam.getSortDirection(), noteParam.getSort());
+        List<NotePage> pageList = notePageService.getNotePageListByKeyword(keyword, sort);
+
+        return new SearchedResult(keyword, noteList, pageList);
+    }
+
+    public List<NotePage> getNotePageListByNoteParam(NoteParam noteParam) {
+        Note note = noteParam.getNote();
+        Sort sort = Sort.by(noteParam.getSortDirection(), noteParam.getSort());
+        return notePageService.getNotePageListByNoteId(note.getId(), sort);
+    }
+
+    public List<Tag> getTagListByNotePage(NotePage page) {
+        return tagService.getTagListByNotePage(page);
     }
 }

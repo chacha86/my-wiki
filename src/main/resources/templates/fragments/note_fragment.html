@@ -14,7 +14,7 @@
     <details th:id="${'n_' + note.id}" th:unless="${#lists.isEmpty(note.children)}">
         <summary class="hover:bg-gray-500 hover:text-white hover:rounded-md"
                  th:classappend="${note.id == noteDetail.id} ? 'bg-gray-500 rounded-md': ''">
-            <a th:href="@{|/note/${note.id}|}" th:text="${note.name}"
+            <a class="" th:href="@{|/note/${note.id}|}" th:text="${note.name}"
                onclick="noteEventHandle('left-side-menu-content');"></a>
         </summary>
         <ul>
