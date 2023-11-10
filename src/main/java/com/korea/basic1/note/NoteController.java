@@ -29,14 +29,13 @@ public class NoteController {
     private final NoteService noteService;
     private final NoteProcessingService noteProcessingService;
     @RequestMapping("/")
-    public String index(@RequestParam(defaultValue = "") String keyword) {
+    public String index(Model model) {
 
         List<Note> noteList = noteService.getParentNoteList();
-
         if(noteList.isEmpty()) {
             return "redirect:add";
         }
-        return "main";
+        return "redirect:/note/" + noteList.get(0).getId();
     }
 
     @PostMapping("/add")
