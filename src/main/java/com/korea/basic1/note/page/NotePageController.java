@@ -38,6 +38,7 @@ public class NotePageController {
     @RequestMapping("/{pageId}")
     public String list(Model model, @PathVariable("noteId") Long noteId,
                        @PathVariable("pageId") Long pageId, @ModelAttribute NoteParam noteParam,
+                       @RequestParam(value = "openList", required = false) ArrayList<Long> openList,
                        HttpSession session) {
 
         List<Note> noteList = noteService.getParentNoteList();
@@ -68,8 +69,14 @@ public class NotePageController {
             session.removeAttribute("resultMsg");
         }
 
-        model.addAttribute("noteDto", noteDto);
+        if(openList != null) {
+            for (Long id : openList) {
+                System.out.println("id = " + id);
+            }
+        }
 
+        model.addAttribute("noteDto", noteDto);
+        model.addAttribute("openList", openList);
         model.addAttribute("pageDetail", notePage);
         model.addAttribute("noteList", noteList);
         model.addAttribute("notePageList", notePageList);

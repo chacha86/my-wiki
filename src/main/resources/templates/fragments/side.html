@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="side-wrap" class="left-side-wrap flex relative">
+    <div class="left-side-inner flex">
+        <div class="left-side-menu origin-left bg-gray-800 text-white overflow-hidden">
+            <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
+                <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
+            </div>
+            <div class="custom-scroll left-side-menu-content h-[83%] px-[5px] overflow-y-scroll">
+                <form th:action="@{|/note/${noteDetail.id}|}" id="tree-form" method="post">
+                    <ul class="menu bg-gray-800">
+                        <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
+                    </ul>
+                </form>
+            </div>
+
+            <div class="h-[7%] flex items-center text-[7px] text-center border border-gray-300 ">
+                <form th:action="@{/note/add}" method="post" class="w-[15%] mr-[10px] border border-white">
+                    <input type="submit" value="추가" onclick="noteEventHandle()">
+                </form>
+                <form th:action="@{/note/add-group}" method="post"
+                      class="w-[15%] mr-[10px] border border-white overflow-hidden">
+                    <input type="hidden" name="noteId" th:value="${noteDetail.id}">
+                    <input type="submit" value="하위노트추가" onclick="noteEventHandle()">
+                </form>
+                <a th:href="@{|/note/delete/${noteDetail.id}|}"
+                   class="w-[15%] mr-[10px] border border-white overflow-hidden" onclick="noteEventHandle()">삭제</a>
+                <div>
+                    <a href="#" class="w-[15%] mr-[10px] border border-white overflow-hidden"
+                       onclick="my_modal_1.showModal(); noteEventHandle('left-side-menu-content')">이름 변경</a>
+                    <dialog id="my_modal_1" class="modal text-black">
+                        <div class="modal-box">
+                            <h3 class="font-bold text-lg">노트 이름 변경</h3>
+                            <div>
+                                <form th:action="@{|/note/update/${noteDetail.id}|}" method="post">
+                                    <div class="my-[10px]">
+                                        <input type="text" class="input input-bordered w-full max-w-xs"
+                                               name="noteName" th:value="${noteDetail.name}">
+                                    </div>
+                                    <div>
+                                        <button class="btn">Ok</button>
+                                    </div>
+                                </form>
+                                <form method="dialog">
+                                    <button class="btn">Close</button>
+                                </form>
+                            </div>
+                        </div>
+                    </dialog>
+                    <script th:inline="javascript">
+                        function popInput() {
+                            document.querySelector();
+                        }
+                    </script>
+                    <div class="inline-block">
+                        <a href="#" class="w-[15%] mr-[10px] border border-white overflow-hidden"
+                           onclick="my_modal_4.showModal()">open modal</a>
+                        <dialog id="my_modal_4" class="modal text-black">
+                            <div class="modal-box w-[25%] h-[60%]">
+                                <h3 class="font-bold text-lg mb-[10px]">노트 이동</h3>
+                                <form th:action="@{/note/move}" method="post">
+                                    <input type="hidden" name="moveTargetId" th:value="${noteDetail.id}">
+                                    <div class="move-tree overflow-scroll h-[75%] border">
+                                        <ul class="menu">
+                                            <!--                                            <li th:replace="fragments/note_fragment::note_move_tree(${noteDetail}, ${noteList}, 1)" onclick="noteEventHandle('move-tree')"></li>-->
+                                            <li th:replace="fragments/note_fragment::note_move_tree(${noteDto.currentNote}, ${noteDto.parentList}, ${noteDto.notCheckableList})"
+                                                onclick="noteEventHandle('move-tree')"></li>
+                                        </ul>
+                                    </div>
+                                    <div class="modal-action">
+                                        <button class="btn btn-xs">이동</button>
+                                    </div>
+                                </form>
+                                <div class="flex justify-around">
+                                    <div class="modal-action">
+                                        <form method="dialog" class="flex justify-around">
+                                            <button class="btn btn-xs">취소</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                </form>
+                            </div>
+                        </dialog>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
+        <div class="left-second-menu-content origin-left custom-scroll bg-gray-800 text-white overflow-scroll">
+            <div class="flex justify-between items-center flex-wrap border-b-[1px]">
+                <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
+                <div class="m-[1rem]"
+                     th:with="url=@{|/note/${noteDetail.id}/page/${pageDetail.id}?keyword=${searchedResult.keyword}&sort=|},
+                                 classBtn='btn btn-xs'">
+                    <a th:href="${url+'updateDate'}" th:class="${classBtn}">수정일</a>
+                    <a th:href="${url+'createDate'}" th:class="${classBtn}">작성일</a>
+                    <a th:href="${url+'title'}" th:class="${classBtn}">제목</a>
+                </div>
+                <script>
+                    let sortBtn = document.querySelector(".sort");
+                </script>
+            </div>
+            <ul th:each="notePage : ${notePageList}">
+                <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
+                    th:class="|${customClass}|">
+                    <a class="block p-[10px] text-[15px] border-b-[1px]"
+                       th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"
+                       th:text="${notePage.title}" th:id="|article_${notePage.id}|"
+                       onclick="setScroll('left-second-menu-content');"></a>
+                </li>
+            </ul>
+        </div>
+        <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
+    </div>
+    <script>
+        sideControlBars = document.querySelectorAll(".side-control-bar");
+        let isDragging = false;
+        let onDragTarget = null;
+        sideControlBars.forEach(function (item) {
+            item.addEventListener("mousedown", function (e) {
+                isDragging = true;
+                onDragTarget = e.target;
+                console.log(onDragTarget);
+            });
+        });
+
+        document.querySelector(".main").addEventListener("mousemove", function (e) {
+            if (isDragging) {
+                let target = onDragTarget.previousElementSibling;
+                let standard = e.pageX + onDragTarget.clientWidth / 2;
+                if (standard >= e.clientX) {
+                    target.style.transform = "scaleX(0.99)";
+                } else {
+                    target.style.transform = "scaleX(1.01)";
+                }
+
+                target.style.width = e.clientX - target.getBoundingClientRect().x + "px";
+                target.style.transform = "scaleX(1)";
+            }
+        });
+
+        document.querySelector("body").addEventListener("mouseup", function (e) {
+            if (isDragging) {
+                // document.querySelector(".main").style.cursor = 'default';
+                isDragging = false;
+            }
+        });
+    </script>
+
+</div>
+</body>
+</html>

@@ -6,9 +6,11 @@
     <link rel="stylesheet" href="/global.css">
 </head>
 <body>
-<div class="aaa">aaaa</div>
-
-<a th:href="@{/aaa/bbb}">asdf</a>
-<a href="/aaa/bbb">bcvx</a>
+<form th:action="@{/array-test}" method="post">
+    <input type="hidden" name="array" value="aa">
+    <input type="hidden" name="array" value="bb">
+    <input type="hidden" name="array" value="cc">
+    <input type="submit" value="test">
+</form>
 </body>
 </html>

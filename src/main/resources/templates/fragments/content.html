@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div th:fragment="content" class="content h-[100vh-94px] w-[100%] overflow-x-hidden overflow-y-hidden">
+    <form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
+        <div class="flex justify-between">
+
+            <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
+                   name="title"
+                   th:value="${pageDetail.title}">
+            <span th:text="${pageDetail.updateDate + ', ' + pageDetail.createDate}"></span>
+            <a href="#" class="font-bold text-red-500 p-[10px]"
+               onclick="confirmDelete()">X</a>
+        </div>
+        <div>
+            <input type="hidden" name="pageId" th:value="${pageDetail.id}">
+            <input type="hidden" name="content">
+        </div>
+    </form>
+    <div th:replace="/fragments/toast_editor::test">
+    </div>
+    <div class="flex w-[100%]">
+        <label>태그</label>
+        <div>
+            <ul class="flex">
+                <li class="mr-[0.3rem]" th:each="tag : ${pageDetail.tagList}" th:text="${tag.name}"></li>
+            </ul>
+            <form th:action="@{/tag/add}" method="post">
+                <input type="hidden" name="noteId" th:value="${noteDetail.id}">
+                <input type="hidden" name="pageId" th:value="${pageDetail.id}">
+                <input type="text" name="tagName" class="border mt-[10px]">
+                <input type="submit" value="추가" class="btn btn-md">
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

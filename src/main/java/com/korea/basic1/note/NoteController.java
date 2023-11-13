@@ -1,5 +1,7 @@
 package com.korea.basic1.note;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.korea.basic1.note.page.NotePage;
 import com.korea.basic1.note.page.NotePageService;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
@@ -13,11 +15,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
@@ -49,8 +53,8 @@ public class NoteController {
         Note note = noteProcessingService.saveGroupNotebook(noteId);
         return "redirect:/note/" + note.getId();
     }
-    @GetMapping("{noteId}")
-    public String intro(Model model, @PathVariable("noteId") Long noteId, @RequestParam(defaultValue = "") String keyword) throws UnsupportedEncodingException {
+    @RequestMapping("{noteId}")
+    public String intro(Model model, @PathVariable("noteId") Long noteId, @RequestParam(defaultValue = "") String keyword) {
         Note note = noteService.getNoteById(noteId);
 
         if(note.getPageList().isEmpty()) {

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="navbar" class="navbar bg-gray-800 text-white py-[20px] border-b-[3px] border-white">
+    <div class="flex-1">
+        <a class="btn btn-ghost normal-case text-[30px]">CNote</a>
+        <i class="fa-solid fa-magnifying-glass mr-[10px]"></i>
+        <div class="w-[35%]">
+            <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"
+                  class="flex relative justify-between items-center">
+                <input type="text" placeholder="Search" name="keyword"
+                       class="input input-bordered text-black w-full max-w-xs"
+                       id="search-input" autocomplete="off"
+                       th:if="${searchedResult}"
+                       th:value="${searchedResult.keyword}">
+                <input type="submit" class="btn text-white hover:text-black" value="search">
+                <div class="searchBox hidden absolute z-10 top-[100%] left-[0] bg-gray-600 bg-opacity-[98%] h-[50vh] w-[100%] p-[20px]">
+                    <div class="content border h-[100%] border-white overflow-scroll">
+                        <ul class="m-[10px]" th:if="${searchedResult}">
+                            <li th:each="note : ${searchedResult.searchedNoteList}"
+                                class="hover:bg-gray-400 px-[0.5rem]"><a
+                                    th:href="@{|/note/${note.id}?keyword=${searchedResult.keyword}|}"
+                                    class="inline-block w-[100%]" th:text="${note.name}"
+                                    th:classappend="${note.id == noteDetail.id} ? 'bg-gray-400' : ''"></a></li>
+                            <li th:unless="${#lists.isEmpty(searchedResult.searchedNotePageList)}"
+                                th:each="notePage : ${searchedResult.searchedNotePageList}"
+                                class="hover:bg-gray-400 px-[0.5rem]"><a
+                                    th:href="@{|/note/${notePage.note.id}/page/${notePage.id}?keyword=${searchedResult.keyword}|}"
+                                    class="inline-block w-[100%]"
+                                    th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "
+                                    th:text="${notePage.title}"></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+            <script>
+                let body = document.querySelector("body");
+                let searchBox = document.querySelector(".searchBox");
+                let searchInput = document.querySelector("#search-input");
+
+                searchInput.addEventListener('focusin', function (e) {
+                    console.log('hihi');
+                    searchBox.style.display = 'block';
+                });
+
+                if (searchInput.value !== '') {
+                    searchBox.style.display = 'block';
+                }
+
+                // searchInput.addEventListener('focusout', function (e) {
+                //     searchBox.style.display = 'none';
+                // });
+
+                body.addEventListener('click', function (e) {
+                    console.log('aaa' + e.target.id);
+                    if (e.target.id !== 'search-input') {
+                        searchBox.style.display = 'none';
+                    }
+                });
+            </script>
+        </div>
+    </div>
+    <div class="flex-none">
+        <div class="text-white"></div>
+
+        <a class="text-[13px] hover:bg-gray-600 p-[5px] rounded-md" sec:authorize="isAnonymous()" href="/user/login">login</a>
+        <a class="text-[13px] hover:bg-gray-600 p-[5px] rounded-md" sec:authorize="isAuthenticated()"
+           href="/user/logout">logout</a>
+
+        <ul class="menu menu-horizontal px-1">
+            <li>
+                <label class="swap swap-rotate hover:text-white hover:bg-gray-600 p-[5px]">
+                    <input type="checkbox" id="nav-toggle"/>
+                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                         viewBox="0 0 512 512">
+                        <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/>
+                    </svg>
+                    <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                         viewBox="0 0 512 512">
+                        <polygon
+                                points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/>
+                    </svg>
+                </label>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
