@@ -67,29 +67,29 @@
 </div>
 <!--    <div class="main h-[750px] overflow-hidden">-->
 <div class="main overflow-hidden flex relative">
-    <div class="left-side-wrap min-w-[300px] h-[calc(100vh-95px)] w-[35%] flex relative">
+    <div class="left-side-wrap h-[calc(100vh-95px)] flex relative">
         <div class="flex w-[100%]">
-            <div class="left-side-menu w-[60%] bg-gray-800 text-white overflow-hidden">
+            <div class="left-side-menu bg-gray-800 text-white overflow-hidden">
                 <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
                     <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
                 </div>
-                <div class="left-side-menu-content w-[100%] h-[83%] px-[5px] overflow-y-scroll">
+                <div class="left-side-menu-content h-[83%] px-[5px] overflow-y-scroll">
                     <ul class="menu bg-gray-800">
                         <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
                     </ul>
                 </div>
 
-                <div class="h-[7%] w-[100%] flex items-center text-[10px] text-center border border-gray-300 ">
+                <div class="h-[7%] flex items-center text-[10px] text-center border border-gray-300 ">
                     <form th:action="@{/note/add}" method="post" class="w-[20%] mr-[10px] border border-white">
                         <input type="submit" value="추가" onclick="noteEventHandle()">
                     </form>
                     <form th:action="@{/note/add-group}" method="post"
-                          class="w-[20%] mr-[10px] border border-white overflow-hidden">
+                          class="mr-[10px] border border-white overflow-hidden">
                         <input type="hidden" name="noteId" th:value="${noteDetail.id}">
                         <input type="submit" value="하위노트추가" onclick="noteEventHandle()">
                     </form>
                     <a th:href="@{|/note/delete/${noteDetail.id}|}"
-                       class="w-[20%] mr-[10px] border border-white overflow-hidden" onclick="noteEventHandle()">삭제</a>
+                       class="mr-[10px] border border-white overflow-hidden" onclick="noteEventHandle()">삭제</a>
                     <!--                        <a class="block bg-gray-800 text-[17px] font-bold text-center text-white hover:bg-gray-500"-->
                     <!--                           th:href="@{|/note/add|}" onclick="scrollDown()">+ 하위노트 추가</a>-->
                     <div>
@@ -102,7 +102,8 @@
                     </div>
                 </div>
             </div>
-            <div class="left-second-menu-content w-[40%] bg-gray-800 text-white overflow-scroll">
+            <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
+            <div class="left-second-menu-content bg-gray-800 text-white overflow-scroll">
                 <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
                 <ul th:each="notePage : ${notePageList}">
                     <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
@@ -114,6 +115,7 @@
                     </li>
                 </ul>
             </div>
+            <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
         </div>
     </div>
     <div class="content h-[100vh-94px] w-[100%] overflow-x-hidden overflow-y-hidden">
@@ -135,7 +137,40 @@
         </div>
     </div>
 </div>
+<script>
+    sideControlBars = document.querySelectorAll(".side-control-bar");
+    let isDragging = false;
+    let onDragTarget = null;
+    sideControlBars.forEach(function (item) {
+        item.addEventListener("mousedown", function (e) {
+            isDragging = true;
+            onDragTarget = e.target;
+            console.log(onDragTarget);
+        });
+    });
 
+    document.querySelector(".main").addEventListener("mousemove", function (e) {
+        if (isDragging) {
+            let target = onDragTarget.previousElementSibling;
+            let standard = e.pageX + onDragTarget.clientWidth / 2;
+            if (standard >= e.clientX) {
+                target.style.transform = "scaleX(0.99)";
+            } else {
+                target.style.transform = "scaleX(1.01)";
+            }
+
+            target.style.width = e.clientX - target.getBoundingClientRect().x + "px";
+            target.style.transform = "scaleX(1)";
+        }
+    });
+
+    document.querySelector("body").addEventListener("mouseup", function (e) {
+        if (isDragging) {
+            // document.querySelector(".main").style.cursor = 'default';
+            isDragging = false;
+        }
+    });
+</script>
 <form th:action="@{/note/${noteDetail.id}/page/delete}" id="delete" method="post"></form>
 <script src="/note_list_ui.js"></script>
 </body>
