@@ -3,7 +3,9 @@ package com.korea.basic1.note;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Array;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,16 +22,18 @@ public class NoteService {
     public List<Note> getParentNoteList() {
         return noteRepository.findByParentId(null);
     }
+
     public Note getNoteById(Long id) {
         Optional<Note> optional = noteRepository.findById(id);
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             return optional.get();
         }
         throw new IllegalArgumentException("해당 노트는 존재하지 않습니다.");
     }
+
     public Note getNoChildNote(Long id) {
         Note note = getNoteById(id);
-        if(note.getChildren().isEmpty()) {
+        if (note.getChildren().isEmpty()) {
             return note;
         }
 
@@ -46,6 +50,7 @@ public class NoteService {
 
         return noteRepository.save(note);
     }
+
     public Note getDefaultNotebook() {
         Note note = new Note();
         note.setName("새노트");
@@ -53,6 +58,7 @@ public class NoteService {
         note.setUpdateDate(LocalDateTime.now());
         return noteRepository.save(note);
     }
+
     public Note saveGroupNotebook(Note parent) {
         Note child = getDefaultNotebook();
         child.setParent(parent);
@@ -75,6 +81,15 @@ public class NoteService {
         }
     }
 
+    public List<Note> collecNotCheckableNote(Note standard, List<Note> notCheckableList) {
+        notCheckableList.add(standard);
+        for (Note note : standard.getChildren()) {
+            collecNotCheckableNote(note, notCheckableList);
+        }
+
+        return notCheckableList;
+    }
+
     public void updateNoteName(Long noteId, String noteName) {
         Note note = getNoteById(noteId);
         if (note == null) {
@@ -84,4 +99,52 @@ public class NoteService {
             noteRepository.save(note); // save는 ID가 있으면 update, ID가 없으면 insert
         }
     }
+
+    public void moveNoteTo(Long moveTargetId, Long destinationId) {
+        Note target = getNoteById(moveTargetId);
+        target.setParent(getNoteById(destinationId));
+        noteRepository.save(target);
+    }
+
+    public List<Note> getNoteListByKeyword(String keyword) {
+        return noteRepository.findAllByNameContaining(keyword);
+    }
+
+    public List<NoteTreeDto> buildNoteTreeDto() {
+        List<NoteTreeDto> parentNoteList = new ArrayList<>();
+        for (Note parentNote : getParentNoteList()) {
+            NoteTreeDto havingChildrenNoteTreeDto = getHavingChildrenNoteTreeDto(parentNote);
+            parentNoteList.add(havingChildrenNoteTreeDto);
+        }
+
+        return parentNoteList;
+    }
+
+    public NoteTreeDto getHavingChildrenNoteTreeDto(Note parent) {
+        NoteTreeDto noteTreeDto = transformNoteToDto(parent);
+        if(parent.getChildren().isEmpty()) {
+            return  noteTreeDto;
+        }
+
+        for (Note childNote : parent.getChildren()) {
+            NoteTreeDto childNoteDto = getHavingChildrenNoteTreeDto(childNote);
+            noteTreeDto.getChildren().add(childNoteDto);
+        }
+
+        return noteTreeDto;
+    }
+    public NoteTreeDto transformNoteToDto(Note note) {
+        return NoteTreeDto.builder()
+                .id(note.getId())
+                .name(note.getName())
+                .children(new ArrayList<>())
+                .build();
+    }
+
+//    private NoteTreeDto transformNoteToTreeDto(Note note) {
+//        NoteTreeDto noteTreeDto = NoteTreeDto.builder()
+//                .id(note.getId())
+//                .name(note.getName())
+//                .build();
+//    }
 }

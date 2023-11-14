@@ -69,7 +69,7 @@
 <div class="main overflow-hidden flex relative">
     <div class="left-side-wrap h-[calc(100vh-95px)] flex relative">
         <div class="flex w-[100%]">
-            <div class="left-side-menu bg-gray-800 text-white overflow-hidden">
+            <div class="left-side-menu w-[400px] bg-gray-800 text-white overflow-hidden">
                 <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
                     <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
                 </div>
@@ -103,7 +103,7 @@
                 </div>
             </div>
             <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
-            <div class="left-second-menu-content bg-gray-800 text-white overflow-scroll">
+            <div class="left-second-menu-content w-[400px] bg-gray-800 text-white overflow-scroll">
                 <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
                 <ul th:each="notePage : ${notePageList}">
                     <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
@@ -114,6 +114,33 @@
                            onclick="setScroll('left-second-menu-content');"></a>
                     </li>
                 </ul>
+                <div class="absolute top-[90%]">
+                    <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"
+                          class="flex relative justify-between items-center">
+                        <input type="text" placeholder="Search" name="keyword"
+                               class="input input-bordered text-black w-full max-w-xs"
+                               id="search-input" autocomplete="off">
+                        <input type="submit" class="btn text-white hover:text-black" value="search">
+                        <div class="searchBox hidden absolute z-10 bottom-[100%] left-[0] bg-gray-600 bg-opacity-[98%] h-[50vh] w-[100%] p-[20px]">
+                            <div class="content border h-[100%] border-white overflow-scroll">
+                                <ul class="m-[10px]" th:if="${searchedResult}">
+                                    <li th:each="note : ${searchedResult.searchedNoteList}"
+                                        class="hover:bg-gray-400 px-[0.5rem]"><a
+                                            th:href="@{|/note/${note.id}?keyword=${searchedResult.keyword}|}"
+                                            class="inline-block w-[100%]" th:text="${note.name}"
+                                            th:classappend="${note.id == noteDetail.id} ? 'bg-gray-400' : ''"></a></li>
+                                    <li th:unless="${#lists.isEmpty(searchedResult.searchedNotePageList)}"
+                                        th:each="notePage : ${searchedResult.searchedNotePageList}"
+                                        class="hover:bg-gray-400 px-[0.5rem]"><a
+                                            th:href="@{|/note/${notePage.note.id}/page/${notePage.id}?keyword=${searchedResult.keyword}|}"
+                                            class="inline-block w-[100%]"
+                                            th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "
+                                            th:text="${notePage.title}"></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
         </div>
@@ -168,6 +195,29 @@
         if (isDragging) {
             // document.querySelector(".main").style.cursor = 'default';
             isDragging = false;
+        }
+    });
+    let body = document.querySelector("body");
+    let searchBox = document.querySelector(".searchBox");
+    let searchInput = document.querySelector("#search-input");
+
+    searchInput.addEventListener('focusin', function (e) {
+        console.log('hihi');
+        searchBox.style.display = 'block';
+    });
+
+    if (searchInput.value !== '') {
+        searchBox.style.display = 'block';
+    }
+
+    // searchInput.addEventListener('focusout', function (e) {
+    //     searchBox.style.display = 'none';
+    // });
+
+    body.addEventListener('click', function (e) {
+        console.log('aaa' + e.target.id);
+        if (e.target.id !== 'search-input') {
+            searchBox.style.display = 'none';
         }
     });
 </script>

@@ -1,16 +1,19 @@
 package com.korea.basic1.note.page;
 
-import com.korea.basic1.note.Note;
-import com.korea.basic1.note.NoteService;
+import com.korea.basic1.note.*;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
 import com.korea.basic1.note.pageDetail.NotePageDetailService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -20,6 +23,7 @@ public class NotePageController {
 
     private final NotePageService notePageService;
     private final NoteService noteService;
+    private final NoteProcessingService noteProcessingService;
     private final NotePageDetailService notePageDetailService;
 
     @RequestMapping("/add")
@@ -32,34 +36,60 @@ public class NotePageController {
     }
 
     @RequestMapping("/{pageId}")
-    public String list(Model model, @PathVariable("noteId") Long noteId, @PathVariable("pageId") Long pageId) {
-        List<Note> noteList = noteService.getParentNoteList();
-//        Note note = noteService.getNoChildNote(noteId);
-        Note note = noteService.getNoteById(noteId);
-        List<NotePage> notePageList = note.getPageList();
+    public String list(Model model, @PathVariable("noteId") Long noteId,
+                       @PathVariable("pageId") Long pageId, @ModelAttribute NoteParam noteParam,
+                       @RequestParam(value = "openList", required = false) ArrayList<Long> openList,
+                       HttpSession session) {
 
-        if(notePageList.isEmpty()) {
+        List<Note> noteList = noteService.getParentNoteList();
+        Note note = noteService.getNoteById(noteId);
+        noteParam.setNote(note);
+        List<NotePage> notePageList = noteProcessingService.getNotePageListByNoteParam(noteParam);
+//        List<NotePage> notePageList = note.getPageList();
+
+        if (notePageList.isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);
         }
 
         NotePage notePage = notePageService.getNotePageById(pageId);
-        if(notePage == null) {
-            notePage = notePageList.get(0);
+        SearchedResult searchedResult = noteProcessingService.getSearchedNoteAndPageList(noteParam);
+
+        NoteDto noteDto = new NoteDto();
+        noteDto.setCurrentNote(note);
+        noteDto.setParentList(noteList);
+        noteDto.setChildren(note.getChildren());
+        noteDto.setPageList(note.getPageList());
+        List<Note> notCheckableList = noteService.collecNotCheckableNote(note, new ArrayList<>());
+        noteDto.setNotCheckableList(notCheckableList);
+
+
+        String resultMsg = (String) session.getAttribute("resultMsg");
+        if (resultMsg != null) {
+            model.addAttribute("resultMsg", resultMsg);
+            session.removeAttribute("resultMsg");
         }
 
+        if(openList != null) {
+            for (Long id : openList) {
+                System.out.println("id = " + id);
+            }
+        }
+
+        model.addAttribute("noteDto", noteDto);
+        model.addAttribute("openList", openList);
         model.addAttribute("pageDetail", notePage);
         model.addAttribute("noteList", noteList);
         model.addAttribute("notePageList", notePageList);
         model.addAttribute("noteDetail", note);
+        model.addAttribute("searchedResult", searchedResult);
 
         return "note_list";
     }
 
     @RequestMapping("update")
-    public String update(@PathVariable("noteId") Long noteId, Long pageId, String noteName, String title, @RequestParam(defaultValue = "") String content) {
-        noteService.updateNoteName(noteId, noteName);
+    public String update(@PathVariable("noteId") Long noteId, Long pageId, String title, @RequestParam(defaultValue = "") String content) {
         notePageService.updateNotePage(pageId, title, content);
-        return String.format("redirect:/note/%d/page/%d",noteId, pageId);
+        return String.format("redirect:/note/%d/page/%d", noteId, pageId);
     }
 
     //
@@ -68,7 +98,7 @@ public class NotePageController {
     public String delete(@PathVariable("noteId") Long noteId, Long pageId) {
 
         notePageService.delete(pageId);
-        return String.format("redirect:/note/%d/page/%d",noteId, pageId);
+        return String.format("redirect:/note/%d/page/%d", noteId, pageId);
     }
 //
 //    @RequestMapping("detail")
