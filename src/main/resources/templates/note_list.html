@@ -74,9 +74,12 @@
                     <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
                 </div>
                 <div class="left-side-menu-content h-[83%] px-[5px] overflow-y-scroll">
-                    <ul class="menu bg-gray-800">
-                        <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
-                    </ul>
+                    <form id="openListForm">
+                        <input type="hidden" name="openList" id="openList">
+                        <ul class="menu bg-gray-800">
+                            <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
+                        </ul>
+                    </form>
                 </div>
 
                 <div class="h-[7%] flex items-center text-[10px] text-center border border-gray-300 ">
