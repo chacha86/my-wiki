@@ -2,13 +2,13 @@
     display: none;
 }
 
-@font-face {
-    font-family: 'Noto Sans KR';
-    src: url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap');
-    /*src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');*/
-    font-weight: normal;
-    font-style: normal;
-}
+/*@font-face {*/
+/*    font-family: 'Noto Sans KR';*/
+/*    src: url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap');*/
+/*    !*src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');*!*/
+/*    font-weight: normal;*/
+/*    font-style: normal;*/
+/*}*/
 
 html>body {
     font-family: 'Noto Sans KR', sans-serif;
@@ -30,3 +30,9 @@ html>body .toastui-editor-md-code, html>body .toastui-editor-md-code-block
     margin-top: 13px;
     width: 5px;
 }
+
+/*@font-face {*/
+/*    font-family: 'Font Awesome';*/
+/*    font-display: optional;*/
+/*    !* 나머지 @font-face 규칙 *!*/
+/*}*/

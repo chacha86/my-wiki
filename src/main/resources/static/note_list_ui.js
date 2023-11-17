@@ -20,34 +20,34 @@ document.querySelector("#nav-toggle").addEventListener("click", (element) => {
     }
 })
 
-function noteEventHandle(className) {
-    setCollapse();
-    setScroll(className);
-}
+// function noteEventHandle(className) {
+//     setCollapse();
+//     setScroll(className);
+// }
 
-function initScrollPosition(className) {
-    const element = document.querySelector('.' + className);
-    const savedPosition = localStorage.getItem(className + '_scrollPosition');
-    if (!(savedPosition === 'undefined' || savedPosition == null)) {
-        element.scrollTop = savedPosition;
-    }
-}
-
-function setScroll(className) {
-    let element = document.querySelector('.' + className);
-    localStorage.setItem(className + '_scrollPosition', element.scrollTop);
-}
-function setCollapse() {
-    let tagList = document.querySelectorAll("details");
-    let openList = [];
-    for (let i = 0; i < tagList.length; i++) {
-        result = tagList[i].getAttribute('open');
-        if (result !== null) {
-            openList.push(tagList[i].id);
-        }
-    }
-    localStorage.setItem('openList', JSON.stringify(openList));
-}
+// function initScrollPosition(className) {
+//     const element = document.querySelector('.' + className);
+//     const savedPosition = localStorage.getItem(className + '_scrollPosition');
+//     if (!(savedPosition === 'undefined' || savedPosition == null)) {
+//         element.scrollTop = savedPosition;
+//     }
+// }
+//
+// function setScroll(className) {
+//     let element = document.querySelector('.' + className);
+//     localStorage.setItem(className + '_scrollPosition', element.scrollTop);
+// }
+// function setCollapse() {
+//     let tagList = document.querySelectorAll("details");
+//     let openList = [];
+//     for (let i = 0; i < tagList.length; i++) {
+//         result = tagList[i].getAttribute('open');
+//         if (result !== null) {
+//             openList.push(tagList[i].id);
+//         }
+//     }
+//     localStorage.setItem('openList', JSON.stringify(openList));
+// }
 
 // function reproduce() {
 //     let openList = JSON.parse(localStorage.getItem('openList'));
@@ -58,7 +58,7 @@ function setCollapse() {
 //     }
 // }
 
-function collectOpenList() {
+function collectOpenList(note) {
     let tagList = document.querySelectorAll("details");
     let openList = [];
     for (let i = 0; i < tagList.length; i++) {
@@ -70,13 +70,13 @@ function collectOpenList() {
     return openList;
 }
 
-function submitWithOpenList() {
-    let openList = collectOpenList();
+function submitWithOpenList(note) {
+    let openList = collectOpenList(note);
     let form = document.querySelector('#openListForm');
     let input = document.querySelector('#openList');
     input.value = JSON.stringify(openList);
     console.log(input.value);
-    form.action='/note/' + 1;
-    form.method='post';
+    // form.action='/note/' + note.getAttribute('note-id') + '/page/' + 100;
+    form.action='/note/37/page/' + 100;
     form.submit();
 }

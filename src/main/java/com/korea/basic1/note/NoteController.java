@@ -8,10 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,9 +43,11 @@ public class NoteController {
         return "redirect:/note/" + note.getId();
     }
     @GetMapping("{noteId}")
-    public String intro(Model model, @PathVariable("noteId") Long noteId) {
+    public String intro(Model model, @PathVariable("noteId") Long noteId, @RequestParam(value = "openList", defaultValue = "[]") String openList,
+                        RedirectAttributes redirectAttributes) {
 
         Note note = noteService.getNoteById(noteId);
+        redirectAttributes.addFlashAttribute("openList", openList);
 
         if(note.getPageList().isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);

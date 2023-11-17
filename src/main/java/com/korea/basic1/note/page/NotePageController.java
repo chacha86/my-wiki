@@ -1,5 +1,8 @@
 package com.korea.basic1.note.page;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.korea.basic1.note.*;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
 import com.korea.basic1.note.pageDetail.NotePageDetailService;
@@ -38,14 +41,12 @@ public class NotePageController {
     @RequestMapping("/{pageId}")
     public String list(Model model, @PathVariable("noteId") Long noteId,
                        @PathVariable("pageId") Long pageId, @ModelAttribute NoteParam noteParam,
-                       @RequestParam(value = "openList", required = false) ArrayList<Long> openList,
-                       HttpSession session) {
+                       HttpSession session) throws JsonProcessingException {
 
         List<Note> noteList = noteService.getParentNoteList();
         Note note = noteService.getNoteById(noteId);
         noteParam.setNote(note);
         List<NotePage> notePageList = noteProcessingService.getNotePageListByNoteParam(noteParam);
-//        List<NotePage> notePageList = note.getPageList();
 
         if (notePageList.isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);
@@ -69,14 +70,21 @@ public class NotePageController {
             session.removeAttribute("resultMsg");
         }
 
-        if(openList != null) {
+
+        String openListJson = (String)model.getAttribute("openList");
+        System.out.println("openList = " + openListJson);
+
+        if(openListJson != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            List<Long> openList = mapper.readValue(openListJson, new TypeReference<List<Long>>() {
+            });
             for (Long id : openList) {
                 System.out.println("id = " + id);
             }
+            model.addAttribute("openList", openList);
         }
 
         model.addAttribute("noteDto", noteDto);
-        model.addAttribute("openList", openList);
         model.addAttribute("pageDetail", notePage);
         model.addAttribute("noteList", noteList);
         model.addAttribute("notePageList", notePageList);
