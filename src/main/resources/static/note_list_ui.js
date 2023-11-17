@@ -4,8 +4,8 @@
 //     reproduce();
 // }
 //
-// initScrollPosition('left-side-menu-content');
-// initScrollPosition('left-second-menu-content');
+initScrollPosition('left-side-menu-content');
+initScrollPosition('left-second-menu-content');
 
 document.querySelector("#nav-toggle").addEventListener("click", (element) => {
 
@@ -20,45 +20,15 @@ document.querySelector("#nav-toggle").addEventListener("click", (element) => {
     }
 })
 
-// function noteEventHandle(className) {
-//     setCollapse();
-//     setScroll(className);
-// }
+function initScrollPosition(className) {
+    const element = document.querySelector('.' + className);
+    const savedPosition = localStorage.getItem(className + '_scrollPosition');
+    if (!(savedPosition === 'undefined' || savedPosition == null)) {
+        element.scrollTop = savedPosition;
+    }
+}
 
-// function initScrollPosition(className) {
-//     const element = document.querySelector('.' + className);
-//     const savedPosition = localStorage.getItem(className + '_scrollPosition');
-//     if (!(savedPosition === 'undefined' || savedPosition == null)) {
-//         element.scrollTop = savedPosition;
-//     }
-// }
-//
-// function setScroll(className) {
-//     let element = document.querySelector('.' + className);
-//     localStorage.setItem(className + '_scrollPosition', element.scrollTop);
-// }
-// function setCollapse() {
-//     let tagList = document.querySelectorAll("details");
-//     let openList = [];
-//     for (let i = 0; i < tagList.length; i++) {
-//         result = tagList[i].getAttribute('open');
-//         if (result !== null) {
-//             openList.push(tagList[i].id);
-//         }
-//     }
-//     localStorage.setItem('openList', JSON.stringify(openList));
-// }
-
-// function reproduce() {
-//     let openList = JSON.parse(localStorage.getItem('openList'));
-//     for (let i = 0; i < openList.length; i++) {
-//         let tag = document.querySelector('#' + openList[i]);
-//         console.log(tag);
-//         if (tag !== null) tag.setAttribute('open', '');
-//     }
-// }
-
-function collectOpenList(note) {
+function collectOpenList() {
     let tagList = document.querySelectorAll("details");
     let openList = [];
     for (let i = 0; i < tagList.length; i++) {
@@ -70,13 +40,33 @@ function collectOpenList(note) {
     return openList;
 }
 
+function getNoteSideWidth() {
+    let noteSide = document.querySelector('.left-side-menu');
+    return noteSide.offsetWidth;
+}
+
+function getPageSideWidth() {
+    let pageSide = document.querySelector('.left-second-menu-content');
+    return pageSide.offsetWidth;
+}
 function submitWithOpenList(note) {
-    let openList = collectOpenList(note);
-    let form = document.querySelector('#openListForm');
-    let input = document.querySelector('#openList');
-    input.value = JSON.stringify(openList);
-    console.log(input.value);
-    // form.action='/note/' + note.getAttribute('note-id') + '/page/' + 100;
-    form.action='/note/37/page/' + 100;
+    let openList = collectOpenList();
+    let noteWidth = getNoteSideWidth();
+    let pageWidth = getPageSideWidth();
+    let noteUIParam = {
+        'openList': openList,
+        'noteWidth' : noteWidth,
+        'pageWidth' : pageWidth
+    };
+
+    let form = document.querySelector('#noteUIForm');
+    let input = document.querySelector('#noteUIParamJson');
+    input.value = JSON.stringify(noteUIParam);
+    let pageUrl = "";
+    if(note.getAttribute('page-id') != null){
+        pageUrl = '/page/' +note.getAttribute('page-id');
+    }
+    form.action='/note/' + note.getAttribute('note-id') + pageUrl;
+    console.log(form.action);
     form.submit();
 }

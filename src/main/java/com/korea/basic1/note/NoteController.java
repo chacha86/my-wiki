@@ -1,5 +1,7 @@
 package com.korea.basic1.note;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.korea.basic1.note.page.NotePage;
 import com.korea.basic1.note.page.NotePageService;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
@@ -21,11 +23,12 @@ public class NoteController {
 
     private final NoteService noteService;
     private final NoteProcessingService noteProcessingService;
+
     @RequestMapping("/")
     public String main(Model model) {
 
         List<Note> noteList = noteService.getParentNoteList();
-        if(noteList.isEmpty()) {
+        if (noteList.isEmpty()) {
             return "redirect:add";
         }
         return "redirect:/note/" + noteList.get(0).getId();
@@ -42,14 +45,20 @@ public class NoteController {
         Note note = noteProcessingService.saveGroupNotebook(noteId);
         return "redirect:/note/" + note.getId();
     }
+
     @GetMapping("{noteId}")
-    public String intro(Model model, @PathVariable("noteId") Long noteId, @RequestParam(value = "openList", defaultValue = "[]") String openList,
-                        RedirectAttributes redirectAttributes) {
+    public String intro(Model model, @PathVariable("noteId") Long noteId, @RequestParam(required = false) String noteUIParamJson,
+                        RedirectAttributes redirectAttributes) throws JsonProcessingException {
 
         Note note = noteService.getNoteById(noteId);
-        redirectAttributes.addFlashAttribute("openList", openList);
 
-        if(note.getPageList().isEmpty()) {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        NoteUIParam noteUIParamObj = null;
+//        noteUIParamObj = objectMapper.readValue(noteUIParam, NoteUIParam.class);
+
+        redirectAttributes.addFlashAttribute("noteUIParamJson", noteUIParamJson);
+
+        if (note.getPageList().isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);
         }
         NotePage firstNotePage = note.getPageList().get(0);

@@ -8,19 +8,21 @@
 <li th:fragment="note_tree(noteDetail, noteList)" th:each="note : ${noteList}"
     th:class="${#lists.isEmpty(note.children)} ? 'hover:bg-gray-500 flex-row hover:text-white hover:rounded-md' : ''"
     th:classappend="${#lists.isEmpty(note.children) and note.id == noteDetail.id} ? 'bg-gray-500 rounded-md': ''">
-    <!--    th:classappend="${noteDetail.id == note.id and noteDetail.groupYn == 0} ? 'bg-gray-700 rounded-md' : '' "-->
-<!--    <div th:if="${#lists.isEmpty(note.children)}" class="w-[100%] hover:text-white hover:rounded-md">-->
-<!--                <i class="fa-regular fa-note-sticky hover:p-[5px] hover:text-[1.5rem]"></i> -->
+    <div th:if="${#lists.isEmpty(note.children)}" class="w-[100%] hover:text-white hover:rounded-md">
+        <!--                <i class="fa-regular fa-note-sticky hover:p-[5px] hover:text-[1.5rem]"></i> -->
+        <span>📖</span>
         <a th:if="${#lists.isEmpty(note.children)}" th:attr="note-id=${note.id}" th:text="${note.name}"
            onclick="submitWithOpenList(this)"></a>
-<!--    </div>-->
+    </div>
+    <!--    </div>-->
     <details
-            th:attr="note-id=${note.id}, open=${openList != null and #lists.contains(openList, note.id)} ? 'true':'false'"
+            th:attr="note-id=${note.id}, open=${noteUIParam != null and #lists.contains(noteUIParam.openList, note.id)} ? 'true':'false'"
             th:unless="${#lists.isEmpty(note.children)}">
         <summary class="hover:bg-gray-500 hover:text-white hover:rounded-md"
                  th:classappend="${note.id == noteDetail.id} ? 'bg-gray-500 rounded-md': ''">
             <!--            <a th:attr="note-id=${note.id}" th:text="${note.name}" onclick="submitWithOpenList(this)"></a>-->
-<!--            <i class="fa-solid fa-bars hover:p-[5px] hover:text-[1.5rem]" style="color: #ffffff; z-index: 999"></i>-->
+            <!--            <i class="fa-solid fa-bars hover:p-[5px] hover:text-[1.5rem]" style="color: #ffffff; z-index: 999"></i>-->
+            <span class="text-[1rem]">📚</span>
             <a th:text="${note.name}"></a>
         </summary>
         <ul>

@@ -69,13 +69,14 @@
 <div class="main overflow-hidden flex relative">
     <div class="left-side-wrap h-[calc(100vh-95px)] flex relative">
         <div class="flex w-[100%]">
-            <div class="left-side-menu w-[400px] bg-gray-800 text-white overflow-hidden">
+            <div th:class="'left-side-menu bg-gray-800 text-white overflow-hidden'"
+                 th:classappend="${noteUIParam} ? ${'w-[' + noteUIParam.noteWidth + 'px]'} : 'w-[400px]'">
                 <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
                     <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
                 </div>
-                <div class="left-side-menu-content h-[83%] px-[5px] overflow-y-scroll">
-                    <form id="openListForm">
-                        <input type="hidden" name="openList" id="openList">
+                <div class="left-side-menu-content custom-scroll h-[83%] px-[5px] overflow-y-scroll">
+                    <form id="noteUIForm">
+                        <input type="hidden" name="noteUIParamJson" id="noteUIParamJson">
                         <ul class="menu bg-gray-800">
                             <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
                         </ul>
@@ -150,15 +151,20 @@
                 </div>
             </div>
             <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
-            <div class="left-second-menu-content w-[400px] bg-gray-800 text-white overflow-scroll">
+            <div class="custom-scroll left-second-menu-content bg-gray-800 text-white overflow-scroll"
+                 th:classappend="${noteUIParam} ? ${'w-[' + noteUIParam.pageWidth + 'px]'} : 'w-[400px]'">
                 <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
                 <ul th:each="notePage : ${notePageList}">
                     <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
                         th:class="|${customClass}|">
-                        <a class="block p-[10px] text-[15px] border-b-[1px]"
-                           th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"
-                           th:text="${notePage.title}" th:id="|article_${notePage.id}|"
-                           onclick="setScroll('left-second-menu-content');"></a>
+                        <!--                           th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"-->
+                        <div class="flex border-b-[1px] items-center">
+                            <span>📄</span>
+                            <a class="block p-[10px] text-[15px] hover:cursor-pointer"
+                               th:text="${notePage.title}" th:id="|article_${notePage.id}|"
+                               th:attr="note-id=${notePage.note.id}, page-id=${notePage.id}"
+                               onclick="submitWithOpenList(this)"></a>
+                        </div>
                     </li>
                 </ul>
                 <div class="absolute top-[90%]">
@@ -178,11 +184,13 @@
                                             th:classappend="${note.id == noteDetail.id} ? 'bg-gray-400' : ''"></a></li>
                                     <li th:unless="${#lists.isEmpty(searchedResult.searchedNotePageList)}"
                                         th:each="notePage : ${searchedResult.searchedNotePageList}"
-                                        class="hover:bg-gray-400 px-[0.5rem]"><a
-                                            th:href="@{|/note/${notePage.note.id}/page/${notePage.id}?keyword=${searchedResult.keyword}|}"
-                                            class="inline-block w-[100%]"
-                                            th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "
-                                            th:text="${notePage.title}"></a></li>
+                                        class="hover:bg-gray-400 px-[0.5rem]">
+                                        <!--                                            th:href="@{|/note/${notePage.note.id}/page/${notePage.id}?keyword=${searchedResult.keyword}|}"-->
+
+                                        <a
+                                                class="inline-block w-[100%]"
+                                                th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "
+                                                th:text="${notePage.title}"></a></li>
                                 </ul>
                             </div>
                         </div>
@@ -214,61 +222,61 @@
 <form th:action="@{/note/${noteDetail.id}/page/delete}" id="delete" method="post"></form>
 <script src="/note_list_ui.js"></script>
 <script>
-    // sideControlBars = document.querySelectorAll(".side-control-bar");
-    // let isDragging = false;
-    // let onDragTarget = null;
-    // sideControlBars.forEach(function (item) {
-    //     item.addEventListener("mousedown", function (e) {
-    //         isDragging = true;
-    //         onDragTarget = e.target;
-    //         console.log(onDragTarget);
-    //     });
-    // });
-    //
-    // document.querySelector(".main").addEventListener("mousemove", function (e) {
-    //     if (isDragging) {
-    //         let target = onDragTarget.previousElementSibling;
-    //         let standard = e.pageX + onDragTarget.clientWidth / 2;
-    //         if (standard >= e.clientX) {
-    //             target.style.transform = "scaleX(0.99)";
-    //         } else {
-    //             target.style.transform = "scaleX(1.01)";
-    //         }
-    //
-    //         target.style.width = e.clientX - target.getBoundingClientRect().x + "px";
-    //         target.style.transform = "scaleX(1)";
-    //     }
-    // });
-    //
-    // document.querySelector("body").addEventListener("mouseup", function (e) {
-    //     if (isDragging) {
-    //         // document.querySelector(".main").style.cursor = 'default';
-    //         isDragging = false;
-    //     }
-    // });
-    // let body = document.querySelector("body");
-    // let searchBox = document.querySelector(".searchBox");
-    // let searchInput = document.querySelector("#search-input");
-    //
-    // searchInput.addEventListener('focusin', function (e) {
-    //     console.log('hihi');
-    //     searchBox.style.display = 'block';
-    // });
-    //
-    // if (searchInput.value !== '') {
-    //     searchBox.style.display = 'block';
-    // }
+    sideControlBars = document.querySelectorAll(".side-control-bar");
+    let isDragging = false;
+    let onDragTarget = null;
+    sideControlBars.forEach(function (item) {
+        item.addEventListener("mousedown", function (e) {
+            isDragging = true;
+            onDragTarget = e.target;
+            console.log(onDragTarget);
+        });
+    });
 
-    // searchInput.addEventListener('focusout', function (e) {
-    //     searchBox.style.display = 'none';
-    // });
+    document.querySelector(".main").addEventListener("mousemove", function (e) {
+        if (isDragging) {
+            let target = onDragTarget.previousElementSibling;
+            let standard = e.pageX + onDragTarget.clientWidth / 2;
+            if (standard >= e.clientX) {
+                target.style.transform = "scaleX(0.99)";
+            } else {
+                target.style.transform = "scaleX(1.01)";
+            }
 
-    // body.addEventListener('click', function (e) {
-    //     console.log('aaa' + e.target.id);
-    //     if (e.target.id !== 'search-input') {
-    //         searchBox.style.display = 'none';
-    //     }
-    // });
+            target.style.width = e.clientX - target.getBoundingClientRect().x + "px";
+            target.style.transform = "scaleX(1)";
+        }
+    });
+
+    document.querySelector("body").addEventListener("mouseup", function (e) {
+        if (isDragging) {
+            // document.querySelector(".main").style.cursor = 'default';
+            isDragging = false;
+        }
+    });
+    let body = document.querySelector("body");
+    let searchBox = document.querySelector(".searchBox");
+    let searchInput = document.querySelector("#search-input");
+
+    searchInput.addEventListener('focusin', function (e) {
+        console.log('hihi');
+        searchBox.style.display = 'block';
+    });
+
+    if (searchInput.value !== '') {
+        searchBox.style.display = 'block';
+    }
+
+    searchInput.addEventListener('focusout', function (e) {
+        searchBox.style.display = 'none';
+    });
+
+    body.addEventListener('click', function (e) {
+        console.log('aaa' + e.target.id);
+        if (e.target.id !== 'search-input') {
+            searchBox.style.display = 'none';
+        }
+    });
 </script>
 </body>
 </html>
