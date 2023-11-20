@@ -6,11 +6,13 @@
 </head>
 <body>
 <li th:fragment="note_tree(noteDetail, noteList)" th:each="note : ${noteList}"
-    th:class="${#lists.isEmpty(note.children)} ? 'hover:bg-gray-500 flex-row hover:text-white hover:rounded-md' : ''"
-    th:classappend="${#lists.isEmpty(note.children) and note.id == noteDetail.id} ? 'bg-gray-500 rounded-md': ''">
+    th:class="${#lists.isEmpty(note.children)} ? 'hover:bg-gray-500 hover:text-white hover:rounded-md' : ''"
+    th:classappend="${#lists.isEmpty(note.children) and note.id == noteDetail.id} ? 'bg-gray-500 rounded-md': ''"
+    th:attr="note-id=${note.id}, note-name=${note.name}">
+<!--    <div class="absolute left-[-30px] top-[0] ml-[10px]">▤</div>-->
     <div th:if="${#lists.isEmpty(note.children)}" class="w-[100%] hover:text-white hover:rounded-md">
         <!--                <i class="fa-regular fa-note-sticky hover:p-[5px] hover:text-[1.5rem]"></i> -->
-        <span>📖</span>
+        <span class="hover:text-[1.5rem]">📖</span>
         <a th:if="${#lists.isEmpty(note.children)}" th:attr="note-id=${note.id}" th:text="${note.name}"
            onclick="submitWithOpenList(this)"></a>
     </div>
@@ -22,7 +24,7 @@
                  th:classappend="${note.id == noteDetail.id} ? 'bg-gray-500 rounded-md': ''">
             <!--            <a th:attr="note-id=${note.id}" th:text="${note.name}" onclick="submitWithOpenList(this)"></a>-->
             <!--            <i class="fa-solid fa-bars hover:p-[5px] hover:text-[1.5rem]" style="color: #ffffff; z-index: 999"></i>-->
-            <span class="text-[1rem]">📚</span>
+            <span class="text-[1rem] hover:text-[1.5rem]">📚</span>
             <a th:text="${note.name}"></a>
         </summary>
         <ul>
@@ -33,7 +35,7 @@
     </details>
 </li>
 
-<div th:fragment="target_list(note, hasChild, checkable)" class="flex">
+<div th:fragment="target_list(note, hasChild, checkable)">
     <input th:if="${hasChild and checkable}" type="radio"
            name="destinationId" th:value="${note.id}">
     <a th:if="${hasChild}" th:text="${note.name}"></a>
@@ -44,23 +46,12 @@
     th:with="noChild = ${#lists.isEmpty(note.children)},
              hasChild = ${!noChild},
              checkable = ${!#lists.contains(notCheckableList, note)},
-             onTarget = ${note.id == noteDetail.id}">
+             onTarget = ${note.id == noteDetail.id}"
+    th:class="${noChild and onTarget} ? 'selected-item' : ''">
     <div th:replace="~{/fragments/note_fragment::target_list(${note}, ${noChild}, ${checkable})}"></div>
-    <!--    <div class="flex">-->
-    <!--        <input th:if="${#lists.isEmpty(note.children) and (note.id != noteDetail.id) and checkable}" type="radio"-->
-    <!--               name="moveTarget">-->
-    <!--        <a th:if="${#lists.isEmpty(note.children)}" th:text="${checkable + '_' +note.name}"></a>-->
-    <!--    </div>-->
     <details th:id="${'m_' + note.id}" th:if="${hasChild}">
-        <!--             th:with="checkable = ${!#lists.isEmpty(note.children) or (note.id == noteDetail.id)} ? false : true">-->
-        <summary>
+        <summary th:class="${onTarget} ? 'selected-item' : '' ">
             <div th:replace="~{/fragments/note_fragment::target_list(${note}, ${hasChild}, ${checkable})}"></div>
-            <!--            <div th:replace="~{/fragments/note_fragment::target_list(note, !hasChild, isTarget)}"></div>-->
-            <!--            <div class="flex">-->
-            <!--                <input th:unless="${#lists.isEmpty(note.children) or (note.id == noteDetail.id)}" type="radio"-->
-            <!--                       name="moveTarget">-->
-            <!--                <a th:text="${checkable + '_' + note.id + '_' + noteDetail.id + '_' + note.name}"></a>-->
-            <!--            </div>-->
         </summary>
         <ul>
             <li th:if="${hasChild and onTarget}"

@@ -7,6 +7,84 @@
 initScrollPosition('left-side-menu-content');
 initScrollPosition('left-second-menu-content');
 
+document.querySelectorAll('ul.menu li').forEach((element) => {
+    element.addEventListener('contextmenu', (event) => {
+        let noteId = element.getAttribute('note-id');
+        let noteName = element.getAttribute('note-name');
+
+        event.preventDefault();
+        console.log(noteName);
+        event.stopPropagation();
+        let mouseX = event.clientX;
+        let mouseY = event.clientY;
+        test(mouseX, mouseY, noteId, noteName);
+    })
+});
+
+function test(mouseX, mouseY, noteId, noteName) {
+    let noteMenuPopup = document.querySelector('#note-menu-popup');
+    let body = document.querySelector('body');
+
+    if (noteMenuPopup != null) {
+        body.removeChild(noteMenuPopup);
+    }
+    noteMenuPopup = createNoteMenuPopup(mouseX, mouseY, noteId, noteName);
+    body.appendChild(noteMenuPopup);
+}
+
+function setTargetNote(noteId, noteName) {
+    let modal = document.querySelector('#my_modal_1')
+    let form = modal.querySelector('form');
+    form.action = '/note/update/' + noteId;
+    form.querySelector('input[name="noteName"]').value = noteName;
+
+}
+function createNoteMenuPopup(mouseX, mouseY, noteId, noteName) {
+    let noteMenuPopup = document.createElement('div');
+    noteMenuPopup.setAttribute('class', 'absolute p-[5px] left-['+mouseX+'px] top-[' + mouseY + 'px] bg-gray-200 w-64 h-64');
+    noteMenuPopup.setAttribute('id', 'note-menu-popup');
+
+    let noteMenuList = document.createElement('ul');
+    let del = {
+        'text' : '🗑️ 삭제',
+        'href' : '/note/delete/' + noteId,
+        'onclick' : null
+    }
+    let addGroup = {
+        'text' : '➕ 하위노트추가',
+        'href' : '/note/add-group/' + noteId,
+        'onclick' : null
+    }
+    let update = {
+        'text' : '🛠️ 이름변경',
+        'href' : '#',
+        'onclick' : 'my_modal_1.showModal();setTargetNote('+noteId+ ', "' + noteName + '");'
+    }
+    let move = {
+        'text' : '➡️ 노트이동',
+        'href' : '/note/move/' + noteId,
+        'onclick' : null
+    }
+    // let noteMenuListItems = ['삭제', '그룹추가', '노트추가', '이름변경', '노트이동'];
+    let noteMenuListItems = [del, addGroup, update, move];
+    noteMenuListItems.forEach((element) => {
+        let listItem = document.createElement('li');
+        let anchor = document.createElement('a');
+        anchor.setAttribute('href', element.href);
+        anchor.setAttribute('class', 'block w-[100%] hover:bg-gray-500 rounded-md p-[5px]');
+        if(element.onclick != null){
+            anchor.setAttribute('onclick', element.onclick);
+        }
+        anchor.innerText = element.text;
+        listItem.appendChild(anchor);
+        noteMenuList.appendChild(listItem);
+    });
+
+    noteMenuPopup.appendChild(noteMenuList);
+
+    return noteMenuPopup;
+}
+
 document.querySelector("#nav-toggle").addEventListener("click", (element) => {
 
     if (element.target.checked == true) {

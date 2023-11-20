@@ -40,8 +40,8 @@ public class NoteController {
         return String.format("redirect:/note/%d/page/add", note.getId());
     }
 
-    @PostMapping("/add-group")
-    public String groupAdd(Long noteId) {
+    @GetMapping("/add-group/{noteId}")
+    public String groupAdd(@PathVariable Long noteId) {
         Note note = noteProcessingService.saveGroupNotebook(noteId);
         return "redirect:/note/" + note.getId();
     }
