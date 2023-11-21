@@ -25,6 +25,7 @@ public class Note {
     private LocalDateTime createDate;
     @Column(nullable = false)
     private LocalDateTime updateDate;
+    private Integer groupYn;
 
     @ManyToOne
     private Note parent;

@@ -40,14 +40,26 @@ public class NoteService {
         return getNoteById(id + 1);
     }
 
-    public Note saveDefaultNote() {
-        Note note = Note.builder()
+    public Note getDefaultNote() {
+
+        return Note.builder()
                 .name("새노트")
                 .createDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .parent(null)
+                .groupYn(0)
                 .build();
+    }
 
+    public Note saveDefaultNote() {
+        Note note = getDefaultNote();
+        return noteRepository.save(note);
+    }
+
+    public Note saveDefaultNote(Long noteId) {
+        Note parent = getNoteById(noteId);
+        Note note = getDefaultNote();
+        note.setParent(parent);
         return noteRepository.save(note);
     }
 
@@ -62,6 +74,7 @@ public class NoteService {
     public Note saveGroupNotebook(Note parent) {
         Note child = getDefaultNotebook();
         child.setParent(parent);
+        child.setGroupYn(1);
         return noteRepository.save(child);
     }
 
@@ -122,8 +135,8 @@ public class NoteService {
 
     public NoteTreeDto getHavingChildrenNoteTreeDto(Note parent) {
         NoteTreeDto noteTreeDto = transformNoteToDto(parent);
-        if(parent.getChildren().isEmpty()) {
-            return  noteTreeDto;
+        if (parent.getChildren().isEmpty()) {
+            return noteTreeDto;
         }
 
         for (Note childNote : parent.getChildren()) {
@@ -133,6 +146,7 @@ public class NoteService {
 
         return noteTreeDto;
     }
+
     public NoteTreeDto transformNoteToDto(Note note) {
         return NoteTreeDto.builder()
                 .id(note.getId())

@@ -8,20 +8,21 @@
 <li th:fragment="note_tree(noteDetail, noteList)" th:each="note : ${noteList}"
     th:class="${#lists.isEmpty(note.children)} ? 'hover:bg-gray-500 hover:text-white hover:rounded-md' : ''"
     th:classappend="${#lists.isEmpty(note.children) and note.id == noteDetail.id} ? 'bg-gray-500 rounded-md': ''"
-    th:attr="note-id=${note.id}, note-name=${note.name}">
+    th:attr="data-note-id=${note.id}, data-note-name=${note.name}, data-note-type=${note.groupYn == 0} ? 'note' : 'group'">
 <!--    <div class="absolute left-[-30px] top-[0] ml-[10px]">▤</div>-->
-    <div th:if="${#lists.isEmpty(note.children)}" class="w-[100%] hover:text-white hover:rounded-md">
+    <div th:if="${note.groupYn == 0}" class="w-[100%] hover:text-white hover:rounded-md">
         <!--                <i class="fa-regular fa-note-sticky hover:p-[5px] hover:text-[1.5rem]"></i> -->
         <span class="hover:text-[1.5rem]">📖</span>
-        <a th:if="${#lists.isEmpty(note.children)}" th:attr="note-id=${note.id}"
+        <a th:if="${#lists.isEmpty(note.children)}" th:attr="data-note-id=${note.id}, data-note-type=${note.groupYn}"
            th:text="${note.name}"
            th:href="@{|/note/${note.id}|}"
            onclick="submitWithOpenList(this); return false;"></a>
     </div>
     <!--    </div>-->
     <details
-            th:attr="note-id=${note.id}, open=${noteUIParam != null and #lists.contains(noteUIParam.openList, note.id)} ? 'true':'false'"
-            th:unless="${#lists.isEmpty(note.children)}">
+            th:if="${note.groupYn == 1}"
+            th:attr="data-note-id=${note.id}, open=${noteUIParam != null and #lists.contains(noteUIParam.openList, note.id)} ? 'true':'false'"
+            >
         <summary class="hover:bg-gray-500 hover:text-white hover:rounded-md"
                  th:classappend="${note.id == noteDetail.id} ? 'bg-gray-500 rounded-md': ''">
             <!--            <a th:attr="note-id=${note.id}" th:text="${note.name}" onclick="submitWithOpenList(this)"></a>-->
