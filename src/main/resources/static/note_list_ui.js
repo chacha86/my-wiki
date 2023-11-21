@@ -1,12 +1,3 @@
-
-// 노트 트리에서 열려있는 노트 재현
-// if (localStorage.getItem('openList') !== null) {
-//     reproduce();
-// }
-//
-initScrollPosition('left-side-menu-content');
-initScrollPosition('left-second-menu-content');
-
 document.querySelectorAll('ul.menu li').forEach((element) => {
     element.addEventListener('contextmenu', (event) => {
         let noteId = element.getAttribute('data-note-id');
@@ -124,56 +115,6 @@ function createGroupMenuPopup(mouseX, mouseY, noteInfo) {
     baseMenuPopup.appendChild(groupMenuList);
 
     return baseMenuPopup;
-    // let noteMenuPopup = document.createElement('div');
-    // noteMenuPopup.setAttribute('class', 'absolute p-[5px] left-['+mouseX+'px] top-[' + mouseY + 'px] bg-gray-200 w-64 h-64');
-    // noteMenuPopup.setAttribute('id', 'note-menu-popup');
-    //
-    // let noteMenuList = document.createElement('ul');
-    // let noteId = noteInfo.noteId;
-    // let noteName = noteInfo.noteName;
-
-    // let del = {
-    //     'text' : '🗑️ 삭제',
-    //     'href' : '/note/delete/' + noteId,
-    //     'onclick' : 'submitWithOpenList(this); return false;'
-    // }
-    // let addGroup = {
-    //     'text' : '🗂️ 새그룹 추가',
-    //     'href' : '/note/add-group/' + noteId,
-    //     'onclick' : 'submitWithOpenList(this); return false;'
-    // }
-    // let addNote = {
-    //     'text' : '➕ 새노트 추가',
-    //     'href' : '/note/add/' + noteId,
-    //     'onclick' : 'submitWithOpenList(this); return false;'
-    // }
-    // let update = {
-    //     'text' : '🛠️ 이름변경',
-    //     'href' : '#',
-    //     'onclick' : 'my_modal_1.showModal();setTargetNote('+noteId+ ', "' + noteName + '");'
-    // }
-    // let move = {
-    //     'text' : '➡️ 노트이동',
-    //     'href' : '/note/move/' + noteId,
-    //     'onclick' : null
-    // }
-    // let noteMenuListItems = [del, addGroup, addNote, update, move];
-    // noteMenuListItems.forEach((element) => {
-    //     let listItem = document.createElement('li');
-    //     let anchor = document.createElement('a');
-    //     anchor.setAttribute('href', element.href);
-    //     anchor.setAttribute('class', 'block w-[100%] hover:bg-gray-500 rounded-md p-[5px]');
-    //     if(element.onclick != null){
-    //         anchor.setAttribute('onclick', element.onclick);
-    //     }
-    //     anchor.innerText = element.text;
-    //     listItem.appendChild(anchor);
-    //     noteMenuList.appendChild(listItem);
-    // });
-    //
-    // noteMenuPopup.appendChild(noteMenuList);
-
-    // return noteMenuPopup;
 }
 
 document.querySelector("#nav-toggle").addEventListener("click", (element) => {
@@ -203,7 +144,7 @@ function collectOpenList() {
     for (let i = 0; i < tagList.length; i++) {
         result = tagList[i].getAttribute('open');
         if (result !== null) {
-            openList.push(tagList[i].getAttribute('note-id'));
+            openList.push(tagList[i].getAttribute('data-note-id'));
         }
     }
     return openList;

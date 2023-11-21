@@ -41,8 +41,8 @@ public class NotePageController {
     @RequestMapping("/{pageId}")
     public String list(Model model, @PathVariable("noteId") Long noteId,
                        @PathVariable("pageId") Long pageId, @ModelAttribute NoteParam noteParam,
-                       @RequestParam(defaultValue = "{}") String noteUIParamJson,
-                       HttpSession session) throws JsonProcessingException {
+//                       @RequestParam(defaultValue = "{}") String noteUIParamJson,
+                       HttpSession session){
 
         List<Note> noteList = noteService.getParentNoteList();
         Note note = noteService.getNoteById(noteId);
@@ -70,16 +70,16 @@ public class NotePageController {
             model.addAttribute("resultMsg", resultMsg);
             session.removeAttribute("resultMsg");
         }
-        String flashNoteUIParamJson = (String) model.getAttribute("noteUIParamJson");
-
-        if (flashNoteUIParamJson != null) {
-            noteUIParamJson = flashNoteUIParamJson;
-        }
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        NoteUIParam noteUIParam = objectMapper.readValue(noteUIParamJson, NoteUIParam.class);
-
-        model.addAttribute("noteUIParam", noteUIParam);
+//        String flashNoteUIParamJson = (String) model.getAttribute("noteUIParamJson");
+//
+//        if (flashNoteUIParamJson != null) {
+//            noteUIParamJson = flashNoteUIParamJson;
+//        }
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        NoteUIParam noteUIParam = objectMapper.readValue(noteUIParamJson, NoteUIParam.class);
+//
+//        model.addAttribute("noteUIParam", noteUIParam);
         model.addAttribute("noteDto", noteDto);
         model.addAttribute("pageDetail", notePage);
         model.addAttribute("noteList", noteList);

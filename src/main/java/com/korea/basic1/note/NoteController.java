@@ -42,8 +42,7 @@ public class NoteController {
     }
 
     @GetMapping("{noteId}")
-    public String intro(Model model, @PathVariable("noteId") Long noteId, @RequestParam(required = false) String noteUIParamJson,
-                        RedirectAttributes redirectAttributes) throws JsonProcessingException {
+    public String intro(Model model, @PathVariable("noteId") Long noteId) {
 
         Note note = noteService.getNoteById(noteId);
 
@@ -51,7 +50,7 @@ public class NoteController {
 //        NoteUIParam noteUIParamObj = null;
 //        noteUIParamObj = objectMapper.readValue(noteUIParam, NoteUIParam.class);
 
-        redirectAttributes.addFlashAttribute("noteUIParamJson", noteUIParamJson);
+//        redirectAttributes.addFlashAttribute("noteUIParamJson", noteUIParamJson);
 
         if (note.getPageList().isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);
