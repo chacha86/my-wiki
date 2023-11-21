@@ -24,16 +24,6 @@ public class NoteController {
     private final NoteService noteService;
     private final NoteProcessingService noteProcessingService;
 
-    @RequestMapping("/")
-    public String main(Model model) {
-
-        List<Note> noteList = noteService.getParentNoteList();
-        if (noteList.isEmpty()) {
-            return "redirect:add";
-        }
-        return "redirect:/note/" + noteList.get(0).getId();
-    }
-
     @PostMapping("/add")
     public String add() {
         Note note = noteService.saveDefaultNote();
@@ -70,7 +60,7 @@ public class NoteController {
     @GetMapping("delete/{noteId}")
     public String delete(@PathVariable Long noteId) {
         noteProcessingService.deleteNote(noteId);
-        return "redirect:/note/";
+        return "redirect:/";
     }
 
     @PostMapping("update/{noteId}")

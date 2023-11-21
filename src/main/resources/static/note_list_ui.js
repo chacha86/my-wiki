@@ -17,11 +17,11 @@ document.querySelectorAll('ul.menu li').forEach((element) => {
         event.stopPropagation();
         let mouseX = event.clientX;
         let mouseY = event.clientY;
-        test(mouseX, mouseY, noteId, noteName);
+        noteMenuPopup(mouseX, mouseY, noteId, noteName);
     })
 });
 
-function test(mouseX, mouseY, noteId, noteName) {
+function noteMenuPopup(mouseX, mouseY, noteId, noteName) {
     let noteMenuPopup = document.querySelector('#note-menu-popup');
     let body = document.querySelector('body');
 
@@ -48,12 +48,12 @@ function createNoteMenuPopup(mouseX, mouseY, noteId, noteName) {
     let del = {
         'text' : '🗑️ 삭제',
         'href' : '/note/delete/' + noteId,
-        'onclick' : null
+        'onclick' : 'submitWithOpenList(this); return false;'
     }
     let addGroup = {
         'text' : '➕ 하위노트추가',
         'href' : '/note/add-group/' + noteId,
-        'onclick' : null
+        'onclick' : 'submitWithOpenList(this); return false;'
     }
     let update = {
         'text' : '🛠️ 이름변경',
@@ -65,7 +65,6 @@ function createNoteMenuPopup(mouseX, mouseY, noteId, noteName) {
         'href' : '/note/move/' + noteId,
         'onclick' : null
     }
-    // let noteMenuListItems = ['삭제', '그룹추가', '노트추가', '이름변경', '노트이동'];
     let noteMenuListItems = [del, addGroup, update, move];
     noteMenuListItems.forEach((element) => {
         let listItem = document.createElement('li');
@@ -127,7 +126,7 @@ function getPageSideWidth() {
     let pageSide = document.querySelector('.left-second-menu-content');
     return pageSide.offsetWidth;
 }
-function submitWithOpenList(note) {
+function getNoteUIParamJsonStr() {
     let openList = collectOpenList();
     let noteWidth = getNoteSideWidth();
     let pageWidth = getPageSideWidth();
@@ -137,14 +136,14 @@ function submitWithOpenList(note) {
         'pageWidth' : pageWidth
     };
 
+    return JSON.stringify(noteUIParam);
+}
+function submitWithOpenList(paramTag) {
+
+    let noteUIParam = getNoteUIParamJsonStr();
     let form = document.querySelector('#noteUIForm');
     let input = document.querySelector('#noteUIParamJson');
-    input.value = JSON.stringify(noteUIParam);
-    let pageUrl = "";
-    if(note.getAttribute('page-id') != null){
-        pageUrl = '/page/' +note.getAttribute('page-id');
-    }
-    form.action='/note/' + note.getAttribute('note-id') + pageUrl;
-    console.log(form.action);
+    input.value = noteUIParam;
+    form.action = paramTag.getAttribute('href');
     form.submit();
 }

@@ -163,7 +163,8 @@
                             <a class="block p-[10px] text-[15px] hover:cursor-pointer"
                                th:text="${notePage.title}" th:id="|article_${notePage.id}|"
                                th:attr="note-id=${notePage.note.id}, page-id=${notePage.id}"
-                               onclick="submitWithOpenList(this)"></a>
+                               th:href="@{|/note/${notePage.note.id}/page/${notePage.id}|}"
+                               onclick="submitWithOpenList(this); return false;"></a>
                         </div>
                     </li>
                 </ul>

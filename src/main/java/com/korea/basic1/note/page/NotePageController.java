@@ -78,6 +78,7 @@ public class NotePageController {
 
         ObjectMapper objectMapper = new ObjectMapper();
         NoteUIParam noteUIParam = objectMapper.readValue(noteUIParamJson, NoteUIParam.class);
+
         model.addAttribute("noteUIParam", noteUIParam);
         model.addAttribute("noteDto", noteDto);
         model.addAttribute("pageDetail", notePage);
