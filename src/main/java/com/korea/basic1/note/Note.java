@@ -30,7 +30,7 @@ public class Note {
     @ManyToOne
     private Note parent;
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
     private List<Note> children = new ArrayList<>();
 
     @OneToMany(mappedBy = "note")
