@@ -10,12 +10,13 @@
     th:classappend="${#lists.isEmpty(note.children) and note.id == noteDetail.id} ? 'bg-gray-500 rounded-md': ''"
     th:attr="data-note-id=${note.id}, data-note-name=${note.name}, data-note-type=${note.groupYn == 0} ? 'note' : 'group'">
 <!--    <div class="absolute left-[-30px] top-[0] ml-[10px]">▤</div>-->
-    <div th:if="${note.groupYn == 0}" class="w-[100%] hover:text-white hover:rounded-md">
+    <div th:if="${note.groupYn == 0}" class="w-[100%] hover:text-white hover:rounded-md m-[0] p-[0]">
         <!--                <i class="fa-regular fa-note-sticky hover:p-[5px] hover:text-[1.5rem]"></i> -->
-        <span class="hover:text-[1.5rem]">📖</span>
+        <span class="hover:text-[1.5rem] ml-[16px]">📖</span>
         <a th:if="${#lists.isEmpty(note.children)}" th:attr="data-note-id=${note.id}, data-note-type=${note.groupYn}"
            th:text="${note.name}"
            th:href="@{|/note/${note.id}|}"
+           class="h-[100%] w-[100%] pr-[16px] py-[8px]"
            onclick="submitWithOpenList(this); return false;"></a>
     </div>
     <!--    </div>-->

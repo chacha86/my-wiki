@@ -23,4 +23,9 @@ public class MainController {
         }
         return "redirect:/note/" + noteList.get(0).getId();
     }
+
+    @RequestMapping("/async")
+    public String async() {
+        return "async";
+    }
 }

@@ -8,6 +8,7 @@ import com.korea.basic1.note.tag.Tag;
 import com.korea.basic1.note.tag.TagService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class NoteProcessingService {
 
     //    @Transactional
     @Transactional
+    @CachePut(value = "noteList")
     public void deleteNote(Long noteId) {
         Note note = noteService.getNoteById(noteId);
         deleteChildNoteRecursively(note);
@@ -43,6 +45,7 @@ public class NoteProcessingService {
         notePageDetailService.deleteAll(detailList);
         notePageService.deleteAll(pageList);
     }
+    @CachePut(value = "noteList")
     public Note saveGroupNotebook(Long noteId) {
         Note parent = noteService.getNoteById(noteId);
         Note child = noteService.saveGroupNotebook(parent);

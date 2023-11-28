@@ -14,5 +14,6 @@ public class NoteTreeDto {
     private Long id;
     private String name;
     private boolean open;
+    private Integer groupYn;
     private List<NoteTreeDto> children;
 }

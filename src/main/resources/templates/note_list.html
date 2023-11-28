@@ -77,10 +77,15 @@
                 <div class="left-side-menu-content custom-scroll h-[83%] px-[5px] overflow-y-scroll">
                         <form id="noteUIForm">
                             <input type="hidden" name="noteUIParamJson" id="noteUIParamJson">
+                            <input type="hidden" th:id="csrf-token" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <ul class="menu bg-gray-800">
                                 <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
                             </ul>
                         </form>
+                </div>
+                <script src="/async_note.js"></script>
+                <div id="async">
+
                 </div>
 
                 <div class="flex items-center text-center justify-center border border-gray-300 ">
@@ -222,7 +227,13 @@
 </div>
 <form th:action="@{/note/${noteDetail.id}/page/delete}" id="delete" method="post"></form>
 <script src="/note_list_ui.js"></script>
-<script>
+<script th:inline="javascript">
+
+    let noteUIParam = [[${noteUIParam}]];
+    if(noteUIParam != null) {
+        initScrollPosition(noteUIParam.noteSideScrollPosition, noteUIParam.pageSideScrollPosition);
+    }
+
     sideControlBars = document.querySelectorAll(".side-control-bar");
     let isDragging = false;
     let onDragTarget = null;

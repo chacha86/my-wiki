@@ -130,12 +130,11 @@ document.querySelector("#nav-toggle").addEventListener("click", (element) => {
     }
 })
 
-function initScrollPosition(className) {
-    const element = document.querySelector('.' + className);
-    const savedPosition = localStorage.getItem(className + '_scrollPosition');
-    if (!(savedPosition === 'undefined' || savedPosition == null)) {
-        element.scrollTop = savedPosition;
-    }
+function initScrollPosition(noteSideScrollPosition, pageSideScrollPosition) {
+    let noteSide = document.querySelector('.left-side-menu-content');
+    let pageSide = document.querySelector('.left-second-menu-content');
+    noteSide.scrollTo({top:noteSideScrollPosition, behavior:'smooth'});
+    pageSide.scrollTo({top:pageSideScrollPosition, behavior:'smooth'});
 }
 
 function collectOpenList() {
@@ -159,17 +158,47 @@ function getPageSideWidth() {
     let pageSide = document.querySelector('.left-second-menu-content');
     return pageSide.offsetWidth;
 }
+function getNoteSideScrollPosition() {
+    let noteSide = document.querySelector('.left-side-menu-content');
+    return noteSide.scrollTop;
+}
+
+function getPageSideScrollPosition() {
+    let pageSide = document.querySelector('.left-second-menu-content');
+    return pageSide.scrollTop;
+}
+
+function getSideMenuHidden() {
+    let sideMenu = document.querySelector('.left-side-wrap');
+    return sideMenu == null;
+}
 function getNoteUIParamJsonStr() {
     let openList = collectOpenList();
     let noteWidth = getNoteSideWidth();
     let pageWidth = getPageSideWidth();
+    let noteSideScrollPosition = getNoteSideScrollPosition();
+    let pageSideScrollPosition = getPageSideScrollPosition();
+    let sideMenuHidden = getSideMenuHidden();
     let noteUIParam = {
         'openList': openList,
         'noteWidth' : noteWidth,
-        'pageWidth' : pageWidth
+        'pageWidth' : pageWidth,
+        'noteSideScrollPosition' : noteSideScrollPosition,
+        'pageSideScrollPosition' : pageSideScrollPosition,
+        'sideMenuHidden' : sideMenuHidden
     };
 
     return JSON.stringify(noteUIParam);
+}
+function setTokenToForm(form) {
+    let token = document.querySelector('#csrf-token');
+    let input = document.createElement('input');
+    input.setAttribute('type', 'hidden');
+    input.setAttribute('name', '_csrf');
+    input.setAttribute('value', token.getAttribute('value'));
+    form.appendChild(input);
+
+    return form;
 }
 function submitWithOpenList(paramTag) {
 
@@ -178,5 +207,8 @@ function submitWithOpenList(paramTag) {
     let input = document.querySelector('#noteUIParamJson');
     input.value = noteUIParam;
     form.action = paramTag.getAttribute('href');
+    form = setTokenToForm(form);
+    form.method = 'post';
+
     form.submit();
 }

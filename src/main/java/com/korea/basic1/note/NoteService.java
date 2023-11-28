@@ -1,6 +1,8 @@
 package com.korea.basic1.note;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Array;
@@ -19,6 +21,7 @@ public class NoteService {
         return noteRepository.findAll();
     }
 
+    @CachePut(value = "noteList")
     public List<Note> getParentNoteList() {
         return noteRepository.findByParentId(null);
     }
@@ -51,11 +54,13 @@ public class NoteService {
                 .build();
     }
 
+    @CachePut(value = "noteList")
     public Note saveDefaultNote() {
         Note note = getDefaultNote();
         return noteRepository.save(note);
     }
 
+    @CachePut(value = "noteList")
     public Note saveDefaultNote(Long noteId) {
         Note parent = getNoteById(noteId);
         Note note = getDefaultNote();
@@ -103,6 +108,7 @@ public class NoteService {
         return notCheckableList;
     }
 
+    @CachePut(value = "noteList")
     public void updateNoteName(Long noteId, String noteName) {
         Note note = getNoteById(noteId);
         if (note == null) {
@@ -152,6 +158,7 @@ public class NoteService {
                 .id(note.getId())
                 .name(note.getName())
                 .children(new ArrayList<>())
+                .groupYn(note.getGroupYn())
                 .build();
     }
 

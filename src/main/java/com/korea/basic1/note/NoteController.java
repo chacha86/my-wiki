@@ -30,18 +30,18 @@ public class NoteController {
         return String.format("redirect:/note/%d/page/add", note.getId());
     }
 
-    @GetMapping("/add/{noteId}")
+    @PostMapping("/add/{noteId}")
     public String add(@PathVariable Long noteId) {
         Note note = noteService.saveDefaultNote(noteId);
         return String.format("redirect:/note/%d/page/add", note.getId());
     }
-    @GetMapping("/add-group/{noteId}")
+    @PostMapping("/add-group/{noteId}")
     public String groupAdd(@PathVariable Long noteId) {
         Note note = noteProcessingService.saveGroupNotebook(noteId);
         return "redirect:/note/" + note.getId();
     }
 
-    @GetMapping("{noteId}")
+    @RequestMapping ("{noteId}")
     public String intro(Model model, @PathVariable("noteId") Long noteId) {
 
         Note note = noteService.getNoteById(noteId);
@@ -61,7 +61,7 @@ public class NoteController {
 
     }
 
-    @GetMapping("delete/{noteId}")
+    @PostMapping("delete/{noteId}")
     public String delete(@PathVariable Long noteId) {
         noteProcessingService.deleteNote(noteId);
         return "redirect:/";
