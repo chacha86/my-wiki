@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -49,5 +50,14 @@ public class MemberController {
     @GetMapping("/test")
     public String test() {
         return "test";
+    }
+
+    @PostMapping("/profile")
+    public String profile(MultipartFile file) {
+
+        String fileName = file.getOriginalFilename();
+
+        return "";
+
     }
 }
