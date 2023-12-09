@@ -33,7 +33,7 @@
         </summary>
         <ul>
             <li th:if="${#lists.isEmpty(note.children)}"
-                th:replace="~{/fragments/note_fragment::note_tree(${noteDetail}, ${note.children})}">
+                th:replace="~{fragments/note_fragment::note_tree(${noteDetail}, ${note.children})}">
             </li>
         </ul>
     </details>
@@ -52,14 +52,14 @@
              checkable = ${!#lists.contains(notCheckableList, note)},
              onTarget = ${note.id == noteDetail.id}"
     th:class="${noChild and onTarget} ? 'selected-item' : ''">
-    <div th:replace="~{/fragments/note_fragment::target_list(${note}, ${noChild}, ${checkable})}"></div>
+    <div th:replace="~{note_fragment::target_list(${note}, ${noChild}, ${checkable})}"></div>
     <details th:id="${'m_' + note.id}" th:if="${hasChild}">
         <summary th:class="${onTarget} ? 'selected-item' : '' ">
-            <div th:replace="~{/fragments/note_fragment::target_list(${note}, ${hasChild}, ${checkable})}"></div>
+            <div th:replace="~{fragments/note_fragment::target_list(${note}, ${hasChild}, ${checkable})}"></div>
         </summary>
         <ul>
             <li th:if="${hasChild and onTarget}"
-                th:replace="~{/fragments/note_fragment::note_move_tree(${note}, ${note.children}, ${notCheckableList})}">
+                th:replace="~{fragments/note_fragment::note_move_tree(${note}, ${note.children}, ${notCheckableList})}">
             </li>
         </ul>
     </details>

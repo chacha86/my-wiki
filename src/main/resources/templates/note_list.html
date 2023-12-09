@@ -85,7 +85,7 @@
                         <input type="hidden" th:id="csrf-token" th:name="${_csrf.parameterName}"
                                th:value="${_csrf.token}"/>
                         <ul class="menu bg-gray-800">
-                            <li th:replace="fragments/note_fragment::note_tree(${noteDetail}, ${noteList})"></li>
+                            <li th:replace="~{fragments/note_fragment::note_tree(${noteDetail}, ${noteList})}"></li>
                         </ul>
                     </form>
                 </div>
@@ -227,7 +227,7 @@
                 <input type="hidden" name="content">
             </div>
         </form>
-        <div th:replace="/fragments/toast_editor::test">
+        <div th:replace="~{fragments/toast_editor::test}">
         </div>
     </div>
 </div>
