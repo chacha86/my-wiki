@@ -14,12 +14,8 @@ server:
 #    password: ${DB_PASSWORD}
 
 spring:
-  datasource:
-    url: jdbc:mariadb://dev.ramgibauk.com:3306/wiki?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
-    driverClassName: org.mariadb.jdbc.Driver
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
-
+  profiles:
+    include: secret
   jpa:
     hibernate:
       ddl-auto: update
