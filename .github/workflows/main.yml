@@ -79,5 +79,4 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ env.OWNER_LC }}/cnote-1:${{ needs.tag.outputs.tag_name }},
             ghcr.io/${{ env.OWNER_LC }}/cnote-1:latest
