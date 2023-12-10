@@ -18,7 +18,7 @@ jobs:
         - name: gradlew 실행 권한 부여
           run: chmod +x gradlew
         - name: gradle 빌드
-          run: ./gradlew clearn build --no-daemon
+          run: ./gradlew clean build --no-daemon
         - name: build 폴더를 캐시에 저장
           uses: actions/upload-artifact@v3
           with:
