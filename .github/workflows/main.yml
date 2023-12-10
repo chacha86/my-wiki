@@ -95,7 +95,6 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
             docker pull ghcr.io/${{ github.actor }}/cnote-1:latest
             docker stop running-container
             docker run -d --name cnote ghcr.io/${{ github.actor }}/cnote-1:latest
