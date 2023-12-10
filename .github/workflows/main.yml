@@ -81,11 +81,11 @@ jobs:
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/cnote-1:latest
   deploy:
+    needs: buildImageAndPush
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: Pull and Run Docker Image
         uses: appleboy/ssh-action@master
         with:
@@ -97,4 +97,4 @@ jobs:
             echo ${{ secrets.GHCR_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker pull ghcr.io/${{ github.actor }}/cnote-1:latest
             docker stop cnote
-            docker run -d --name cnote ghcr.io/${{ github.actor }}/cnote-1:latest
+            docker run -d --name=cnote --rm -p 8088:8088 ghcr.io/${{ github.actor }}/cnote-1:latest
