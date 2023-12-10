@@ -80,3 +80,22 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/cnote-1:latest
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Pull and Run Docker Image
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            docker pull ghcr.io/${{ github.actor }}/cnote-1:latest
+            docker stop running-container
+            docker run -d --name cnote ghcr.io/${{ github.actor }}/cnote-1:latest
+          "
