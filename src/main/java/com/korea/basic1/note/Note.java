@@ -1,5 +1,6 @@
 package com.korea.basic1.note;
 
+import com.korea.basic1.note.page.NotePage;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,11 +25,15 @@ public class Note {
     private LocalDateTime createDate;
     @Column(nullable = false)
     private LocalDateTime updateDate;
+    private Integer groupYn;
+
     @ManyToOne
     private Note parent;
-    @Column(columnDefinition = "tinyint default -1")
-    private int depth;
+
+    @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+    private List<Note> children = new ArrayList<>();
 
     @OneToMany(mappedBy = "note")
-    List<NotePage> pageList = new ArrayList<>();
+    private List<NotePage> pageList = new ArrayList<>();
+
 }
