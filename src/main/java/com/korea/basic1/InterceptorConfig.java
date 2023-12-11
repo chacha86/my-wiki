@@ -9,6 +9,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new ParamInterceptor())
-                .addPathPatterns("/**"); // 특정 경로에 대해 인터셉터를 적용합니다.
+                .addPathPatterns("/api/**"); // 특정 경로에 대해 인터셉터를 적용합니다.
     }
 }

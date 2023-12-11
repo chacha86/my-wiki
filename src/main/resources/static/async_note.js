@@ -35,17 +35,3 @@ function render(data) {
     // mainComponent.createElement();
     mainComponent.render();
 }
-
-// function getNotes(callback) {
-//     fetch('http://localhost:8088/api/notes/')
-//         .then((response) => {
-//             return response.json();
-//         })
-//         .then((data) => {
-//             callback(data);
-//         })
-//         .catch((error) => {
-//             console.log(error);
-//         });
-// }
-//

@@ -8,6 +8,6 @@ import java.util.List;
 public interface NotePageRepository extends JpaRepository<NotePage, Long> {
 
     List<NotePage> findByTitleContaining(String keyword, Sort sort);
-
     List<NotePage> findByNoteId(Long id, Sort sort);
+    List<NotePage> findByNoteId(Long id);
 }
