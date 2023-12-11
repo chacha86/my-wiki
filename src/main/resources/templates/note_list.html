@@ -67,28 +67,31 @@
         </ul>
     </div>
 </div>
-<!--    <div class="main h-[750px] overflow-hidden">-->
 <div class="main overflow-hidden flex relative">
     <div id="profile-modal">
 
     </div>
     <div class="left-side-wrap h-[calc(100vh-95px)] flex relative">
-        <div class="flex w-[100%]">
-            <div th:class="'left-side-menu bg-gray-800 text-white overflow-hidden'"
-                 th:classappend="${noteUIParam} ? ${'w-[' + noteUIParam.noteWidth + 'px]'} : 'w-[400px]'">
-                <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
-                    <h1 class="text-[1rem] p-[20px] ">노트 목록 ..</h1>
-                </div>
-                <div class="left-side-menu-content custom-scroll h-[83%] px-[5px] overflow-y-scroll">
-                    <form id="noteUIForm">
-                        <input type="hidden" name="noteUIParamJson" id="noteUIParamJson">
-                        <input type="hidden" th:id="csrf-token" th:name="${_csrf.parameterName}"
-                               th:value="${_csrf.token}"/>
-                        <ul class="menu bg-gray-800">
-                            <li th:replace="~{fragments/note_fragment::note_tree(${noteDetail}, ${noteList})}"></li>
-                        </ul>
-                    </form>
-                </div>
+        <div id="left-note-container" class="flex w-[100%]">
+            <form id="noteUIForm">
+                <input type="hidden" name="noteUIParamJson" id="noteUIParamJson">
+                <input type="hidden" th:id="csrf-header" th:value="${_csrf.headerName}"/>
+                <input type="hidden" th:id="csrf-token" th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}"/>
+                <ul id="note-list-area" class="menu bg-gray-800">
+                    <!--                            <li th:replace="~{fragments/note_fragment::note_tree(${noteDetail}, ${noteList})}"></li>-->
+                </ul>
+            </form>
+<!--            <div th:class="'left-side-menu bg-gray-800 text-white overflow-hidden'"-->
+<!--                 th:classappend="${noteUIParam} ? ${'w-[' + noteUIParam.noteWidth + 'px]'} : 'w-[400px]'">-->
+<!--                <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">-->
+<!--                    <h1 class="text-[1rem] p-[20px] ">노트 목록 ..</h1>-->
+<!--                </div>-->
+<!--                <div class="left-side-menu-content custom-scroll h-[83%] px-[5px] overflow-y-scroll">-->
+<!--                </div>-->
+<!--                <div class="left-side-menu-content-async custom-scroll h-[83%] px-[5px] overflow-y-scroll">-->
+
+<!--                </div>-->
                 <script src="/async_note.js"></script>
                 <div id="async">
 
@@ -98,18 +101,6 @@
                     <form th:action="@{/note/add}" method="post">
                         <input type="submit" value="추가">
                     </form>
-                    <!--                    <form th:action="@{/note/add-group}" method="post"-->
-                    <!--                          class="mr-[10px] border border-white overflow-hidden">-->
-                    <!--                        <input type="hidden" name="noteId" th:value="${noteDetail.id}">-->
-                    <!--                        <input type="submit" value="하위노트추가">-->
-                    <!--                    </form>-->
-                    <!--                    <a th:href="@{|/note/delete/${noteDetail.id}|}"-->
-                    <!--                       class="mr-[10px] border border-white overflow-hidden">삭제</a>-->
-                    <!--                    &lt;!&ndash;                        <a class="block bg-gray-800 text-[17px] font-bold text-center text-white hover:bg-gray-500"&ndash;&gt;-->
-                    <!--                    &lt;!&ndash;                           th:href="@{|/note/add|}" onclick="scrollDown()">+ 하위노트 추가</a>&ndash;&gt;-->
-                    <!--                    <div>-->
-                    <!--                        <a href="#" class="w-[15%] mr-[10px] border border-white overflow-hidden"-->
-                    <!--                           onclick="my_modal_1.showModal(); noteEventHandle('left-side-menu-content')">이름 변경</a>-->
                     <dialog id="my_modal_1" class="modal text-black">
                         <div class="modal-box">
                             <h3 class="font-bold text-lg">노트 이름 변경</h3>
@@ -129,36 +120,6 @@
                             </div>
                         </div>
                     </dialog>
-                    <!--                        <div class="inline-block">-->
-                    <!--                            <a href="#" class="w-[15%] mr-[10px] border border-white overflow-hidden"-->
-                    <!--                               onclick="my_modal_4.showModal()">open modal</a>-->
-                    <!--                            <dialog id="my_modal_4" class="modal text-black">-->
-                    <!--                                <div class="modal-box w-[25%] h-[60%]">-->
-                    <!--                                    <h3 class="font-bold text-lg mb-[10px]">노트 이동</h3>-->
-                    <!--                                    <form th:action="@{/note/move}" method="post">-->
-                    <!--                                        <input type="hidden" name="moveTargetId" th:value="${noteDetail.id}">-->
-                    <!--                                        <div class="move-tree overflow-scroll h-[75%] border">-->
-                    <!--                                            <ul class="menu">-->
-                    <!--                                                &lt;!&ndash;                                            <li th:replace="fragments/note_fragment::note_move_tree(${noteDetail}, ${noteList}, 1)" onclick="noteEventHandle('move-tree')"></li>&ndash;&gt;-->
-                    <!--                                                <li th:replace="fragments/note_fragment::note_move_tree(${noteDto.currentNote}, ${noteDto.parentList}, ${noteDto.notCheckableList})"-->
-                    <!--                                                    onclick="noteEventHandle('move-tree')"></li>-->
-                    <!--                                            </ul>-->
-                    <!--                                        </div>-->
-                    <!--                                        <div class="modal-action">-->
-                    <!--                                            <button class="btn btn-xs">이동</button>-->
-                    <!--                                        </div>-->
-                    <!--                                    </form>-->
-                    <!--                                    <div class="flex justify-around">-->
-                    <!--                                        <div class="modal-action">-->
-                    <!--                                            <form method="dialog" class="flex justify-around">-->
-                    <!--                                                <button class="btn btn-xs">취소</button>-->
-                    <!--                                            </form>-->
-                    <!--                                        </div>-->
-                    <!--                                    </div>-->
-                    <!--                                </div>-->
-                    <!--                            </dialog>-->
-                    <!--                        </div>-->
-                    <!--                    </div>-->
                 </div>
             </div>
             <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
@@ -318,9 +279,105 @@
     }
 
     function close() {
-        console.log("hjih");
         document.querySelector("#profile-modal").innerHTML = '';
     }
+
+    function createNoteListContent() {
+        return document.createElement(`
+            <div class="left-side-menu bg-gray-800 text-white overflow-hidden">
+            </div>
+        `);
+    }
+
+    function createNoteListItems() {
+        return document.createElement(`
+            <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
+                <h1 class="text-[1rem] p-[20px] ">노트 목록 ..</h1>
+            </div>
+            <div class="left-side-menu-content custom-scroll h-[83%] px-[5px] overflow-y-scroll">
+                <ul id="note-list-area" class="menu bg-gray-800">
+
+                </ul>
+            </div>
+        `);
+    }
+    function renderingNoteTree(data) {
+
+        console.log(data);
+        const noteListContainer = document.querySelector("#left-note-container");
+        const noteListContent = createNoteListContent();
+        const noteListItems = createNoteListItems();
+
+        const html = `
+            ${createNoteTree(data.noteList)}
+        `;
+
+        noteListItems.innerHTML = html;
+        noteListContent.appendChild(noteListItems);
+        noteListContainer.appendChild(noteListContent);
+
+        console.log(noteListContainer);
+
+    }
+
+    function createNoteTree(noteList) {
+        return `
+            ${noteList.map((note) => {
+            return `${createNoteItem(note)}`;
+        }).join('')}
+        `
+    }
+
+    function createChildNoteTree(note, noteItemClass, recurFunc) {
+        return `
+            <details>
+                <summary class="${noteItemClass}"><a>${note.name}</a></summary>
+                <ul>
+                    ${note.children.length > 0 ? recurFunc(note.children) : ''}
+                </ul>
+            </details>
+        `
+    }
+
+    function createNoteItem(note) {
+
+        let noteItemClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
+        let groupItemClass = note.groupYn === 0 ? noteItemClass : "";
+
+        return `
+            <li class="${groupItemClass}">
+                ${note.groupYn === 0 ? `<a onclick="getNotes();">${note.name}</a>` : ``}
+                ${note.groupYn === 1 ? createChildNoteTree(note, noteItemClass, createNoteTree) : ''}
+            </li>
+        `
+    }
+
+    function getNotes() {
+        const headerName = document.querySelector("#csrf-header").value;
+        const token = document.querySelector("#csrf-token").value;
+        const noteUIParamJson = getNoteUIParamJsonStr();
+
+        fetch("/api/notes", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [headerName]: token
+            },
+            body: noteUIParamJson
+        })
+            .then(response => response.json())
+            .then(data => {
+                renderingNoteTree(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+    }
+
+    getNotes();
+
 </script>
+
 </body>
 </html>

@@ -3,7 +3,6 @@ package com.korea.basic1.note;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -16,10 +15,20 @@ public class NoteUIParam {
     private int pageSideScrollPosition;
     private boolean sideMenuHidden;
 
-    public NoteUIParam() {
-        this.openList = new ArrayList<>();
-        this.noteWidth = 300;
-        this.pageWidth = 300;
-        this.sideMenuHidden = false;
+    public NoteUIParam() {}
+
+    public NoteUIParam(List<Long> openList, double noteWidth, double pageWidth, int noteSideScrollPosition, int pageSideScrollPosition, boolean sideMenuHidden) {
+        this.openList = openList;
+        this.noteWidth = noteWidth;
+        this.pageWidth = pageWidth;
+        this.noteSideScrollPosition = noteSideScrollPosition;
+        this.pageSideScrollPosition = pageSideScrollPosition;
+        this.sideMenuHidden = sideMenuHidden;
     }
+//    public NoteUIParam() {
+//        this.openList = new ArrayList<>();
+//        this.noteWidth = 300;
+//        this.pageWidth = 300;
+//        this.sideMenuHidden = false;
+//    }
 }

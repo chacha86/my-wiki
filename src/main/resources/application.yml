@@ -6,13 +6,6 @@ server:
 #spring.datasource.driverClassName:com.mysql.cj.jdbc.Driver
 
 ## mariaDB
-#spring:
-#  datasource:
-#    url: jdbc:mariadb://dev.ramgibauk.com:3306/wiki?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
-#    driverClassName: org.mariadb.jdbc.Driver
-#    username: ${DB_USER}
-#    password: ${DB_PASSWORD}
-
 spring:
   profiles:
     include: secret

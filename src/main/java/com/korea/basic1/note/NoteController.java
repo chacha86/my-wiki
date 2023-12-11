@@ -46,12 +46,6 @@ public class NoteController {
 
         Note note = noteService.getNoteById(noteId);
 
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        NoteUIParam noteUIParamObj = null;
-//        noteUIParamObj = objectMapper.readValue(noteUIParam, NoteUIParam.class);
-
-//        redirectAttributes.addFlashAttribute("noteUIParamJson", noteUIParamJson);
-
         if (note.getPageList().isEmpty()) {
             return String.format("redirect:/note/%d/page/add", noteId);
         }
@@ -73,26 +67,4 @@ public class NoteController {
         return "redirect:/note/" + noteId;
     }
 
-//    @GetMapping("{noteId}/page/{pageId}")
-//    public String view(Model model, @PathVariable Long noteId, @PathVariable Long pageId) {
-//
-//        List<Note> noteList = noteService.getParentNoteList();
-//        Note noteDetail = noteService.getNoteById(noteId);
-//        NotePage pageDetail = notePageService.getNotePageById(pageId);
-//
-//        if(noteList.isEmpty()) {
-//            return "redirect:/note/add";
-//        }
-//
-//        if(pageDetail == null) {
-//            return "redirect:/note/" + noteId + "/page/add";
-//        }
-//
-//        model.addAttribute("noteList", noteList);
-//        model.addAttribute("noteDetail", noteDetail);
-//        model.addAttribute("notePageList", noteDetail.getPageList());
-//        model.addAttribute("pageDetail", pageDetail);
-//
-//        return "note_list";
-//    }
 }
