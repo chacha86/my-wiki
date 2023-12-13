@@ -353,12 +353,14 @@
 
         return `
             <li class="${groupItemClass}">
-                ${note.groupYn === 0 ? `<a onclick="getPages(${note.id});">${note.name}</a>` : ``}
+                ${note.groupYn === 0 ? `<a id="note-${note.id}" onclick="getPages(${note.id});">${note.name}</a>` : ``}
                 ${note.groupYn === 1 ? createChildNoteTree(note, noteUIParam, noteItemClass, createNoteTree) : ''}
             </li>
         `
     }
 
+
+    let prevNoteId = null;
     function getPages(noteId) {
         const url = "/api/notes/" + noteId + "/pages";
         const headerName = document.querySelector("#csrf-header").value;
@@ -376,11 +378,24 @@
             .then(response => response.json())
             .then(data => {
                 renderingNotePage(data);
+
+                const currentNoteItem = document.querySelector("#note-" + noteId);
+                const prevNoteItem = document.querySelector("#note-" + prevNoteId);
+
+                let originClass = currentNoteItem.getAttribute("class")
+                let newClass = originClass + " bg-gray-500 text-white rounded-md";
+
+                currentNoteItem.setAttribute("class", newClass);
+                if(prevNoteItem != null) {
+                    prevNoteItem.setAttribute("class", originClass);
+                }
+                prevNoteId = noteId;
             })
             .catch(error => {
                 console.error('Error:', error);
             });
     }
+
 
     function getNotes() {
         const headerName = document.querySelector("#csrf-header").value;
