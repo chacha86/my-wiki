@@ -76,4 +76,30 @@ public class NoteRestController {
         return jsonStr;
     }
 
+    @Getter
+    @Setter
+    private static class NotePageContentDto {
+        private NotePageDto notePageDto;
+        private NoteUIParam noteUIParam;
+    }
+    @RequestMapping("/pages/{notePageId}")
+    public String getPageContent(@PathVariable Long notePageId, @RequestBody NoteUIParam noteUIParam) {
+        NotePage notePage = notePageService.getNotePageById(notePageId);
+        NotePageDto notePageDto = notePage.toDto();
+        String jsonStr = null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            NotePageContentDto notePageContentDto = new NotePageContentDto();
+
+            notePageContentDto.setNotePageDto(notePageDto);
+            notePageContentDto.setNoteUIParam(noteUIParam);
+
+            jsonStr = objectMapper.writeValueAsString(notePageContentDto);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return jsonStr;
+    }
 }
