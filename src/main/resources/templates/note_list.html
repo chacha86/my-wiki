@@ -174,9 +174,8 @@
         <form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
             <div class="flex justify-between">
 
-                <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
-                       name="title"
-                       th:value="${pageDetail.title}">
+                <input class="title block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
+                       name="title">
                 <a href="#" class="font-bold text-red-500 p-[10px]"
                    onclick="confirmDelete()">X</a>
             </div>
@@ -293,9 +292,11 @@
 
     function createNotePageItem(notePageDto) {
         console.log(notePageDto);
+        let pageClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
+        let pageLinkClass = "block p-[10px] text-[15px] hover:cursor-pointer";
         return `
-            <li class="hover:bg-gray-500 hover:text-white hover:rounded-md">
-                <a>${notePageDto.title}</a>
+            <li class="${pageClass}">
+                <a class="${pageLinkClass}" id="note-page-${notePageDto.id}" onclick="getContent(${notePageDto.id});">${notePageDto.title}</a>
             </li>
         `
     }
@@ -359,6 +360,58 @@
         `
     }
 
+    function rederingNotePageContent(data) {
+        const content = document.querySelector(".content");
+        const html = `
+            ${pageDetail.content}
+        `;
+
+        content.innerHTML = html;
+    }
+
+    let prevNotePageId = null;
+
+    function getContent(notePageId) {
+        const url = "/api/notes/pages/" + notePageId;
+        const headerName = document.querySelector("#csrf-header").value;
+        const token = document.querySelector("#csrf-token").value;
+        const noteUIParamJson = getNoteUIParamJsonStr();
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [headerName]: token
+            },
+            body: noteUIParamJson
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const titleInput = document.querySelector(".title");
+                console.log(editor);
+                titleInput.value=data.notePageDto.title;
+                editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
+
+
+                // renderingNotePageContent(data);
+                //
+                // const currentNoteItem = document.querySelector("#note-" + noteId);
+                // const prevNoteItem = document.querySelector("#note-" + prevNoteId);
+                //
+                // let originClass = currentNoteItem.getAttribute("class")
+                // let newClass = originClass + " bg-gray-500 text-white rounded-md";
+                //
+                // currentNoteItem.setAttribute("class", newClass);
+                // if(prevNoteItem != null) {
+                //     prevNoteItem.setAttribute("class", originClass);
+                // }
+                // prevNoteId = noteId;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
 
     let prevNoteId = null;
     function getPages(noteId) {
