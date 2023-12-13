@@ -1,6 +1,7 @@
 package com.korea.basic1.note.page;
 
 import com.korea.basic1.note.Note;
+import com.korea.basic1.note.NotePageDto;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,4 +31,15 @@ public class NotePage {
 
     @OneToOne
     private NotePageDetail notePageDetail;
+
+    public NotePageDto toDto() {
+        return NotePageDto.builder()
+                .id(id)
+                .title(title)
+                .hit(hit)
+                .createDate(createDate)
+                .updateDate(updateDate)
+                .notePageDetailDto(notePageDetail.toDto())
+                .build();
+    }
 }

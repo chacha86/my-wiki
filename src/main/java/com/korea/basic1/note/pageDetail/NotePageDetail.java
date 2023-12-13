@@ -26,4 +26,13 @@ public class NotePageDetail {
 
     @OneToOne(mappedBy = "notePageDetail")
     private NotePage notePage;
+
+    public NotePageDetailDto toDto() {
+        return NotePageDetailDto.builder()
+                .id(id)
+                .content(content)
+                .createDate(createDate)
+                .updateDate(updateDate)
+                .build();
+    }
 }

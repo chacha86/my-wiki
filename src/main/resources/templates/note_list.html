@@ -67,25 +67,23 @@
         </ul>
     </div>
 </div>
-<!--    <div class="main h-[750px] overflow-hidden">-->
 <div class="main overflow-hidden flex relative">
     <div id="profile-modal">
 
     </div>
     <div class="left-side-wrap h-[calc(100vh-95px)] flex relative">
         <div class="flex w-[100%]">
-            <div th:class="'left-side-menu bg-gray-800 text-white overflow-hidden'"
-                 th:classappend="${noteUIParam} ? ${'w-[' + noteUIParam.noteWidth + 'px]'} : 'w-[400px]'">
+            <div class="left-side-menu bg-gray-800 text-white overflow-hidden w-[400px]">
                 <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
-                    <h1 class="text-[1rem] p-[20px] ">노트 목록 ..</h1>
+                    <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
                 </div>
                 <div class="left-side-menu-content custom-scroll h-[83%] px-[5px] overflow-y-scroll">
                     <form id="noteUIForm">
                         <input type="hidden" name="noteUIParamJson" id="noteUIParamJson">
-                        <input type="hidden" th:id="csrf-token" th:name="${_csrf.parameterName}"
+                        <input type="hidden" id="csrf-header" th:value="${_csrf.headerName}">
+                        <input type="hidden" id="csrf-token" th:name="${_csrf.parameterName}"
                                th:value="${_csrf.token}"/>
-                        <ul class="menu bg-gray-800">
-                            <li th:replace="~{fragments/note_fragment::note_tree(${noteDetail}, ${noteList})}"></li>
+                        <ul id="note-item-list" class="menu bg-gray-800">
                         </ul>
                     </form>
                 </div>
@@ -98,18 +96,6 @@
                     <form th:action="@{/note/add}" method="post">
                         <input type="submit" value="추가">
                     </form>
-                    <!--                    <form th:action="@{/note/add-group}" method="post"-->
-                    <!--                          class="mr-[10px] border border-white overflow-hidden">-->
-                    <!--                        <input type="hidden" name="noteId" th:value="${noteDetail.id}">-->
-                    <!--                        <input type="submit" value="하위노트추가">-->
-                    <!--                    </form>-->
-                    <!--                    <a th:href="@{|/note/delete/${noteDetail.id}|}"-->
-                    <!--                       class="mr-[10px] border border-white overflow-hidden">삭제</a>-->
-                    <!--                    &lt;!&ndash;                        <a class="block bg-gray-800 text-[17px] font-bold text-center text-white hover:bg-gray-500"&ndash;&gt;-->
-                    <!--                    &lt;!&ndash;                           th:href="@{|/note/add|}" onclick="scrollDown()">+ 하위노트 추가</a>&ndash;&gt;-->
-                    <!--                    <div>-->
-                    <!--                        <a href="#" class="w-[15%] mr-[10px] border border-white overflow-hidden"-->
-                    <!--                           onclick="my_modal_1.showModal(); noteEventHandle('left-side-menu-content')">이름 변경</a>-->
                     <dialog id="my_modal_1" class="modal text-black">
                         <div class="modal-box">
                             <h3 class="font-bold text-lg">노트 이름 변경</h3>
@@ -129,56 +115,28 @@
                             </div>
                         </div>
                     </dialog>
-                    <!--                        <div class="inline-block">-->
-                    <!--                            <a href="#" class="w-[15%] mr-[10px] border border-white overflow-hidden"-->
-                    <!--                               onclick="my_modal_4.showModal()">open modal</a>-->
-                    <!--                            <dialog id="my_modal_4" class="modal text-black">-->
-                    <!--                                <div class="modal-box w-[25%] h-[60%]">-->
-                    <!--                                    <h3 class="font-bold text-lg mb-[10px]">노트 이동</h3>-->
-                    <!--                                    <form th:action="@{/note/move}" method="post">-->
-                    <!--                                        <input type="hidden" name="moveTargetId" th:value="${noteDetail.id}">-->
-                    <!--                                        <div class="move-tree overflow-scroll h-[75%] border">-->
-                    <!--                                            <ul class="menu">-->
-                    <!--                                                &lt;!&ndash;                                            <li th:replace="fragments/note_fragment::note_move_tree(${noteDetail}, ${noteList}, 1)" onclick="noteEventHandle('move-tree')"></li>&ndash;&gt;-->
-                    <!--                                                <li th:replace="fragments/note_fragment::note_move_tree(${noteDto.currentNote}, ${noteDto.parentList}, ${noteDto.notCheckableList})"-->
-                    <!--                                                    onclick="noteEventHandle('move-tree')"></li>-->
-                    <!--                                            </ul>-->
-                    <!--                                        </div>-->
-                    <!--                                        <div class="modal-action">-->
-                    <!--                                            <button class="btn btn-xs">이동</button>-->
-                    <!--                                        </div>-->
-                    <!--                                    </form>-->
-                    <!--                                    <div class="flex justify-around">-->
-                    <!--                                        <div class="modal-action">-->
-                    <!--                                            <form method="dialog" class="flex justify-around">-->
-                    <!--                                                <button class="btn btn-xs">취소</button>-->
-                    <!--                                            </form>-->
-                    <!--                                        </div>-->
-                    <!--                                    </div>-->
-                    <!--                                </div>-->
-                    <!--                            </dialog>-->
-                    <!--                        </div>-->
-                    <!--                    </div>-->
                 </div>
             </div>
             <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
-            <div class="custom-scroll left-second-menu-content bg-gray-800 text-white overflow-scroll"
-                 th:classappend="${noteUIParam} ? ${'w-[' + noteUIParam.pageWidth + 'px]'} : 'w-[400px]'">
+            <div class="custom-scroll left-second-menu-content bg-gray-800 text-white overflow-scroll w-[400px]">
                 <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
-                <ul th:each="notePage : ${notePageList}">
-                    <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"
-                        th:class="|${customClass}|">
-                        <!--                           th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"-->
-                        <div class="flex border-b-[1px] items-center">
-                            <span>📄</span>
-                            <a class="block p-[10px] text-[15px] hover:cursor-pointer"
-                               th:text="${notePage.title}" th:id="|article_${notePage.id}|"
-                               th:attr="note-id=${notePage.note.id}, page-id=${notePage.id}"
-                               th:href="@{|/note/${notePage.note.id}/page/${notePage.id}|}"
-                               onclick="submitWithOpenList(this); return false;"></a>
-                        </div>
-                    </li>
+                <ul id="page-item-list">
+
                 </ul>
+<!--                <ul th:each="notePage : ${notePageList}">-->
+<!--                    <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"-->
+<!--                        th:class="|${customClass}|">-->
+<!--                        &lt;!&ndash;                           th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"&ndash;&gt;-->
+<!--                        <div class="flex border-b-[1px] items-center">-->
+<!--                            <span>📄</span>-->
+<!--                            <a class="block p-[10px] text-[15px] hover:cursor-pointer"-->
+<!--                               th:text="${notePage.title}" th:id="|article_${notePage.id}|"-->
+<!--                               th:attr="note-id=${notePage.note.id}, page-id=${notePage.id}"-->
+<!--                               th:href="@{|/note/${notePage.note.id}/page/${notePage.id}|}"-->
+<!--                               onclick="submitWithOpenList(this); return false;"></a>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                </ul>-->
                 <div class="absolute top-[90%]">
                     <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"
                           class="flex relative justify-between items-center">
@@ -216,9 +174,8 @@
         <form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
             <div class="flex justify-between">
 
-                <input class="block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
-                       name="title"
-                       th:value="${pageDetail.title}">
+                <input class="title block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
+                       name="title">
                 <a href="#" class="font-bold text-red-500 p-[10px]"
                    onclick="confirmDelete()">X</a>
             </div>
@@ -318,9 +275,207 @@
     }
 
     function close() {
-        console.log("hjih");
         document.querySelector("#profile-modal").innerHTML = '';
     }
+
+    function setNoteSideMenu(uiParam) {
+        const noteWidth = uiParam.noteWidth;
+        const leftSideMenu = document.querySelector(".left-side-menu");
+        leftSideMenu.setAttribute("class", "left-side-menu bg-gray-800 text-white overflow-hidden w-[" + noteWidth + "px]");
+    }
+
+    function setPageSideMenu(uiParam) {
+        const pageWidth = uiParam.pageWidth;
+        const leftSecondMenuContent = document.querySelector(".left-second-menu-content");
+        leftSecondMenuContent.setAttribute("class", "custom-scroll left-second-menu-content bg-gray-800 text-white overflow-scroll w-[" + pageWidth + "px]");
+    }
+
+    function createNotePageItem(notePageDto) {
+        console.log(notePageDto);
+        let pageClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
+        let pageLinkClass = "block p-[10px] text-[15px] hover:cursor-pointer";
+        return `
+            <li class="${pageClass}">
+                <a class="${pageLinkClass}" id="note-page-${notePageDto.id}" onclick="getContent(${notePageDto.id});">${notePageDto.title}</a>
+            </li>
+        `
+    }
+
+    function createNotePage(pageDtoList) {
+        return `
+            ${pageDtoList.map((notePageDto) => {
+            return `${createNotePageItem(notePageDto)}`;
+        }).join('')}
+        `
+    }
+
+    function renderingNotePage(data) {
+        setPageSideMenu(data.noteUIParam);
+        const pageItemList = document.querySelector("#page-item-list");
+        const html = `
+            ${createNotePage(data.notePageDtoList)}
+        `;
+
+        pageItemList.innerHTML = html;
+    }
+    function renderingNoteTree(data) {
+        setNoteSideMenu(data.noteUIParam);
+        const noteItemList = document.querySelector("#note-item-list");
+
+        const html = `
+            ${createNoteTree(data.noteTree, data.noteUIParam)}
+        `;
+
+        noteItemList.innerHTML = html;
+    }
+
+    function createNoteTree(noteList, noteUIParam) {
+        return `
+            ${noteList.map((note) => {
+            return `${createNoteItem(note, noteUIParam)}`;
+        }).join('')}
+        `
+    }
+
+    function createChildNoteTree(note, noteUIParam, noteItemClass, recurFunc) {
+        return `
+            <details data-note-id="${note.id}" ${noteUIParam.openList.includes(note.id) ? "open" : ""}>
+                <summary class="${noteItemClass}"><a>${note.name}</a></summary>
+                <ul>
+                    ${note.children.length > 0 ? recurFunc(note.children, noteUIParam) : ''}
+                </ul>
+            </details>
+        `
+    }
+
+    function createNoteItem(note, noteUIParam) {
+        let noteItemClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
+        let groupItemClass = note.groupYn === 0 ? noteItemClass : "";
+
+        return `
+            <li class="${groupItemClass}">
+                ${note.groupYn === 0 ? `<a id="note-${note.id}" onclick="getPages(${note.id});">${note.name}</a>` : ``}
+                ${note.groupYn === 1 ? createChildNoteTree(note, noteUIParam, noteItemClass, createNoteTree) : ''}
+            </li>
+        `
+    }
+
+    function rederingNotePageContent(data) {
+        const content = document.querySelector(".content");
+        const html = `
+            ${pageDetail.content}
+        `;
+
+        content.innerHTML = html;
+    }
+
+    let prevNotePageId = null;
+
+    function getContent(notePageId) {
+        const url = "/api/notes/pages/" + notePageId;
+        const headerName = document.querySelector("#csrf-header").value;
+        const token = document.querySelector("#csrf-token").value;
+        const noteUIParamJson = getNoteUIParamJsonStr();
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [headerName]: token
+            },
+            body: noteUIParamJson
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const titleInput = document.querySelector(".title");
+                console.log(editor);
+                titleInput.value=data.notePageDto.title;
+                editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
+
+
+                // renderingNotePageContent(data);
+                //
+                // const currentNoteItem = document.querySelector("#note-" + noteId);
+                // const prevNoteItem = document.querySelector("#note-" + prevNoteId);
+                //
+                // let originClass = currentNoteItem.getAttribute("class")
+                // let newClass = originClass + " bg-gray-500 text-white rounded-md";
+                //
+                // currentNoteItem.setAttribute("class", newClass);
+                // if(prevNoteItem != null) {
+                //     prevNoteItem.setAttribute("class", originClass);
+                // }
+                // prevNoteId = noteId;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    let prevNoteId = null;
+    function getPages(noteId) {
+        const url = "/api/notes/" + noteId + "/pages";
+        const headerName = document.querySelector("#csrf-header").value;
+        const token = document.querySelector("#csrf-token").value;
+        const noteUIParamJson = getNoteUIParamJsonStr();
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [headerName]: token
+            },
+            body: noteUIParamJson
+        })
+            .then(response => response.json())
+            .then(data => {
+                renderingNotePage(data);
+
+                const currentNoteItem = document.querySelector("#note-" + noteId);
+                const prevNoteItem = document.querySelector("#note-" + prevNoteId);
+
+                let originClass = currentNoteItem.getAttribute("class")
+                let newClass = originClass + " bg-gray-500 text-white rounded-md";
+
+                currentNoteItem.setAttribute("class", newClass);
+                if(prevNoteItem != null) {
+                    prevNoteItem.setAttribute("class", originClass);
+                }
+                prevNoteId = noteId;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+
+    function getNotes() {
+        const headerName = document.querySelector("#csrf-header").value;
+        const token = document.querySelector("#csrf-token").value;
+        const noteUIParamJson = getNoteUIParamJsonStr();
+
+        fetch("/api/notes", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [headerName]: token
+            },
+            body: noteUIParamJson
+        })
+            .then(response => response.json())
+            .then(data => {
+                renderingNoteTree(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+    }
+
+    getNotes();
+
 </script>
+
 </body>
 </html>

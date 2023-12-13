@@ -1,12 +1,14 @@
 package com.korea.basic1.note.page;
 
 import com.korea.basic1.note.Note;
+import com.korea.basic1.note.NotePageDto;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,5 +65,20 @@ public class NotePageService {
 
     public List<NotePage> getNotePageListByNoteId(Long id, Sort sort) {
         return notePageRepository.findByNoteId(id, sort);
+    }
+
+    public List<NotePage> getNotePageListByNoteId(Long id) {
+        return notePageRepository.findByNoteId(id);
+    }
+
+    public List<NotePageDto> getNotePageDtoList(List<NotePage> notePageList) {
+
+        List<NotePageDto> notePageDtoList = new ArrayList<>();
+        for (NotePage notePage : notePageList) {
+            notePage.getNotePageDetail().toDto();
+            notePageDtoList.add(notePage.toDto());
+        }
+
+        return notePageDtoList;
     }
 }
