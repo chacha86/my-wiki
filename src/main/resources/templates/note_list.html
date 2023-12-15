@@ -3,46 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.2/dist/full.min.css" rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" href="/global.css"/>
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css"
-    />
-    <link
-            rel="stylesheet"
-            href="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight.min.css"
-    />
-    <!--    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.3/dist/full.css" rel="stylesheet" type="text/css"/>-->
+    <div th:replace="fragments/common"></div>
 </head>
 <body>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
-<!-- 하이라이트 라이브러리, 언어 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/css.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/java.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/javascript.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/xml.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/php.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/php-template.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/languages/sql.min.js"></script>
-<!-- 토스트 UI 에디터, 신택스 하이라이트 플러그인 추가 -->
-<script src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight-all.min.js"></script>
-<!--<form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">-->
-<!--    <div class="header bg-gray-800">-->
-<!--        <h1 class="text-white text-[2rem] p-[20px]">CNote</h1>-->
-<!--        <div>-->
-<!--        </div>-->
-<!--    </div>-->
+<div th:replace="fragments/common-js"></div>
 <div class="navbar bg-gray-800 text-white py-[20px] border-b-[3px] border-white">
     <div class="flex-1">
         <a class="btn btn-ghost normal-case text-[30px]">CNote</a>
     </div>
     <div class="flex justify-end">
         <img class="h-[5%] w-[5%] mr-[10px] rounded-[50%]" src="/img/2023071701753_0.jpg" alt="profile">
-        <div class="text-[13px]"><a class="hover:cursor-pointer" onclick="test();">profile</a></div>
+        <div class="text-[13px]"><a class="hover:cursor-pointer" onclick="openProfilePop();">profile</a></div>
         <div class="text-white"></div>
 
         <a class="text-[13px] hover:bg-gray-600 p-[5px] rounded-md" sec:authorize="isAnonymous()" href="/user/login">login</a>
@@ -123,20 +94,6 @@
                 <ul id="page-item-list">
 
                 </ul>
-<!--                <ul th:each="notePage : ${notePageList}">-->
-<!--                    <li th:with="customClass=${notePage.id == pageDetail.id} ? 'bg-gray-500 border-b-[3px]' : 'border-b-[1px]'"-->
-<!--                        th:class="|${customClass}|">-->
-<!--                        &lt;!&ndash;                           th:href="@{|/note/${noteDetail.id}/page/${notePage.id}|}"&ndash;&gt;-->
-<!--                        <div class="flex border-b-[1px] items-center">-->
-<!--                            <span>📄</span>-->
-<!--                            <a class="block p-[10px] text-[15px] hover:cursor-pointer"-->
-<!--                               th:text="${notePage.title}" th:id="|article_${notePage.id}|"-->
-<!--                               th:attr="note-id=${notePage.note.id}, page-id=${notePage.id}"-->
-<!--                               th:href="@{|/note/${notePage.note.id}/page/${notePage.id}|}"-->
-<!--                               onclick="submitWithOpenList(this); return false;"></a>-->
-<!--                        </div>-->
-<!--                    </li>-->
-<!--                </ul>-->
                 <div class="absolute top-[90%]">
                     <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"
                           class="flex relative justify-between items-center">
@@ -155,8 +112,6 @@
                                     <li th:unless="${#lists.isEmpty(searchedResult.searchedNotePageList)}"
                                         th:each="notePage : ${searchedResult.searchedNotePageList}"
                                         class="hover:bg-gray-400 px-[0.5rem]">
-                                        <!--                                            th:href="@{|/note/${notePage.note.id}/page/${notePage.id}?keyword=${searchedResult.keyword}|}"-->
-
                                         <a
                                                 class="inline-block w-[100%]"
                                                 th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "
@@ -254,7 +209,7 @@
         }
     });
 
-    function test() {
+    function openProfilePop() {
         let html = `
         <div class="w-[500px] h-[600px] bg-blue-500 absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-[999] flex flex-col justify-around items-center">
             <div class="w-[50%] h-[40%]">
@@ -272,10 +227,6 @@
         `
         document.querySelector("#profile-modal").innerHTML = html;
 
-    }
-
-    function close() {
-        document.querySelector("#profile-modal").innerHTML = '';
     }
 
     function setNoteSideMenu(uiParam) {
@@ -318,6 +269,7 @@
 
         pageItemList.innerHTML = html;
     }
+
     function renderingNoteTree(data) {
         setNoteSideMenu(data.noteUIParam);
         const noteItemList = document.querySelector("#note-item-list");
@@ -360,117 +312,251 @@
         `
     }
 
-    function rederingNotePageContent(data) {
-        const content = document.querySelector(".content");
-        const html = `
-            ${pageDetail.content}
+    function postFetch(url, jsonData, callback) {
+
+        const headerName = document.querySelector("#csrf-header").value;
+        const token = document.querySelector("#csrf-token").value;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [headerName]: token
+            },
+            body: jsonData
+        })
+            .then(response => response.json())
+            .then(data => {
+                callback(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function changeSelectedItem(currentItemId, prevItemId, customClass) {
+
+        const currentItem = document.querySelector("#" + currentItemId);
+        const prevItem = document.querySelector("#" + prevItemId);
+        //
+        let originClass = currentItem.getAttribute("class")
+        let newClass = originClass + customClass;
+        //
+        currentItem.setAttribute("class", newClass);
+        if (prevItem != null) {
+            prevItem.setAttribute("class", originClass);
+        }
+    }
+
+    class BaseComponent {
+
+        constructor(url, itemPrefix, customClass) {
+            this.prevId = null;
+            this.currentId = null;
+            this.url = url;
+            this.itemPrefix = itemPrefix;
+            this.customClass = customClass;
+        }
+
+        postFetch(url, jsonData, callback) {
+
+            const headerName = document.querySelector("#csrf-header").value;
+            const token = document.querySelector("#csrf-token").value;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [headerName]: token
+                },
+                body: jsonData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    callback(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        changeSelectedItem(currentItemId, prevItemId, customClass) {
+
+            const currentItem = document.querySelector("#" + currentItemId);
+            const prevItem = document.querySelector("#" + prevItemId);
+            //
+            let originClass = currentItem.getAttribute("class")
+            let newClass = originClass + customClass;
+            //
+            currentItem.setAttribute("class", newClass);
+            if (prevItem != null) {
+                prevItem.setAttribute("class", originClass);
+            }
+        }
+
+        render(data, func) {
+            // const url = "/api/notes/pages/" + this.currentId;
+            const noteUIParamJson = getNoteUIParamJsonStr();
+            this.postFetch(this.url, noteUIParamJson, function (data) {
+
+                func(data);
+                // const titleInput = document.querySelector(".title");
+                // titleInput.value = data.notePageDto.title;
+                // editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
+
+                const currentItemId = this.itemPrefix + this.currentId;
+                const prevItemId = this.itemPrefix + this.prevId;
+
+                this.changeSelectedItem(currentItemId, prevItemId, this.customClass);
+                this.prevId = this.currentId;
+
+            });
+        }
+    }
+
+    class NotePageComponent extends BaseComponent {
+
+        constructor(url, itemPrefix, customClass) {
+            super(url, itemPrefix, customClass);
+        }
+
+        createNotePageItem(notePageDto) {
+            console.log(notePageDto);
+            let pageClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
+            let pageLinkClass = "block p-[10px] text-[15px] hover:cursor-pointer";
+            return `
+            <li class="${pageClass}">
+                <a class="${pageLinkClass}" id="note-page-${notePageDto.id}" onclick="getContent(${notePageDto.id});">${notePageDto.title}</a>
+            </li>
+        `
+        }
+
+        createNotePage(pageDtoList) {
+            return `
+            ${pageDtoList.map((notePageDto) => {
+                return `${this.createNotePageItem(notePageDto)}`;
+            }).join('')}
+        `
+        }
+
+        renderingNotePage(data) {
+            setPageSideMenu(data.noteUIParam);
+            const pageItemList = document.querySelector("#page-item-list");
+            const html = `
+            ${this.createNotePage(data.notePageDtoList)}
         `;
 
-        content.innerHTML = html;
+            pageItemList.innerHTML = html;
+        }
+
+        render(data) {
+            super.render(data, this.renderingNotePage);
+        }
     }
+
 
     let prevNotePageId = null;
 
     function getContent(notePageId) {
+
         const url = "/api/notes/pages/" + notePageId;
-        const headerName = document.querySelector("#csrf-header").value;
-        const token = document.querySelector("#csrf-token").value;
         const noteUIParamJson = getNoteUIParamJsonStr();
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                [headerName]: token
-            },
-            body: noteUIParamJson
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                const titleInput = document.querySelector(".title");
-                console.log(editor);
-                titleInput.value=data.notePageDto.title;
-                editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
+        postFetch(url, noteUIParamJson, function (data) {
 
+            const titleInput = document.querySelector(".title");
+            titleInput.value = data.notePageDto.title;
+            editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
 
-                // renderingNotePageContent(data);
-                //
-                // const currentNoteItem = document.querySelector("#note-" + noteId);
-                // const prevNoteItem = document.querySelector("#note-" + prevNoteId);
-                //
-                // let originClass = currentNoteItem.getAttribute("class")
-                // let newClass = originClass + " bg-gray-500 text-white rounded-md";
-                //
-                // currentNoteItem.setAttribute("class", newClass);
-                // if(prevNoteItem != null) {
-                //     prevNoteItem.setAttribute("class", originClass);
-                // }
-                // prevNoteId = noteId;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            const itemPrefix = "note-page-";
+            const currentItemId = itemPrefix + notePageId;
+            const prevItemId = itemPrefix + prevNotePageId;
+            const customClass = " bg-gray-500 text-white rounded-md";
+
+            changeSelectedItem(currentItemId, prevItemId, customClass);
+            prevNotePageId = notePageId;
+
+        });
+    }
+
+    class NoteComponent extends BaseComponent {
+        constructor(url, itemPrefix, customClass) {
+            super(url, itemPrefix, customClass);
+        }
+
+        renderingNoteTree(data) {
+            setNoteSideMenu(data.noteUIParam);
+            const noteItemList = document.querySelector("#note-item-list");
+
+            const html = `
+            ${this.createNoteTree(data.noteTree, data.noteUIParam)}
+        `;
+
+            noteItemList.innerHTML = html;
+        }
+
+        createNoteTree(noteList, noteUIParam) {
+            return `
+            ${noteList.map((note) => {
+                return `${this.createNoteItem(note, noteUIParam)}`;
+            }).join('')}
+        `
+        }
+
+        createChildNoteTree(note, noteUIParam, noteItemClass, recurFunc) {
+            return `
+            <details data-note-id="${note.id}" ${noteUIParam.openList.includes(note.id) ? "open" : ""}>
+                <summary class="${noteItemClass}"><a>${note.name}</a></summary>
+                <ul>
+                    ${note.children.length > 0 ? recurFunc(note.children, noteUIParam) : ''}
+                </ul>
+            </details>
+        `
+        }
+
+        createNoteItem(note, noteUIParam) {
+            let noteItemClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
+            let groupItemClass = note.groupYn === 0 ? noteItemClass : "";
+
+            return `
+            <li class="${groupItemClass}">
+                ${note.groupYn === 0 ? `<a id="note-${note.id}" onclick="getPages(${note.id});">${note.name}</a>` : ``}
+                ${note.groupYn === 1 ? this.createChildNoteTree(note, noteUIParam, noteItemClass, this.createNoteTree.bind(this)) : ''}
+            </li>
+        `
+        }
+
+        render(data) {
+            super.render(data, this.renderingNoteTree);
+        }
     }
 
     let prevNoteId = null;
+
     function getPages(noteId) {
         const url = "/api/notes/" + noteId + "/pages";
-        const headerName = document.querySelector("#csrf-header").value;
-        const token = document.querySelector("#csrf-token").value;
         const noteUIParamJson = getNoteUIParamJsonStr();
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                [headerName]: token
-            },
-            body: noteUIParamJson
-        })
-            .then(response => response.json())
-            .then(data => {
-                renderingNotePage(data);
+        postFetch(url, noteUIParamJson, function (data) {
+            renderingNotePage(data);
 
-                const currentNoteItem = document.querySelector("#note-" + noteId);
-                const prevNoteItem = document.querySelector("#note-" + prevNoteId);
+            const itemPrefix = "note-";
+            const currentItemId = itemPrefix + noteId;
+            const prevItemId = itemPrefix + prevNoteId;
+            const customClass = " bg-gray-500 text-white rounded-md";
 
-                let originClass = currentNoteItem.getAttribute("class")
-                let newClass = originClass + " bg-gray-500 text-white rounded-md";
-
-                currentNoteItem.setAttribute("class", newClass);
-                if(prevNoteItem != null) {
-                    prevNoteItem.setAttribute("class", originClass);
-                }
-                prevNoteId = noteId;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            changeSelectedItem(currentItemId, prevItemId, customClass);
+            prevNoteId = noteId;
+        });
     }
 
-
     function getNotes() {
-        const headerName = document.querySelector("#csrf-header").value;
-        const token = document.querySelector("#csrf-token").value;
+        const url = "/api/notes";
         const noteUIParamJson = getNoteUIParamJsonStr();
 
-        fetch("/api/notes", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                [headerName]: token
-            },
-            body: noteUIParamJson
-        })
-            .then(response => response.json())
-            .then(data => {
-                renderingNoteTree(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-
+        postFetch(url, noteUIParamJson, function (data) {
+            renderingNoteTree(data);
+        });
     }
 
     getNotes();
