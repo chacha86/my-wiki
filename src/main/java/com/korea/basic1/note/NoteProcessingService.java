@@ -45,13 +45,16 @@ public class NoteProcessingService {
         notePageDetailService.deleteAll(detailList);
         notePageService.deleteAll(pageList);
     }
-    @CachePut(value = "noteList")
-    public Note saveGroupNotebook(Long noteId) {
-        Note parent = noteService.getNoteById(noteId);
-        Note child = noteService.saveGroupNotebook(parent);
+    public Note saveGroupNotebook() {
+        Note child = noteService.saveGroupNotebook(null);
         NotePageDetail notePageDetail = notePageDetailService.saveDefaultPageDetail();
         notePageService.saveDefaultNotePage(child, notePageDetail);
         return child;
+    }
+    @CachePut(value = "noteList")
+    public Note saveGroupNotebook(Long noteId) {
+        Note parent = noteService.getNoteById(noteId);
+        return noteService.saveGroupNotebook(parent);
     }
 
     public SearchedResult getSearchedNoteAndPageList(NoteParam noteParam) {

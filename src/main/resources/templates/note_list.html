@@ -64,8 +64,8 @@
                 </div>
 
                 <div class="flex items-center text-center justify-center border border-gray-300 ">
-                    <form th:action="@{/note/add}" method="post">
-                        <input type="submit" value="추가">
+                    <form th:action="@{/note/add-group}" method="post">
+                        <input type="submit" value="새그룹 추가">
                     </form>
                     <dialog id="my_modal_1" class="modal text-black">
                         <div class="modal-box">
@@ -305,8 +305,8 @@
         let groupItemClass = note.groupYn === 0 ? noteItemClass : "";
 
         return `
-            <li class="${groupItemClass}">
-                ${note.groupYn === 0 ? `<a id="note-${note.id}" onclick="getPages(${note.id});">${note.name}</a>` : ``}
+            <li id="${'note-' + note.id}" data-note-name="${note.name}" data-note-type="${note.groupYn}" class="${groupItemClass}">
+                ${note.groupYn === 0 ? `<a onclick="getPages(${note.id});">${note.name}</a>` : ``}
                 ${note.groupYn === 1 ? createChildNoteTree(note, noteUIParam, noteItemClass, createNoteTree) : ''}
             </li>
         `
@@ -327,6 +327,7 @@
         })
             .then(response => response.json())
             .then(data => {
+                console.log('Success:', data);
                 callback(data);
             })
             .catch(error => {
@@ -348,113 +349,6 @@
         }
     }
 
-    class BaseComponent {
-
-        constructor(url, itemPrefix, customClass) {
-            this.prevId = null;
-            this.currentId = null;
-            this.url = url;
-            this.itemPrefix = itemPrefix;
-            this.customClass = customClass;
-        }
-
-        postFetch(url, jsonData, callback) {
-
-            const headerName = document.querySelector("#csrf-header").value;
-            const token = document.querySelector("#csrf-token").value;
-
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    [headerName]: token
-                },
-                body: jsonData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    callback(data);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-
-        changeSelectedItem(currentItemId, prevItemId, customClass) {
-
-            const currentItem = document.querySelector("#" + currentItemId);
-            const prevItem = document.querySelector("#" + prevItemId);
-            //
-            let originClass = currentItem.getAttribute("class")
-            let newClass = originClass + customClass;
-            //
-            currentItem.setAttribute("class", newClass);
-            if (prevItem != null) {
-                prevItem.setAttribute("class", originClass);
-            }
-        }
-
-        render(data, func) {
-            // const url = "/api/notes/pages/" + this.currentId;
-            const noteUIParamJson = getNoteUIParamJsonStr();
-            this.postFetch(this.url, noteUIParamJson, function (data) {
-
-                func(data);
-                // const titleInput = document.querySelector(".title");
-                // titleInput.value = data.notePageDto.title;
-                // editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
-
-                const currentItemId = this.itemPrefix + this.currentId;
-                const prevItemId = this.itemPrefix + this.prevId;
-
-                this.changeSelectedItem(currentItemId, prevItemId, this.customClass);
-                this.prevId = this.currentId;
-
-            });
-        }
-    }
-
-    class NotePageComponent extends BaseComponent {
-
-        constructor(url, itemPrefix, customClass) {
-            super(url, itemPrefix, customClass);
-        }
-
-        createNotePageItem(notePageDto) {
-            console.log(notePageDto);
-            let pageClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
-            let pageLinkClass = "block p-[10px] text-[15px] hover:cursor-pointer";
-            return `
-            <li class="${pageClass}">
-                <a class="${pageLinkClass}" id="note-page-${notePageDto.id}" onclick="getContent(${notePageDto.id});">${notePageDto.title}</a>
-            </li>
-        `
-        }
-
-        createNotePage(pageDtoList) {
-            return `
-            ${pageDtoList.map((notePageDto) => {
-                return `${this.createNotePageItem(notePageDto)}`;
-            }).join('')}
-        `
-        }
-
-        renderingNotePage(data) {
-            setPageSideMenu(data.noteUIParam);
-            const pageItemList = document.querySelector("#page-item-list");
-            const html = `
-            ${this.createNotePage(data.notePageDtoList)}
-        `;
-
-            pageItemList.innerHTML = html;
-        }
-
-        render(data) {
-            super.render(data, this.renderingNotePage);
-        }
-    }
-
-
     let prevNotePageId = null;
 
     function getContent(notePageId) {
@@ -468,68 +362,18 @@
             titleInput.value = data.notePageDto.title;
             editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
 
-            const itemPrefix = "note-page-";
-            const currentItemId = itemPrefix + notePageId;
-            const prevItemId = itemPrefix + prevNotePageId;
-            const customClass = " bg-gray-500 text-white rounded-md";
+            // const itemPrefix = "note-page-";
+            // const currentItemId = itemPrefix + notePageId;
+            // const prevItemId = itemPrefix + prevNotePageId;
+            // const customClass = " bg-gray-500 text-white rounded-md";
 
-            changeSelectedItem(currentItemId, prevItemId, customClass);
+
+            changeSelectedItem(notePageId, prevNotePageId, customClass);
             prevNotePageId = notePageId;
 
         });
     }
 
-    class NoteComponent extends BaseComponent {
-        constructor(url, itemPrefix, customClass) {
-            super(url, itemPrefix, customClass);
-        }
-
-        renderingNoteTree(data) {
-            setNoteSideMenu(data.noteUIParam);
-            const noteItemList = document.querySelector("#note-item-list");
-
-            const html = `
-            ${this.createNoteTree(data.noteTree, data.noteUIParam)}
-        `;
-
-            noteItemList.innerHTML = html;
-        }
-
-        createNoteTree(noteList, noteUIParam) {
-            return `
-            ${noteList.map((note) => {
-                return `${this.createNoteItem(note, noteUIParam)}`;
-            }).join('')}
-        `
-        }
-
-        createChildNoteTree(note, noteUIParam, noteItemClass, recurFunc) {
-            return `
-            <details data-note-id="${note.id}" ${noteUIParam.openList.includes(note.id) ? "open" : ""}>
-                <summary class="${noteItemClass}"><a>${note.name}</a></summary>
-                <ul>
-                    ${note.children.length > 0 ? recurFunc(note.children, noteUIParam) : ''}
-                </ul>
-            </details>
-        `
-        }
-
-        createNoteItem(note, noteUIParam) {
-            let noteItemClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
-            let groupItemClass = note.groupYn === 0 ? noteItemClass : "";
-
-            return `
-            <li class="${groupItemClass}">
-                ${note.groupYn === 0 ? `<a id="note-${note.id}" onclick="getPages(${note.id});">${note.name}</a>` : ``}
-                ${note.groupYn === 1 ? this.createChildNoteTree(note, noteUIParam, noteItemClass, this.createNoteTree.bind(this)) : ''}
-            </li>
-        `
-        }
-
-        render(data) {
-            super.render(data, this.renderingNoteTree);
-        }
-    }
 
     let prevNoteId = null;
 
@@ -556,10 +400,13 @@
 
         postFetch(url, noteUIParamJson, function (data) {
             renderingNoteTree(data);
+            console.log(data);
+            addContextMenuEventToNote();
         });
     }
 
     getNotes();
+
 
 </script>
 

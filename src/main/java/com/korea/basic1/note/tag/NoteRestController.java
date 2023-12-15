@@ -21,6 +21,7 @@ public class NoteRestController {
 
     private final NoteService noteService;
     private final NotePageService notePageService;
+    private final NoteProcessingService noteProcessingService;
 
     @Getter
     @Setter
@@ -101,5 +102,10 @@ public class NoteRestController {
             throw new RuntimeException(e);
         }
         return jsonStr;
+    }
+    @RequestMapping("/delete/{noteId}")
+    public String delete(@PathVariable Long noteId) {
+        noteProcessingService.deleteNote(noteId);
+        return "{\"msg\" : \"노트가 삭제되었습니다.\"}";
     }
 }
