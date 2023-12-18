@@ -1,3 +1,7 @@
+function extractNoteIdNoFromNoteItem(noteItem) {
+    let noteId = noteItem.getAttribute('id');
+    return noteId.split('-')[1];
+}
 function addContextMenuEventToNote() {
     let noteItemList = document.querySelectorAll('#note-item-list li');
     console.log(noteItemList);
@@ -5,9 +9,9 @@ function addContextMenuEventToNote() {
 
         noteItem.addEventListener('contextmenu', (event) => {
             let noteInfo = {
-                'noteId': noteItem.getAttribute('id'),
+                'noteIdNo': extractNoteIdNoFromNoteItem(noteItem),
                 'noteName': noteItem.getAttribute('data-note-name'),
-                'noteType': noteItem.getAttribute('data-note-type') === 0 ? 'note' : 'group'
+                'noteType': noteItem.getAttribute('data-note-type') === "0" ? 'note' : 'group'
             }
             console.log(noteInfo);
             event.preventDefault();
@@ -55,10 +59,10 @@ function openMenuPopup(mouseX, mouseY, noteInfo) {
     body.appendChild(menuPopupEl);
 }
 
-function setTargetNote(noteId, noteName) {
+function setTargetNote(noteIdNo, noteName) {
     let modal = document.querySelector('#my_modal_1')
     let form = modal.querySelector('form');
-    form.action = '/note/update/' + noteId;
+    form.action = '/note/update/' + noteIdNo;
     form.querySelector('input[name="noteName"]').value = noteName;
 
 }
@@ -82,10 +86,30 @@ function createMenuList(menuItemList) {
     return menuList;
 }
 
-function deleteNote(anchor, noteId) {
+function deleteNote(anchor) {
     let noteUIParamJson = getNoteUIParamJsonStr();
     postFetch(anchor.getAttribute('href'), noteUIParamJson, function (data) {
-        getNotes();
+        getNotes(noteUIParamJson);
+    });
+}
+
+function addOpenList(noteUIParamJson, noteIdNo) {
+    const noteUIParam = JSON.parse(noteUIParamJson);
+    noteUIParam.openList.push(noteIdNo);
+    return JSON.stringify(noteUIParam);
+}
+function addGroupNote(anchor, noteIdNo) {
+    let noteUIParamJson = getNoteUIParamJsonStr();
+    noteUIParamJson = addOpenList(noteUIParamJson, noteIdNo);
+    postFetch(anchor.getAttribute('href'), noteUIParamJson, function (data) {
+        getNotes(noteUIParamJson);
+    });
+}
+
+function addNote(anchor, noteIdNo) {
+    const noteUIParamJson = getNoteUIParamJsonStr();
+    postFetch(anchor.getAttribute('href'), noteUIParamJson, function (data) {
+        getNotes(noteUIParamJson);
     });
 }
 
@@ -95,13 +119,13 @@ function createBaseMenuPopup(mouseX, mouseY, noteInfo) {
     baseMenuPopup.setAttribute('id', 'note-menu-popup');
 
     // let baseMenuList = document.createElement('ul');
-    let noteId = noteInfo.noteId;
+    let noteIdNo = noteInfo.noteIdNo;
     let noteName = noteInfo.noteName;
 
     let del = {
         'text': '🗑️ 삭제',
-        'href': '/api/notes/delete/' + noteId,
-        'onclick': 'deleteNote(this, '+noteId+'); return false;'
+        'href': '/api/notes/delete/' + noteIdNo,
+        'onclick': 'deleteNote(this, '+noteIdNo+'); return false;'
     }
 
     // let del = {
@@ -113,11 +137,11 @@ function createBaseMenuPopup(mouseX, mouseY, noteInfo) {
     let update = {
         'text': '🛠️ 이름변경',
         'href': '#',
-        'onclick': 'my_modal_1.showModal();setTargetNote(' + noteId + ', "' + noteName + '");'
+        'onclick': 'my_modal_1.showModal();setTargetNote(' + noteIdNo + ', "' + noteName + '");'
     }
     let move = {
         'text': '➡️ 노트이동',
-        'href': '/note/move/' + noteId,
+        'href': '/note/move/' + noteIdNo,
         'onclick': null
     }
     let baseMenuListItems = [del, update, move];
@@ -139,13 +163,15 @@ function createGroupMenuPopup(mouseX, mouseY, noteInfo) {
 
     let addGroup = {
         'text': '🗂️ 새그룹 추가',
-        'href': '/note/add-group/' + noteInfo.noteId,
-        'onclick': 'submitWithOpenList(this); return false;'
+        'href': '/api/notes/add-group/' + noteInfo.noteIdNo,
+        // 'href': '/note/add-group/' + noteInfo.noteId,
+        'onclick': 'addGroupNote(this, '+noteInfo.noteIdNo+'); return false;'
+        // 'onclick': 'submitWithOpenList(this); return false;'
     }
     let addNote = {
         'text': '➕ 새노트 추가',
-        'href': '/note/add/' + noteInfo.noteId,
-        'onclick': 'submitWithOpenList(this); return false;'
+        'href': '/api/notes/add/' + noteInfo.noteIdNo,
+        'onclick': 'addNote(this, '+ noteInfo.noteIdNo +'); return false;'
     }
 
     let groupMenuItemList = [addGroup, addNote];
@@ -180,7 +206,7 @@ function collectOpenList() {
     let tagList = document.querySelectorAll("details");
     let openList = [];
     for (let i = 0; i < tagList.length; i++) {
-        result = tagList[i].getAttribute('open');
+        let result = tagList[i].getAttribute('open');
         if (result !== null) {
             openList.push(tagList[i].getAttribute('data-note-id'));
         }

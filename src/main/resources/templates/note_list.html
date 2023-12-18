@@ -394,9 +394,8 @@
         });
     }
 
-    function getNotes() {
+    function getNotes(noteUIParamJson) {
         const url = "/api/notes";
-        const noteUIParamJson = getNoteUIParamJsonStr();
 
         postFetch(url, noteUIParamJson, function (data) {
             renderingNoteTree(data);
@@ -405,7 +404,7 @@
         });
     }
 
-    getNotes();
+    getNotes(getNoteUIParamJsonStr());
 
 
 </script>

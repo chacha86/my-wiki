@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("/note/1")
+                        .defaultSuccessUrl("/")
                 );
 
         return http.build();
