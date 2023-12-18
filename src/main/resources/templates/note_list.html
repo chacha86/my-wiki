@@ -71,13 +71,13 @@
                         <div class="modal-box">
                             <h3 class="font-bold text-lg">노트 이름 변경</h3>
                             <div>
-                                <form th:action method="post">
+                                <form th:action method="post" onsubmit="return false;">
                                     <div class="my-[10px]">
                                         <input type="text" class="input input-bordered w-full max-w-xs"
-                                               name="noteName">
+                                               name="noteName" id="new-note-name">
                                     </div>
                                     <div>
-                                        <button class="btn">Ok</button>
+                                        <a th:href="@{|/api/notes/update/${noteDetail.id}|}" class="btn" th:onclick="renameNote(this, [[${noteDetail.id}]]); return false;">Ok</a>
                                     </div>
                                 </form>
                                 <form method="dialog">

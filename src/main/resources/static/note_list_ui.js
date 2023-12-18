@@ -59,13 +59,6 @@ function openMenuPopup(mouseX, mouseY, noteInfo) {
     body.appendChild(menuPopupEl);
 }
 
-function setTargetNote(noteIdNo, noteName) {
-    let modal = document.querySelector('#my_modal_1')
-    let form = modal.querySelector('form');
-    form.action = '/note/update/' + noteIdNo;
-    form.querySelector('input[name="noteName"]').value = noteName;
-
-}
 
 
 function createMenuList(menuItemList) {
@@ -113,6 +106,16 @@ function addNote(anchor, noteIdNo) {
     });
 }
 
+function renameNote(anchor, noteIdNo) {
+    const noteUIParamJson = getNoteUIParamJsonStr();
+    const noteName = document.querySelector('#new-note-name').value;
+    const noteParam = {
+        'noteName': noteName,
+    }
+    postFetch(anchor.getAttribute('href'), noteParam, function (data) {
+        getNotes(noteUIParamJson);
+    });
+}
 function createBaseMenuPopup(mouseX, mouseY, noteInfo) {
     let baseMenuPopup = document.createElement('div');
     baseMenuPopup.setAttribute('class', 'absolute p-[5px] left-[' + mouseX + 'px] top-[' + mouseY + 'px] bg-gray-200 w-64 h-64');
@@ -136,8 +139,8 @@ function createBaseMenuPopup(mouseX, mouseY, noteInfo) {
 
     let update = {
         'text': '🛠️ 이름변경',
-        'href': '#',
-        'onclick': 'my_modal_1.showModal();setTargetNote(' + noteIdNo + ', "' + noteName + '");'
+        'href': '/api/notes/update/' + noteIdNo,
+        'onclick': 'my_modal_1.showModal(); return false;'
     }
     let move = {
         'text': '➡️ 노트이동',
