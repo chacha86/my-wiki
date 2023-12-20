@@ -44,7 +44,7 @@
     </div>
     <div class="left-side-wrap h-[calc(100vh-95px)] flex relative">
         <div class="flex w-[100%]">
-            <div class="left-side-menu bg-gray-800 text-white overflow-hidden w-[400px]">
+            <div class="left-side-menu bg-gray-800 text-white overflow-hidden w-[250px]">
                 <div class="flex h-[10%] items-center justify-around border-r-[1px] border-b-[1px] font-bold">
                     <h1 class="text-[1rem] p-[20px] ">노트 목록</h1>
                 </div>
@@ -77,7 +77,8 @@
                                                name="noteName" id="new-note-name">
                                     </div>
                                     <div>
-                                        <a th:href="@{|/api/notes/update/${noteDetail.id}|}" class="btn" th:onclick="renameNote(this, [[${noteDetail.id}]]); return false;">Ok</a>
+                                        <a th:href="@{|/api/notes/update/${noteDetail.id}|}" class="btn"
+                                           th:onclick="renameNote(this, [[${noteDetail.id}]]); return false;">Ok</a>
                                     </div>
                                 </form>
                                 <form method="dialog">
@@ -89,8 +90,13 @@
                 </div>
             </div>
             <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
-            <div class="custom-scroll left-second-menu-content bg-gray-800 text-white overflow-scroll w-[400px]">
-                <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
+            <div class="custom-scroll left-second-menu-content min-w-[150px] bg-gray-800 text-white overflow-scroll w-[250px]">
+                <div class="h-[10%] flex items-center justify-around border-white border-b">
+                    <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
+                    <div class="border p-[5px] hover:bg-gray-300 hover:text-black">
+                        <a data-uri="/api/pages/add" onclick="addNotePage(this); return false;">+</a>
+                    </div>
+                </div>
                 <ul id="page-item-list">
 
                 </ul>
@@ -232,13 +238,13 @@
     function setNoteSideMenu(uiParam) {
         const noteWidth = uiParam.noteWidth;
         const leftSideMenu = document.querySelector(".left-side-menu");
-        leftSideMenu.setAttribute("class", "left-side-menu bg-gray-800 text-white overflow-hidden w-[" + noteWidth + "px]");
+        leftSideMenu.setAttribute("class", "left-side-menu bg-gray-800 text-white overflow-hidden w-[" + noteWidth + "px] min-w-[150px]");
     }
 
     function setPageSideMenu(uiParam) {
         const pageWidth = uiParam.pageWidth;
         const leftSecondMenuContent = document.querySelector(".left-second-menu-content");
-        leftSecondMenuContent.setAttribute("class", "custom-scroll left-second-menu-content bg-gray-800 text-white overflow-scroll w-[" + pageWidth + "px]");
+        leftSecondMenuContent.setAttribute("class", "custom-scroll left-second-menu-content bg-gray-800 text-white overflow-scroll w-[" + pageWidth + "px] min-w-[150px]");
     }
 
     function createNotePageItem(notePageDto) {
@@ -246,7 +252,7 @@
         let pageClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
         let pageLinkClass = "block p-[10px] text-[15px] hover:cursor-pointer";
         return `
-            <li class="${pageClass}">
+            <li class="${pageClass}" id="page-${notePageDto.id}" data-page-title="${notePageDto.title}">
                 <a class="${pageLinkClass}" id="note-page-${notePageDto.id}" onclick="getContent(${notePageDto.id});">${notePageDto.title}</a>
             </li>
         `
@@ -271,7 +277,10 @@
     }
 
     function renderingNoteTree(data) {
+        console.log(data);
         setNoteSideMenu(data.noteUIParam);
+        setPageSideMenu(data.noteUIParam);
+
         const noteItemList = document.querySelector("#note-item-list");
 
         const html = `
@@ -289,10 +298,10 @@
         `
     }
 
-    function createChildNoteTree(note, noteUIParam, noteItemClass, recurFunc) {
+    function createChildNoteTree(note, noteUIParam, noteItemClass, noteAnchorClass, recurFunc) {
         return `
             <details data-note-id="${note.id}" ${noteUIParam.openList.includes(note.id) ? "open" : ""}>
-                <summary class="${noteItemClass}"><a>${note.name}</a></summary>
+                <summary class="${noteItemClass}"><a class="${noteAnchorClass}">${note.name}</a></summary>
                 <ul>
                     ${note.children.length > 0 ? recurFunc(note.children, noteUIParam) : ''}
                 </ul>
@@ -303,11 +312,12 @@
     function createNoteItem(note, noteUIParam) {
         let noteItemClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
         let groupItemClass = note.groupYn === 0 ? noteItemClass : "";
+        let noteAnchorClass = "min-w-[120px]";
 
         return `
             <li id="${'note-' + note.id}" data-note-name="${note.name}" data-note-type="${note.groupYn}" class="${groupItemClass}">
-                ${note.groupYn === 0 ? `<a onclick="getPages(${note.id});">${note.name}</a>` : ``}
-                ${note.groupYn === 1 ? createChildNoteTree(note, noteUIParam, noteItemClass, createNoteTree) : ''}
+                ${note.groupYn === 0 ? `<a class=${noteAnchorClass} onclick="getPages(${note.id});">${note.name}</a>` : ``}
+                ${note.groupYn === 1 ? createChildNoteTree(note, noteUIParam, noteItemClass, noteAnchorClass, createNoteTree) : ''}
             </li>
         `
     }
@@ -335,6 +345,8 @@
             });
     }
 
+    let selectedNoteId = null;
+
     function changeSelectedItem(currentItemId, prevItemId, customClass) {
 
         const currentItem = document.querySelector("#" + currentItemId);
@@ -347,6 +359,8 @@
         if (prevItem != null) {
             prevItem.setAttribute("class", originClass);
         }
+
+        selectedNoteId = currentItemId;
     }
 
     let prevNotePageId = null;
@@ -362,28 +376,30 @@
             titleInput.value = data.notePageDto.title;
             editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
 
-            // const itemPrefix = "note-page-";
-            // const currentItemId = itemPrefix + notePageId;
-            // const prevItemId = itemPrefix + prevNotePageId;
-            // const customClass = " bg-gray-500 text-white rounded-md";
+            const itemPrefix = "note-page-";
+            const currentItemId = itemPrefix + notePageId;
+            const prevItemId = itemPrefix + prevNotePageId;
+            const customClass = " bg-gray-500 text-white rounded-md";
 
 
-            changeSelectedItem(notePageId, prevNotePageId, customClass);
+            changeSelectedItem(currentItemId, prevItemId, customClass);
             prevNotePageId = notePageId;
 
         });
     }
 
 
+    let currentNoteId = null;
     let prevNoteId = null;
 
     function getPages(noteId) {
+        console.log(noteId);
         const url = "/api/notes/" + noteId + "/pages";
         const noteUIParamJson = getNoteUIParamJsonStr();
 
         postFetch(url, noteUIParamJson, function (data) {
             renderingNotePage(data);
-
+            addContextMenuEventToPage();
             const itemPrefix = "note-";
             const currentItemId = itemPrefix + noteId;
             const prevItemId = itemPrefix + prevNoteId;
@@ -399,7 +415,6 @@
 
         postFetch(url, noteUIParamJson, function (data) {
             renderingNoteTree(data);
-            console.log(data);
             addContextMenuEventToNote();
         });
     }

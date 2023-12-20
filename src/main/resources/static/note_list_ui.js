@@ -1,7 +1,19 @@
-function extractNoteIdNoFromNoteItem(noteItem) {
-    let noteId = noteItem.getAttribute('id');
-    return noteId.split('-')[1];
+function getIdNoFromId(id) {
+    return id.split('-')[1];
 }
+function getItemTypeFromId(id) {
+    return id.split('-')[0];
+}
+function extractIdNoFromItem(item) {
+    let itemId = item.getAttribute('id');
+    return getIdNoFromId(itemId);
+}
+
+function extractItemTypeFromItemId(item) {
+    let itemId = item.getAttribute('id');
+    return getItemTypeFromId(itemId);
+}
+
 function addContextMenuEventToNote() {
     let noteItemList = document.querySelectorAll('#note-item-list li');
     console.log(noteItemList);
@@ -9,11 +21,10 @@ function addContextMenuEventToNote() {
 
         noteItem.addEventListener('contextmenu', (event) => {
             let noteInfo = {
-                'noteIdNo': extractNoteIdNoFromNoteItem(noteItem),
+                'noteIdNo': extractIdNoFromItem(noteItem),
                 'noteName': noteItem.getAttribute('data-note-name'),
-                'noteType': noteItem.getAttribute('data-note-type') === "0" ? 'note' : 'group'
+                'itemType': noteItem.getAttribute('data-note-type') === "0" ? 'note' : 'group'
             }
-            console.log(noteInfo);
             event.preventDefault();
             event.stopPropagation();
             let mouseX = event.clientX;
@@ -21,28 +32,27 @@ function addContextMenuEventToNote() {
             openMenuPopup(mouseX, mouseY, noteInfo);
         })
     });
-    // document.querySelectorAll('ul.menu li').forEach((element) => {
-    //     element.addEventListener('contextmenu', (event) => {
-    //         let noteId = element.getAttribute('data-note-id');
-    //         let noteName = element.getAttribute('data-note-name');
-    //         let noteType = element.getAttribute('data-note-type');
-    //
-    //         let noteInfo = {
-    //             'noteId': noteId,
-    //             'noteName': noteName,
-    //             'noteType': noteType
-    //         }
-    //
-    //         event.preventDefault();
-    //         event.stopPropagation();
-    //         let mouseX = event.clientX;
-    //         let mouseY = event.clientY;
-    //         openMenuPopup(mouseX, mouseY, noteInfo);
-    //     })
-    // });
+}
+function addContextMenuEventToPage() {
+    let pageItemList = document.querySelectorAll('#page-item-list li');
+    console.log(pageItemList);
+    pageItemList.forEach((pageItem) => {
+        pageItem.addEventListener('contextmenu', (event) => {
+            let pageInfo = {
+                'pageIdNo': extractIdNoFromItem(pageItem),
+                'pageTitle': pageItem.getAttribute('data-page-title'),
+                'itemType' : 'page'
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            let mouseX = event.clientX;
+            let mouseY = event.clientY;
+            openMenuPopup(mouseX, mouseY, pageInfo);
+        })
+    });
 }
 
-function openMenuPopup(mouseX, mouseY, noteInfo) {
+function openMenuPopup(mouseX, mouseY, itemInfo) {
     let groupMenuPopupEl = document.querySelector('#note-menu-popup');
     let body = document.querySelector('body');
 
@@ -50,13 +60,21 @@ function openMenuPopup(mouseX, mouseY, noteInfo) {
         body.removeChild(groupMenuPopupEl);
     }
 
-    let menuPopupEl = createNoteMenuPopup(mouseX, mouseY, noteInfo);
+    let menuPopupEl = getMenuPopupEl(itemInfo.itemType, mouseX, mouseY, itemInfo);
+    body.appendChild(menuPopupEl);
+}
 
-    if (noteInfo.noteType === 'group') {
-        menuPopupEl = createGroupMenuPopup(mouseX, mouseY, noteInfo);
+function getMenuPopupEl(itemType, mouseX, mouseY, itemInfo) {
+
+    if (itemType === 'group') {
+        return createGroupMenuPopup(mouseX, mouseY, itemInfo);
+    }
+    if(itemType === 'note') {
+        return createNoteMenuPopup(mouseX, mouseY, itemInfo);
     }
 
-    body.appendChild(menuPopupEl);
+    return createPageMenuPopup(mouseX, mouseY, itemInfo);
+
 }
 
 
@@ -79,10 +97,16 @@ function createMenuList(menuItemList) {
     return menuList;
 }
 
-function deleteNote(anchor) {
-    let noteUIParamJson = getNoteUIParamJsonStr();
+function deleteItem(anchor, itemId) {
+    const noteUIParamJson = getNoteUIParamJsonStr();
+    const itemType = getItemTypeFromId(itemId);
+    const noteIdNo = getIdNoFromId(selectedNoteId);
+    console.log(selectedNoteId);
+    console.log(noteIdNo);
+    console.log(itemType);
+
     postFetch(anchor.getAttribute('href'), noteUIParamJson, function (data) {
-        getNotes(noteUIParamJson);
+        itemType === 'page' ? getPages(noteIdNo):getNotes(noteUIParamJson);
     });
 }
 
@@ -100,7 +124,8 @@ function addGroupNote(anchor, noteIdNo) {
 }
 
 function addNote(anchor, noteIdNo) {
-    const noteUIParamJson = getNoteUIParamJsonStr();
+    let noteUIParamJson = getNoteUIParamJsonStr();
+    noteUIParamJson = addOpenList(noteUIParamJson, noteIdNo);
     postFetch(anchor.getAttribute('href'), noteUIParamJson, function (data) {
         getNotes(noteUIParamJson);
     });
@@ -116,27 +141,32 @@ function renameNote(anchor, noteIdNo) {
         getNotes(noteUIParamJson);
     });
 }
-function createBaseMenuPopup(mouseX, mouseY, noteInfo) {
-    let baseMenuPopup = document.createElement('div');
-    baseMenuPopup.setAttribute('class', 'absolute p-[5px] left-[' + mouseX + 'px] top-[' + mouseY + 'px] bg-gray-200 w-64 h-64');
-    baseMenuPopup.setAttribute('id', 'note-menu-popup');
 
-    // let baseMenuList = document.createElement('ul');
-    let noteIdNo = noteInfo.noteIdNo;
-    let noteName = noteInfo.noteName;
+function addNotePage(anchor) {
+    const noteUIParamJson = getNoteUIParamJsonStr();
+    let url = null;
+    let noteIdNo = null;
+
+    if(selectedNoteId == null) {
+        alert('노트를 선택해주세요.');
+        return;
+    }
+    noteIdNo = getIdNoFromId(selectedNoteId);
+    url = anchor.getAttribute('data-uri') + '/' + noteIdNo;
+
+    postFetch(url, noteUIParamJson, function (data) {
+        // getNotes(noteUIParamJson);
+        getPages(noteIdNo);
+    });
+}
+
+function getNoteMenuItemList(noteIdNo) {
 
     let del = {
         'text': '🗑️ 삭제',
         'href': '/api/notes/delete/' + noteIdNo,
-        'onclick': 'deleteNote(this, '+noteIdNo+'); return false;'
+        'onclick': 'deleteItem(this, "note-' + noteIdNo + '"); return false;'
     }
-
-    // let del = {
-    //     'text': '🗑️ 삭제',
-    //     'href': '/note/delete/' + noteId,
-    //     'onclick': 'submitWithOpenList(this); return false;'
-    // }
-
     let update = {
         'text': '🛠️ 이름변경',
         'href': '/api/notes/update/' + noteIdNo,
@@ -147,29 +177,38 @@ function createBaseMenuPopup(mouseX, mouseY, noteInfo) {
         'href': '/note/move/' + noteIdNo,
         'onclick': null
     }
-    let baseMenuListItems = [del, update, move];
-    let baseMenuListResult = createMenuList(baseMenuListItems);
+
+    return [del, update, move];
+}
+
+function createBaseMenuPopup(mouseX, mouseY, noteInfo, menuItemList) {
+    let baseMenuPopup = document.createElement('div');
+    baseMenuPopup.setAttribute('class', 'absolute p-[5px] left-[' + mouseX + 'px] top-[' + mouseY + 'px] bg-gray-200 w-64 h-64');
+    baseMenuPopup.setAttribute('id', 'note-menu-popup');
+
+    // let baseMenuList = document.createElement('ul');
+    let noteIdNo = noteInfo.noteIdNo;
+
+    // let baseMenuListItems = getNoteMenuItemList(noteIdNo);
+    let baseMenuListResult = createMenuList(menuItemList);
     baseMenuPopup.appendChild(baseMenuListResult);
 
     return baseMenuPopup;
 }
 
 function createNoteMenuPopup(mouseX, mouseY, noteInfo) {
-    return createBaseMenuPopup(mouseX, mouseY, noteInfo);
+    const noteMenuItemList = getNoteMenuItemList(noteInfo.noteIdNo);
+    return createBaseMenuPopup(mouseX, mouseY, noteInfo, noteMenuItemList);
 }
 
 function createGroupMenuPopup(mouseX, mouseY, noteInfo) {
 
-    let baseMenuPopup = createBaseMenuPopup(mouseX, mouseY, noteInfo);
-
-    console.log(noteInfo);
+    let baseMenuPopup = createNoteMenuPopup(mouseX, mouseY, noteInfo);
 
     let addGroup = {
         'text': '🗂️ 새그룹 추가',
         'href': '/api/notes/add-group/' + noteInfo.noteIdNo,
-        // 'href': '/note/add-group/' + noteInfo.noteId,
         'onclick': 'addGroupNote(this, '+noteInfo.noteIdNo+'); return false;'
-        // 'onclick': 'submitWithOpenList(this); return false;'
     }
     let addNote = {
         'text': '➕ 새노트 추가',
@@ -183,6 +222,32 @@ function createGroupMenuPopup(mouseX, mouseY, noteInfo) {
     baseMenuPopup.appendChild(groupMenuList);
 
     return baseMenuPopup;
+}
+
+function getPageMenuItemList(notePageIdNo) {
+
+    let del = {
+        'text': '🗑️ 삭제',
+        'href': '/api/pages/delete/' + notePageIdNo,
+        'onclick': 'deleteItem(this, "page-' + notePageIdNo +'"); return false;'
+    }
+    let update = {
+        'text': '🛠️ 이름변경',
+        'href': '/api/pages/update/' + notePageIdNo,
+        'onclick': 'my_modal_1.showModal(); return false;'
+    }
+    let move = {
+        'text': '➡️ 페이지이동',
+        'href': '/page/move/' + notePageIdNo,
+        'onclick': null
+    }
+
+    return [del, update, move];
+}
+
+function createPageMenuPopup(mouseX, mouseY, pageInfo) {
+    const pageMenuItemList = getPageMenuItemList(pageInfo.pageIdNo);
+    return createBaseMenuPopup(mouseX, mouseY, pageInfo, pageMenuItemList);
 }
 
 document.querySelector("#nav-toggle").addEventListener("click", (element) => {
