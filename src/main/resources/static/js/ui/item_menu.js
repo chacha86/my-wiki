@@ -1,3 +1,6 @@
+import {postFetch, getPages, getNotes, selectedNoteId} from "../note_api.js";
+import {getNoteUIParamJsonStr} from "./note_list_ui.js";
+
 function getIdNoFromId(id) {
     return id.split('-')[1];
 }
@@ -7,11 +10,6 @@ function getItemTypeFromId(id) {
 function extractIdNoFromItem(item) {
     let itemId = item.getAttribute('id');
     return getIdNoFromId(itemId);
-}
-
-function extractItemTypeFromItemId(item) {
-    let itemId = item.getAttribute('id');
-    return getItemTypeFromId(itemId);
 }
 
 function addContextMenuEventToNote() {
@@ -251,102 +249,4 @@ function createPageMenuPopup(mouseX, mouseY, pageInfo) {
     return createBaseMenuPopup(mouseX, mouseY, pageInfo, pageMenuItemList);
 }
 
-document.querySelector("#nav-toggle").addEventListener("click", (element) => {
-
-    if (element.target.checked == true) {
-        sideMenu = document.querySelector('.left-side-wrap');
-        originClass = sideMenu.getAttribute('class');
-        sideMenu.setAttribute('class', 'left-side-wrap hidden');
-        // sideWrap.removeChild(sideMenu);
-    } else {
-        sideMenu = document.querySelector('.left-side-wrap');
-        sideMenu.setAttribute('class', originClass);
-    }
-})
-
-function initScrollPosition(noteSideScrollPosition, pageSideScrollPosition) {
-    let noteSide = document.querySelector('.left-side-menu-content');
-    let pageSide = document.querySelector('.left-second-menu-content');
-    noteSide.scrollTo({top: noteSideScrollPosition, behavior: 'smooth'});
-    pageSide.scrollTo({top: pageSideScrollPosition, behavior: 'smooth'});
-}
-
-function collectOpenList() {
-    let tagList = document.querySelectorAll("details");
-    let openList = [];
-    for (let i = 0; i < tagList.length; i++) {
-        let result = tagList[i].getAttribute('open');
-        if (result !== null) {
-            openList.push(tagList[i].getAttribute('data-note-id'));
-        }
-    }
-    return openList;
-}
-
-function getNoteSideWidth() {
-    let noteSide = document.querySelector('.left-side-menu');
-    return noteSide.offsetWidth;
-}
-
-function getPageSideWidth() {
-    let pageSide = document.querySelector('.left-second-menu-content');
-    return pageSide.offsetWidth;
-}
-
-function getNoteSideScrollPosition() {
-    let noteSide = document.querySelector('.left-side-menu-content');
-    return noteSide.scrollTop;
-}
-
-function getPageSideScrollPosition() {
-    let pageSide = document.querySelector('.left-second-menu-content');
-    return pageSide.scrollTop;
-}
-
-function getSideMenuHidden() {
-    let sideMenu = document.querySelector('.left-side-wrap');
-    return sideMenu == null;
-}
-
-function getNoteUIParamJsonStr() {
-    let openList = collectOpenList();
-    let noteWidth = getNoteSideWidth();
-    let pageWidth = getPageSideWidth();
-    let noteSideScrollPosition = getNoteSideScrollPosition();
-    let pageSideScrollPosition = getPageSideScrollPosition();
-    let sideMenuHidden = getSideMenuHidden();
-    let noteUIParam = {
-        'openList': openList,
-        'noteWidth': noteWidth,
-        'pageWidth': pageWidth,
-        'noteSideScrollPosition': noteSideScrollPosition,
-        'pageSideScrollPosition': pageSideScrollPosition,
-        'sideMenuHidden': sideMenuHidden
-    };
-
-    return JSON.stringify(noteUIParam);
-}
-
-function setTokenToForm(form) {
-    let token = document.querySelector('#csrf-token');
-    let input = document.createElement('input');
-    input.setAttribute('type', 'hidden');
-    input.setAttribute('name', '_csrf');
-    input.setAttribute('value', token.getAttribute('value'));
-    form.appendChild(input);
-
-    return form;
-}
-
-function submitWithOpenList(paramTag) {
-
-    let noteUIParam = getNoteUIParamJsonStr();
-    let form = document.querySelector('#noteUIForm');
-    let input = document.querySelector('#noteUIParamJson');
-    input.value = noteUIParam;
-    form.action = paramTag.getAttribute('href');
-    form = setTokenToForm(form);
-    form.method = 'post';
-
-    form.submit();
-}
+export {addContextMenuEventToNote, addContextMenuEventToPage}
