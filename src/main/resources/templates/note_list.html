@@ -253,7 +253,7 @@
         let pageLinkClass = "block p-[10px] text-[15px] hover:cursor-pointer";
         return `
             <li class="${pageClass}" id="page-${notePageDto.id}" data-page-title="${notePageDto.title}">
-                <a class="${pageLinkClass}" id="note-page-${notePageDto.id}" onclick="getContent(${notePageDto.id});">${notePageDto.title}</a>
+                <a class="${pageLinkClass}" id="page-${notePageDto.id}" onclick="getContent(${notePageDto.id});">${notePageDto.title}</a>
             </li>
         `
     }
@@ -345,7 +345,6 @@
             });
     }
 
-    let selectedNoteId = null;
 
     function changeSelectedItem(currentItemId, prevItemId, customClass) {
 
@@ -359,15 +358,15 @@
         if (prevItem != null) {
             prevItem.setAttribute("class", originClass);
         }
-
-        selectedNoteId = currentItemId;
     }
 
-    let prevNotePageId = null;
+    let selectedNoteId = null;
+    let prevNotePageIdNo = null;
+    let prevNoteIdNo = null;
 
-    function getContent(notePageId) {
+    function getContent(notePageIdNo) {
 
-        const url = "/api/notes/pages/" + notePageId;
+        const url = "/api/notes/pages/" + notePageIdNo;
         const noteUIParamJson = getNoteUIParamJsonStr();
 
         postFetch(url, noteUIParamJson, function (data) {
@@ -376,37 +375,33 @@
             titleInput.value = data.notePageDto.title;
             editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
 
-            const itemPrefix = "note-page-";
-            const currentItemId = itemPrefix + notePageId;
-            const prevItemId = itemPrefix + prevNotePageId;
+            const itemPrefix = "page-";
+            const currentItemId = itemPrefix + notePageIdNo;
+            const prevItemId = itemPrefix + prevNotePageIdNo;
             const customClass = " bg-gray-500 text-white rounded-md";
 
-
             changeSelectedItem(currentItemId, prevItemId, customClass);
-            prevNotePageId = notePageId;
+            prevNotePageIdNo = notePageIdNo;
 
         });
     }
 
 
-    let currentNoteId = null;
-    let prevNoteId = null;
-
-    function getPages(noteId) {
-        console.log(noteId);
-        const url = "/api/notes/" + noteId + "/pages";
+    function getPages(noteIdNo) {
+        const url = "/api/notes/" + noteIdNo + "/pages";
         const noteUIParamJson = getNoteUIParamJsonStr();
 
         postFetch(url, noteUIParamJson, function (data) {
             renderingNotePage(data);
             addContextMenuEventToPage();
             const itemPrefix = "note-";
-            const currentItemId = itemPrefix + noteId;
-            const prevItemId = itemPrefix + prevNoteId;
+            const currentItemId = itemPrefix + noteIdNo;
+            const prevItemId = itemPrefix + prevNoteIdNo;
             const customClass = " bg-gray-500 text-white rounded-md";
 
             changeSelectedItem(currentItemId, prevItemId, customClass);
-            prevNoteId = noteId;
+            prevNoteIdNo = noteIdNo;
+            selectedNoteId = currentItemId;
         });
     }
 

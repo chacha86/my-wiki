@@ -101,6 +101,7 @@ function deleteItem(anchor, itemId) {
     const noteUIParamJson = getNoteUIParamJsonStr();
     const itemType = getItemTypeFromId(itemId);
     const noteIdNo = getIdNoFromId(selectedNoteId);
+    console.log('============================');
     console.log(selectedNoteId);
     console.log(noteIdNo);
     console.log(itemType);
