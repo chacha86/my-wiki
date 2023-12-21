@@ -1,3 +1,4 @@
+import {postFetch, getNotes, getPages, getContent, selectedNoteId} from "../note_api.js";
 function initScrollPosition(noteSideScrollPosition, pageSideScrollPosition) {
     let noteSide = document.querySelector('.left-side-menu-content');
     let pageSide = document.querySelector('.left-second-menu-content');
@@ -117,3 +118,4 @@ function setPageSideMenu(uiParam) {
 }
 
 export {getNoteUIParamJsonStr, setNoteSideMenu, setPageSideMenu}
+export {postFetch, getNotes, getPages, getContent, selectedNoteId} from "../note_api.js"

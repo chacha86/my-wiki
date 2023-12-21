@@ -1,7 +1,6 @@
-import {setPageSideMenu, setNoteSideMenu} from "./note_list_ui.js";
+import {setPageSideMenu, setNoteSideMenu, getNotes, getPages} from "./note_list_ui_util.js";
 
 function renderingNoteTree(data) {
-    console.log(data);
     setNoteSideMenu(data.noteUIParam);
     setPageSideMenu(data.noteUIParam);
 
@@ -33,10 +32,6 @@ function createChildNoteTree(note, noteUIParam, noteItemClass, noteAnchorClass, 
         `
 }
 
-function getPages(id) {
-    console.log(id);
-}
-
 function createNoteItem(note, noteUIParam) {
     let noteItemClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
     let groupItemClass = note.groupYn === 0 ? noteItemClass : "";
@@ -50,4 +45,4 @@ function createNoteItem(note, noteUIParam) {
         `
 }
 
-export {renderingNoteTree}
+export {renderingNoteTree, getNotes, getPages}

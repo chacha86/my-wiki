@@ -1,5 +1,4 @@
-import {postFetch, getPages, getNotes, selectedNoteId} from "../note_api.js";
-import {getNoteUIParamJsonStr} from "./note_list_ui.js";
+import {getNoteUIParamJsonStr} from "./note_list_ui_util.js";
 
 function getIdNoFromId(id) {
     return id.split('-')[1];
@@ -51,7 +50,7 @@ function addContextMenuEventToPage() {
 }
 
 function openMenuPopup(mouseX, mouseY, itemInfo) {
-    let groupMenuPopupEl = document.querySelector('#note-menu-popup');
+    let groupMenuPopupEl = document.querySelector('#item-menu-popup');
     let body = document.querySelector('body');
 
     if (groupMenuPopupEl != null) {
@@ -95,19 +94,19 @@ function createMenuList(menuItemList) {
     return menuList;
 }
 
-function deleteItem(anchor, itemId) {
-    const noteUIParamJson = getNoteUIParamJsonStr();
-    const itemType = getItemTypeFromId(itemId);
-    const noteIdNo = getIdNoFromId(selectedNoteId);
-    console.log('============================');
-    console.log(selectedNoteId);
-    console.log(noteIdNo);
-    console.log(itemType);
-
-    postFetch(anchor.getAttribute('href'), noteUIParamJson, function (data) {
-        itemType === 'page' ? getPages(noteIdNo):getNotes(noteUIParamJson);
-    });
-}
+// function deleteItem(anchor, itemId) {
+//     const noteUIParamJson = getNoteUIParamJsonStr();
+//     const itemType = getItemTypeFromId(itemId);
+//     const noteIdNo = getIdNoFromId(selectedNoteId);
+//     console.log('============================');
+//     console.log(selectedNoteId);
+//     console.log(noteIdNo);
+//     console.log(itemType);
+//
+//     postFetch(anchor.getAttribute('href'), noteUIParamJson, function (data) {
+//         itemType === 'page' ? getPages(noteIdNo):getNotes(noteUIParamJson);
+//     });
+// }
 
 function addOpenList(noteUIParamJson, noteIdNo) {
     const noteUIParam = JSON.parse(noteUIParamJson);
@@ -183,7 +182,7 @@ function getNoteMenuItemList(noteIdNo) {
 function createBaseMenuPopup(mouseX, mouseY, noteInfo, menuItemList) {
     let baseMenuPopup = document.createElement('div');
     baseMenuPopup.setAttribute('class', 'absolute p-[5px] left-[' + mouseX + 'px] top-[' + mouseY + 'px] bg-gray-200 w-64 h-64');
-    baseMenuPopup.setAttribute('id', 'note-menu-popup');
+    baseMenuPopup.setAttribute('id', 'item-menu-popup');
 
     // let baseMenuList = document.createElement('ul');
     let noteIdNo = noteInfo.noteIdNo;

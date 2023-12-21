@@ -1,12 +1,11 @@
-import {setPageSideMenu} from "./note_list_ui.js";
-import {getContent} from "../note_api.js";
+import {setPageSideMenu, getContent} from "./note_list_ui_util.js";
 
 function createNotePageItem(notePageDto) {
     let pageClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
     let pageLinkClass = "block p-[10px] text-[15px] hover:cursor-pointer";
     return `
             <li class="${pageClass}" id="page-${notePageDto.id}" data-page-title="${notePageDto.title}">
-                <a class="${pageLinkClass}" id="page-${notePageDto.id}" onclick="getContent(${notePageDto.id});">${notePageDto.title}</a>
+                <a class="${pageLinkClass}" id="page-${notePageDto.id}">${notePageDto.title}</a>
             </li>
         `
 }
@@ -29,4 +28,4 @@ function renderingNotePage(data) {
     pageItemList.innerHTML = html;
 }
 
-export {renderingNotePage}
+export {renderingNotePage, getContent}
