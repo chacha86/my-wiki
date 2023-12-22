@@ -1,4 +1,5 @@
-import {getNoteUIParamJsonStr} from "./note_list_ui_util.js";
+import {getNotes, getNoteUIParamJsonStr} from "./note_list_ui_util.js";
+import {deleteNote} from "../note_api";
 
 function getIdNoFromId(id) {
     return id.split('-')[1];
@@ -13,7 +14,6 @@ function extractIdNoFromItem(item) {
 
 function addContextMenuEventToNote() {
     let noteItemList = document.querySelectorAll('#note-item-list li');
-    console.log(noteItemList);
     noteItemList.forEach((noteItem) => {
 
         noteItem.addEventListener('contextmenu', (event) => {
@@ -73,19 +73,21 @@ function getMenuPopupEl(itemType, mouseX, mouseY, itemInfo) {
     return createPageMenuPopup(mouseX, mouseY, itemInfo);
 
 }
-
-
-
 function createMenuList(menuItemList) {
     let menuList = document.createElement('ul');
     menuItemList.forEach((element) => {
         let listItem = document.createElement('li');
         let anchor = document.createElement('a');
-        anchor.setAttribute('href', element.href);
+        // anchor.setAttribute('href', element.href);
         anchor.setAttribute('class', 'block w-[100%] hover:bg-gray-500 rounded-md p-[5px]');
-        if (element.onclick != null) {
-            anchor.setAttribute('onclick', element.onclick);
-        }
+        anchor.addEventListener('click', (event) => {
+            console.log('============================');
+            // getNotes(getNoteUIParamJsonStr());
+            // deleteNote(element.noteIdNo, getNotes(getNoteUIParamJsonStr));
+        });
+        // if (element.onclick != null) {
+        //     anchor.setAttribute('onclick', element.onclick);
+        // }
         anchor.innerText = element.text;
         listItem.appendChild(anchor);
         menuList.appendChild(listItem);
@@ -163,7 +165,10 @@ function getNoteMenuItemList(noteIdNo) {
     let del = {
         'text': '🗑️ 삭제',
         'href': '/api/notes/delete/' + noteIdNo,
-        'onclick': 'deleteItem(this, "note-' + noteIdNo + '"); return false;'
+        'noteIdNo': noteIdNo,
+        'api' : 'deleteNote',
+        // 'callback' : callback
+        // 'onclick': 'deleteItem(this, "note-' + noteIdNo + '"); return false;'
     }
     let update = {
         'text': '🛠️ 이름변경',

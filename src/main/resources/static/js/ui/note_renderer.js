@@ -1,5 +1,19 @@
-import {setPageSideMenu, setNoteSideMenu, getNotes, getPages} from "./note_list_ui_util.js";
+import {setPageSideMenu, setNoteSideMenu, getNoteUIParamJsonStr} from "./note_list_ui_util.js";
 
+function renderingNoteTree2(api, callback) {
+    api(getNoteUIParamJsonStr, callback);
+
+    setNoteSideMenu(data.noteUIParam);
+    setPageSideMenu(data.noteUIParam);
+
+    const noteItemList = document.querySelector("#note-item-list");
+
+    const html = `
+            ${createNoteTree(data.noteTree, data.noteUIParam)}
+        `;
+
+    noteItemList.innerHTML = html;
+}
 function renderingNoteTree(data) {
     setNoteSideMenu(data.noteUIParam);
     setPageSideMenu(data.noteUIParam);
@@ -45,4 +59,4 @@ function createNoteItem(note, noteUIParam) {
         `
 }
 
-export {renderingNoteTree, getNotes, getPages}
+export {renderingNoteTree, getNoteUIParamJsonStr}

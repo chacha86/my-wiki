@@ -63,12 +63,12 @@ function getContent(notePageIdNo, callback) {
     });
 }
 
-function getPages(noteIdNo, callback) {
+function getPages(noteIdNo, renderer, callback) {
     const url = "/api/notes/" + noteIdNo + "/pages";
     const noteUIParamJson = getNoteUIParamJsonStr();
 
     postFetch(url, noteUIParamJson, function (data) {
-        callback(data);
+        callback(data, renderer);
     });
     // postFetch(url, noteUIParamJson, function (data) {
     //     renderingNotePage(data);
@@ -84,11 +84,13 @@ function getPages(noteIdNo, callback) {
     // });
 }
 
-function getNotes(noteUIParamJson, callback) {
+function getNotes(noteUIParamJson, renderer, callback) {
     const url = "/api/notes";
 
     postFetch(url, noteUIParamJson, function (data) {
-        callback(data);
+        console.log('*************************************1');
+        callback(data, renderer);
+        console.log('*************************************2');
     //     renderingNoteTree(data);
     //     document.querySelectorAll("#note-item-list li a").forEach(item => {
     //         if(item != null) {
@@ -106,9 +108,6 @@ function getNotes(noteUIParamJson, callback) {
 function deleteNote(noteIdNo, callback) {
     const noteUIParamJson = getNoteUIParamJsonStr();
     const url = "/api/notes/delete/" + noteIdNo;
-    console.log('============================');
-    console.log(selectedNoteId);
-    console.log(noteIdNo);
 
     postFetch(url, noteUIParamJson, function (data) {
         getNotes(noteUIParamJson, callback);

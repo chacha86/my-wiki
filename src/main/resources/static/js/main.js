@@ -1,12 +1,16 @@
-import * as noteApi from './note_api.js';
-import { getNoteUIParamJsonStr } from './ui/note_list_ui_util.js';
-
 import './event_handler/event_nav_toggle.js';
 import './event_handler/event_side_drag.js';
 import './event_handler/event_search_box.js';
-import {getNotesCallback, getNotes} from "./callback.js";
+import {getNotes} from './note_api.js';
+import { renderingNoteTree, getNoteUIParamJsonStr} from './ui/note_renderer.js';
+import { getNotesCallback } from './callback.js';
+// import {addContextMenuEventToNote} from "./ui/item_menu_renderer.js";
 
-getNotes(getNoteUIParamJsonStr(), getNotesCallback);
+
+getNotes(getNoteUIParamJsonStr(), renderingNoteTree, getNotesCallback);
+
+
+// addContextMenuEventToNote(getNotesCallback);
 
 // noteApi.getNotes(getNoteUIParamJsonStr());
 // document.querySelectorAll('#note-item-list li').forEach(item => {

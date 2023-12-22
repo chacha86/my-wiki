@@ -1,6 +1,6 @@
-import {renderingNoteTree, getNotes, getPages} from './ui/note_renderer.js'
-import {renderingNotePage, getContent} from './ui/note_page_renderer.js'
-import {addContextMenuEventToNote, addContextMenuEventToPage} from './ui/item_menu_renderer.js'
+// import {addContextMenuEventToNote, addContextMenuEventToPage} from './ui/item_menu_renderer.js'
+import {getPages} from './note_api.js'
+import {renderingNotePage, getContent} from "./ui/note_page_renderer.js";
 
 function getContentCallback(data) {
     const titleInput = document.querySelector(".title");
@@ -15,8 +15,9 @@ function getContentCallback(data) {
     // changeSelectedItem(currentItemId, prevItemId, customClass);
     // prevNotePageIdNo = notePageIdNo;
 }
-function getPagesCallback(data) {
-    renderingNotePage(data);
+function getPagesCallback(data, renderer) {
+    // renderingNotePage(data);
+    renderer(data);
     document.querySelectorAll("#page-item-list li a").forEach(item => {
         item.addEventListener("click", function (e) {
             const pageId = item.parentElement.getAttribute("id");
@@ -27,7 +28,7 @@ function getPagesCallback(data) {
         });
     });
 
-    addContextMenuEventToPage();
+    // addContextMenuEventToPage();
     // const itemPrefix = "note-";
     // const currentItemId = itemPrefix + noteIdNo;
     // const prevItemId = itemPrefix + prevNoteIdNo;
@@ -38,18 +39,19 @@ function getPagesCallback(data) {
     // selectedNoteId = currentItemId;
 }
 
-function getNotesCallback(data) {
-    renderingNoteTree(data);
+function getNotesCallback(data, renderer) {
+    // renderingNoteTree(data);
+    renderer(data);
     document.querySelectorAll("#note-item-list li a").forEach(item => {
         item.addEventListener("click", function (e) {
             const noteId = item.parentElement.getAttribute("id");
             if(noteId != null) {
                 const noteIdNo = noteId.split("-")[1];
-                getPages(noteIdNo, getPagesCallback);
+                getPages(noteIdNo, renderingNotePage, getPagesCallback);
             }
         });
     });
-    addContextMenuEventToNote();
+    // addContextMenuEventToNote(getNotesCallback);
 }
 
-export {getNotes, getNotesCallback}
+export {getNotesCallback}
