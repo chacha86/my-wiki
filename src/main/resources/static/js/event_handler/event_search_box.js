@@ -18,7 +18,4 @@ body.addEventListener('click', function (e) {
     if (e.target.id !== 'search-input') {
         searchBox.style.display = 'none';
     }
-    if (e.target.id !== 'note-menu-popup' && document.querySelector("#note-menu-popup") !== null) {
-        body.removeChild(document.querySelector("#note-menu-popup"));
-    }
 });

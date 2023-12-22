@@ -1,19 +1,47 @@
-import {setPageSideMenu, setNoteSideMenu, getNoteUIParamJsonStr} from "./note_list_ui_util.js";
+import {
+    setPageSideMenu,
+    setNoteSideMenu,
+    getNoteUIParamJsonStr,
+    changeSelectedItem
+} from "./note_list_ui_util.js";
+import {renderingNotePage} from "./note_page_renderer.js";
+import { addContextMenuEventToNote } from "./item_menu_renderer.js";
+import { postFetch } from "../note_api.js";
+// import {renderingNotePage} from "./note_page_renderer";
 
-function renderingNoteTree2(api, callback) {
-    api(getNoteUIParamJsonStr, callback);
+let selectedNoteId = null;
+let prevNoteId = null;
 
-    setNoteSideMenu(data.noteUIParam);
-    setPageSideMenu(data.noteUIParam);
+function renderingNoteTree2() {
+    const url = "/api/notes";
+    postFetch(url, getNoteUIParamJsonStr(), function (data) {
+        setNoteSideMenu(data.noteUIParam);
+        setPageSideMenu(data.noteUIParam);
 
-    const noteItemList = document.querySelector("#note-item-list");
+        const noteItemList = document.querySelector("#note-item-list");
 
-    const html = `
+        const html = `
             ${createNoteTree(data.noteTree, data.noteUIParam)}
         `;
 
-    noteItemList.innerHTML = html;
+        noteItemList.innerHTML = html;
+        addContextMenuEventToNote();
+
+        document.querySelectorAll("#note-item-list li a").forEach(item => {
+            item.addEventListener("click", function (e) {
+                const noteId = item.parentElement.getAttribute("id");
+                if(noteId != null) {
+                    const noteIdNo = noteId.split("-")[1];
+                    renderingNotePage(noteIdNo);
+                    changeSelectedItem(noteId, prevNoteId, " bg-gray-500 text-white rounded-md");
+                    prevNoteId = noteId;
+                }
+            });
+        });
+        // renderingNotePage();
+    });
 }
+
 function renderingNoteTree(data) {
     setNoteSideMenu(data.noteUIParam);
     setPageSideMenu(data.noteUIParam);
@@ -59,4 +87,4 @@ function createNoteItem(note, noteUIParam) {
         `
 }
 
-export {renderingNoteTree, getNoteUIParamJsonStr}
+export {renderingNoteTree2, getNoteUIParamJsonStr, selectedNoteId}

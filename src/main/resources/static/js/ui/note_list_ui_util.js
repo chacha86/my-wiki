@@ -1,10 +1,24 @@
-import {postFetch, getNotes, getPages, getContent, selectedNoteId} from "../note_api.js";
 function initScrollPosition(noteSideScrollPosition, pageSideScrollPosition) {
     let noteSide = document.querySelector('.left-side-menu-content');
     let pageSide = document.querySelector('.left-second-menu-content');
     noteSide.scrollTo({top: noteSideScrollPosition, behavior: 'smooth'});
     pageSide.scrollTo({top: pageSideScrollPosition, behavior: 'smooth'});
 }
+
+function changeSelectedItem(currentItemId, prevItemId, customClass) {
+
+    const currentItem = document.querySelector("#" + currentItemId);
+    const prevItem = document.querySelector("#" + prevItemId);
+    //
+    let originClass = currentItem.getAttribute("class")
+    let newClass = originClass + customClass;
+    //
+    currentItem.setAttribute("class", newClass);
+    if (prevItem != null) {
+        prevItem.setAttribute("class", originClass);
+    }
+}
+
 
 function collectOpenList() {
     let tagList = document.querySelectorAll("details");
@@ -117,5 +131,4 @@ function setPageSideMenu(uiParam) {
     leftSecondMenuContent.setAttribute("class", "custom-scroll left-second-menu-content bg-gray-800 text-white overflow-scroll w-[" + pageWidth + "px] min-w-[150px]");
 }
 
-export {getNoteUIParamJsonStr, setNoteSideMenu, setPageSideMenu}
-export {postFetch, getNotes, getPages, getContent, selectedNoteId} from "../note_api.js"
+export {getNoteUIParamJsonStr, setNoteSideMenu, setPageSideMenu, changeSelectedItem}
