@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/notes")
@@ -21,6 +22,7 @@ public class NoteRestController {
 
     private final NoteService noteService;
     private final NotePageService notePageService;
+    private final NoteProcessingService noteProcessingService;
 
     @Getter
     @Setter
@@ -101,5 +103,39 @@ public class NoteRestController {
             throw new RuntimeException(e);
         }
         return jsonStr;
+    }
+    @RequestMapping("/delete/{noteId}")
+    public String delete(@PathVariable Long noteId) {
+        noteProcessingService.deleteNote(noteId);
+        return "{\"msg\" : \"노트가 삭제되었습니다.\"}";
+    }
+
+    @RequestMapping("/add-group/{noteId}")
+    public String addGroup(@PathVariable Long noteId) {
+        Note note = noteProcessingService.saveGroupNotebook(noteId);
+        return "{\"msg\" : \"그룹 노트가 생성되었습니다.\", \"noteId\" : " + note.getId() + "}";
+
+    }
+
+    @RequestMapping("/add/{noteId}")
+    public String add(@PathVariable Long noteId) {
+        Note note = noteService.saveDefaultNote(noteId);
+        return "{\"msg\" : \"노트가 생성되었습니다.\", \"noteId\" : " + note.getId() + "}";
+    }
+
+    @Getter
+    @Setter
+    private static class UpdateNoteNameParamDto {
+        private String noteName;
+    }
+
+    @RequestMapping("/update/{noteId}")
+    public String update(@PathVariable Long noteId, @RequestBody UpdateNoteNameParamDto updateNoteNameParamDto) {
+
+        String noteName = updateNoteNameParamDto.getNoteName();
+        System.out.println(noteName);
+        noteService.updateNoteName(noteId, noteName);
+
+        return "{\"msg\" : \"노트가 수정되었습니다.\"}";
     }
 }

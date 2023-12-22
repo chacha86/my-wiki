@@ -24,7 +24,7 @@ public class NoteController {
     private final NoteService noteService;
     private final NoteProcessingService noteProcessingService;
 
-    @PostMapping("/add")
+    @GetMapping("/add")
     public String add() {
         Note note = noteService.saveDefaultNote();
         return String.format("redirect:/note/%d/page/add", note.getId());
@@ -34,6 +34,11 @@ public class NoteController {
     public String add(@PathVariable Long noteId) {
         Note note = noteService.saveDefaultNote(noteId);
         return String.format("redirect:/note/%d/page/add", note.getId());
+    }
+    @PostMapping("/add-group")
+    public String groupAdd() {
+        Note note = noteProcessingService.saveGroupNotebook();
+        return "redirect:/note/" + note.getId();
     }
     @PostMapping("/add-group/{noteId}")
     public String groupAdd(@PathVariable Long noteId) {
