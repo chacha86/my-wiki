@@ -1,18 +1,8 @@
-import {getNoteUIParamJsonStr} from "./note_list_ui_util.js";
+import {getNoteUIParamJsonStr, extractIdNoFromItem, getIdNoFromId} from "./note_list_ui_util.js";
 import {renderingNoteTree2, selectedNoteId} from "./note_renderer.js";
 import {renderingNotePage} from "./note_page_renderer.js";
 import {postFetch} from "../note_api.js";
 
-function getIdNoFromId(id) {
-    return id.split('-')[1];
-}
-function getItemTypeFromId(id) {
-    return id.split('-')[0];
-}
-function extractIdNoFromItem(item) {
-    let itemId = item.getAttribute('id');
-    return getIdNoFromId(itemId);
-}
 
 function addContextMenuEventToNote() {
     let noteItemList = document.querySelectorAll('#note-item-list li');
@@ -113,8 +103,10 @@ function deletePage(pageIdNo) {
     console.log('============================');
     console.log(selectedNoteId);
 
+    const noteIdNo = getIdNoFromId(selectedNoteId);
+
     postFetch(url, noteUIParamJson, function (data) {
-        renderingNotePage(selectedNoteId);
+        renderingNotePage(noteIdNo);
     });
 }
 // function deleteItem(anchor, itemId) {
@@ -167,21 +159,19 @@ function renameNote(noteIdNo) {
     });
 }
 
-function addNotePage(anchor) {
+function addNotePage(noteIdNo) {
     const noteUIParamJson = getNoteUIParamJsonStr();
-    let url = null;
-    let noteIdNo = null;
+    let url = "/api/pages/add/" + noteIdNo;
+    // let noteIdNo = null;
 
-    if(selectedNoteId == null) {
-        alert('노트를 선택해주세요.');
-        return;
-    }
-    noteIdNo = getIdNoFromId(selectedNoteId);
-    url = anchor.getAttribute('data-uri') + '/' + noteIdNo;
+    // if(selectedNoteId == null) {
+    //     alert('노트를 선택해주세요.');
+    //     return;
+    // }
+    // noteIdNo = getIdNoFromId(selectedNoteId);
 
     postFetch(url, noteUIParamJson, function (data) {
-        // getNotes(noteUIParamJson);
-        getPages(noteIdNo);
+        renderingNotePage(noteIdNo);
     });
 }
 
@@ -328,4 +318,4 @@ function getPageApiFunction(apiName) {
             return null;
     }
 }
-export {addContextMenuEventToNote, addContextMenuEventToPage}
+export {addContextMenuEventToNote, addContextMenuEventToPage, addNotePage}

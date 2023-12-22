@@ -33,8 +33,10 @@ function renderingNoteTree2() {
                 if(noteId != null) {
                     const noteIdNo = noteId.split("-")[1];
                     renderingNotePage(noteIdNo);
+
+                    prevNoteId = selectedNoteId;
                     changeSelectedItem(noteId, prevNoteId, " bg-gray-500 text-white rounded-md");
-                    prevNoteId = noteId;
+                    selectedNoteId = noteId;
                 }
             });
         });

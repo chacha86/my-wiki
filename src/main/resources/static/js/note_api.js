@@ -1,6 +1,5 @@
 import {getNoteUIParamJsonStr} from "./ui/note_list_ui_util.js";
 
-
 function postFetch(url, jsonData, callback) {
 
     const headerName = document.querySelector("#csrf-header").value;

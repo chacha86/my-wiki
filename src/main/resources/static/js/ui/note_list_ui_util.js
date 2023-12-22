@@ -5,6 +5,17 @@ function initScrollPosition(noteSideScrollPosition, pageSideScrollPosition) {
     pageSide.scrollTo({top: pageSideScrollPosition, behavior: 'smooth'});
 }
 
+function getIdNoFromId(id) {
+    return id.split('-')[1];
+}
+function getItemTypeFromId(id) {
+    return id.split('-')[0];
+}
+function extractIdNoFromItem(item) {
+    let itemId = item.getAttribute('id');
+    return getIdNoFromId(itemId);
+}
+
 function changeSelectedItem(currentItemId, prevItemId, customClass) {
 
     const currentItem = document.querySelector("#" + currentItemId);
@@ -131,4 +142,4 @@ function setPageSideMenu(uiParam) {
     leftSecondMenuContent.setAttribute("class", "custom-scroll left-second-menu-content bg-gray-800 text-white overflow-scroll w-[" + pageWidth + "px] min-w-[150px]");
 }
 
-export {getNoteUIParamJsonStr, setNoteSideMenu, setPageSideMenu, changeSelectedItem}
+export {getNoteUIParamJsonStr, setNoteSideMenu, setPageSideMenu, changeSelectedItem, getIdNoFromId, extractIdNoFromItem}

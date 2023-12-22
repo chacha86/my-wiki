@@ -2,6 +2,7 @@ import './event_handler/event_nav_toggle.js';
 import './event_handler/event_side_drag.js';
 import './event_handler/event_search_box.js';
 import './event_handler/event_item_menu.js';
+import './event_handler/event_btn.js';
 import { renderingNoteTree2, getNoteUIParamJsonStr} from './ui/note_renderer.js';
 // import { getNotesCallback } from './callback.js';
 // import {addContextMenuEventToNote} from "./ui/item_menu_renderer.js";
