@@ -129,10 +129,12 @@ function addOpenList(noteUIParamJson, noteIdNo) {
     return JSON.stringify(noteUIParam);
 }
 function addGroupNote(noteIdNo) {
+    let url = "/api/notes/add-group";
     let noteUIParamJson = getNoteUIParamJsonStr();
-    const url = "/api/notes/add-group/" + noteIdNo;
+    if(noteIdNo != null) {
+        url = url + "/" + noteIdNo;
+    }
     noteUIParamJson = addOpenList(noteUIParamJson, noteIdNo);
-
     postFetch(url, noteUIParamJson, function (data) {
         renderingNoteTree2();
     });
@@ -318,4 +320,4 @@ function getPageApiFunction(apiName) {
             return null;
     }
 }
-export {addContextMenuEventToNote, addContextMenuEventToPage, addNotePage}
+export {addContextMenuEventToNote, addContextMenuEventToPage, addNotePage, addGroupNote}

@@ -110,11 +110,17 @@ public class NoteRestController {
         return "{\"msg\" : \"노트가 삭제되었습니다.\"}";
     }
 
+    @RequestMapping("/add-group")
+    public String addGroup() {
+        Note note = noteProcessingService.saveGroupNotebook();
+        return "{\"msg\" : \"그룹 노트가 생성되었습니다.\", \"noteId\" : " + note.getId() + "}";
+
+    }
+
     @RequestMapping("/add-group/{noteId}")
     public String addGroup(@PathVariable Long noteId) {
         Note note = noteProcessingService.saveGroupNotebook(noteId);
         return "{\"msg\" : \"그룹 노트가 생성되었습니다.\", \"noteId\" : " + note.getId() + "}";
-
     }
 
     @RequestMapping("/add/{noteId}")

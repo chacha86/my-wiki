@@ -63,36 +63,34 @@
                 </div>
 
                 <div class="flex items-center text-center justify-center border border-gray-300 ">
-                    <form th:action="@{/note/add-group}" method="post">
-                        <input type="submit" value="새그룹 추가">
-                    </form>
-                    <dialog id="my_modal_1" class="modal text-black">
-                        <div class="modal-box">
-                            <h3 class="font-bold text-lg">노트 이름 변경</h3>
-                            <div>
-                                <form th:action method="post" onsubmit="return false;">
-                                    <div class="my-[10px]">
-                                        <input type="text" class="input input-bordered w-full max-w-xs"
-                                               name="noteName" id="new-note-name">
-                                    </div>
-                                    <div>
-                                        <a th:href="@{|/api/notes/update/${noteDetail.id}|}" class="btn"
-                                           th:onclick="renameNote(this, [[${noteDetail.id}]]); return false;">Ok</a>
-                                    </div>
-                                </form>
-                                <form method="dialog">
-                                    <button class="btn">Close</button>
-                                </form>
+                    <a id="add-group-note">새그룹 추가</a>
+                        <dialog id="my_modal_1" class="modal text-black">
+                            <div class="modal-box">
+                                <h3 class="font-bold text-lg">노트 이름 변경</h3>
+                                <div>
+                                    <form th:action method="post" onsubmit="return false;">
+                                        <div class="my-[10px]">
+                                            <input type="text" class="input input-bordered w-full max-w-xs"
+                                                   name="noteName" id="new-note-name">
+                                        </div>
+                                        <div>
+                                            <a th:href="@{|/api/notes/update/${noteDetail.id}|}" class="btn"
+                                               th:onclick="renameNote(this, [[${noteDetail.id}]]); return false;">Ok</a>
+                                        </div>
+                                    </form>
+                                    <form method="dialog">
+                                        <button class="btn">Close</button>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                    </dialog>
+                        </dialog>
                 </div>
             </div>
             <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
             <div class="custom-scroll left-second-menu-content min-w-[150px] bg-gray-800 text-white overflow-scroll w-[250px]">
                 <div class="h-[10%] flex items-center justify-around border-white border-b">
                     <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
-                    <div  id="add-note-btn" class="border p-[5px] hover:bg-gray-300 hover:text-black">
+                    <div id="add-note-btn" class="border p-[5px] hover:bg-gray-300 hover:text-black">
                         +
                     </div>
                 </div>
