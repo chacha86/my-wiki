@@ -27,6 +27,7 @@ public class NoteRestController {
     @Getter
     @Setter
     private static class NoteResultDto {
+        private Long noteId;
         private List<NoteTreeDto> noteTree;
         private NoteUIParam noteUIParam;
     }
@@ -42,6 +43,34 @@ public class NoteRestController {
 
             noteResultDto.setNoteTree(noteTree);
             noteResultDto.setNoteUIParam(noteUIParam);
+
+            jsonStr = objectMapper.writeValueAsString(noteResultDto);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return jsonStr;
+    }
+
+    @Getter
+    @Setter
+    private static class MoveNoteParamDto {
+        private Long noteId;
+        private NoteUIParam noteUIParam;
+    }
+
+    @RequestMapping("move")
+    public String moveNote(@RequestBody MoveNoteParamDto moveNoteParamDto) {
+        List<NoteTreeDto> noteTreeForMove = noteService.buildNoteTreeDtoForMove(moveNoteParamDto.getNoteId());
+        String jsonStr = null;
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            NoteResultDto noteResultDto = new NoteResultDto();
+
+            noteResultDto.setNoteId(moveNoteParamDto.getNoteId());
+            noteResultDto.setNoteTree(noteTreeForMove);
+            noteResultDto.setNoteUIParam(moveNoteParamDto.getNoteUIParam());
 
             jsonStr = objectMapper.writeValueAsString(noteResultDto);
 

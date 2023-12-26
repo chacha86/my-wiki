@@ -208,8 +208,8 @@ function addNotePage(noteInfo) {
 
 function moveNoteModal(noteInfo) {
     const moveModal = document.querySelector('#my_modal_2');
+    renderingMoveModalNoteTree(getNoteUIParamJsonStr(), noteInfo);
     moveModal.show();
-    // renderingMoveModalNoteTree(getNoteUIParamJsonStr());
 }
 
 function getNoteMenuItemList(itemInfo) {

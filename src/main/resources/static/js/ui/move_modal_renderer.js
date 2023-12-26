@@ -1,11 +1,25 @@
 import {
     setPageSideMenu,
-    setNoteSideMenu,
+    setNoteSideMenu, getNoteUIParamJsonStr,
 } from "./note_list_ui_util.js";
 import {postFetch} from "../note_api.js";
-function renderingMoveModalNoteTree(noteUIParam) {
-    const url = "/api/notes";
-    postFetch(url, noteUIParam, function (data) {
+
+const modalCloseBtn = document.querySelector(".move-close");
+modalCloseBtn.addEventListener('click', function () {
+    const modal = document.querySelector("#move-note-modal");
+    modal.innerHTML = "";
+});
+
+function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
+    const url = "/api/notes/move";
+    console.log("------------------------------123");
+    console.log(noteInfo);
+    const moveNoteParam = {
+        "noteId": noteInfo.noteIdNo,
+        "noteUIParam": JSON.parse(noteUIParam)
+    }
+    postFetch(url, JSON.stringify(moveNoteParam), function (data) {
+        console.log(data);
         setNoteSideMenu(data.noteUIParam);
         setPageSideMenu(data.noteUIParam);
 
@@ -16,6 +30,18 @@ function renderingMoveModalNoteTree(noteUIParam) {
         `;
 
         noteItemList.innerHTML = html;
+
+        const noteItem = document.querySelectorAll("#move-note-modal summary");
+        noteItem.forEach((item) => {
+            item.addEventListener('click', function (e) {
+                let span = document.createElement("span");
+                span.innerHTML = "aaa";
+                item.appendChild(span);
+
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        });
     });
 }
 
@@ -45,10 +71,11 @@ function createNoteItem(note, noteUIParam) {
 
     return `
             <li id="${'note-' + note.id}" data-note-name="${note.name}" data-note-type="${note.groupYn}" class="${groupItemClass}">
-                ${note.groupYn === 0 ? `<a class=${noteAnchorClass}">${note.name}</a>` : ``}
                 ${note.groupYn === 1 ? createChildNoteTree(note, noteUIParam, noteItemClass, noteAnchorClass, createNoteTree) : ''}
             </li>
         `
 }
+
+// ${note.groupYn === 0 ? `<a class=${noteAnchorClass}">${note.name}</a>` : ``}
 
 export {renderingMoveModalNoteTree}

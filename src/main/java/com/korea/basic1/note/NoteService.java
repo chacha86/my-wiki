@@ -9,6 +9,7 @@ import java.sql.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -128,6 +129,18 @@ public class NoteService {
     public List<Note> getNoteListByKeyword(String keyword) {
         return noteRepository.findAllByNameContaining(keyword);
     }
+    public List<NoteTreeDto> buildNoteTreeDtoForMove(Long noteId) {
+
+        List<NoteTreeDto> parentNoteList = new ArrayList<>();
+
+        for (Note parentNote : getParentNoteList()) {
+            NoteTreeDto havingChildrenNoteTreeDto = getHavingChildrenNoteTreeDto(parentNote, noteId);
+            parentNoteList.add(havingChildrenNoteTreeDto);
+        }
+
+        return parentNoteList;
+
+    }
 
     public List<NoteTreeDto> buildNoteTreeDto() {
         List<NoteTreeDto> parentNoteList = new ArrayList<>();
@@ -137,6 +150,25 @@ public class NoteService {
         }
 
         return parentNoteList;
+    }
+
+    public NoteTreeDto getHavingChildrenNoteTreeDto(Note parent, Long noteId) {
+        NoteTreeDto noteTreeDto = transformNoteToDto(parent);
+
+        if(Objects.equals(parent.getId(), noteId)) {
+            return noteTreeDto;
+        }
+
+        if (parent.getChildren().isEmpty()) {
+            return noteTreeDto;
+        }
+
+        for (Note childNote : parent.getChildren()) {
+            NoteTreeDto childNoteDto = getHavingChildrenNoteTreeDto(childNote, noteId);
+            noteTreeDto.getChildren().add(childNoteDto);
+        }
+
+        return noteTreeDto;
     }
 
     public NoteTreeDto getHavingChildrenNoteTreeDto(Note parent) {
