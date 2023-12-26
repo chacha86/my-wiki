@@ -7,7 +7,7 @@ import { renderingNoteTree2, getNoteUIParamJsonStr} from './ui/note_renderer.js'
 // import { getNotesCallback } from './callback.js';
 // import {addContextMenuEventToNote} from "./ui/item_menu_renderer.js";
 
-renderingNoteTree2();
+renderingNoteTree2(getNoteUIParamJsonStr());
 // getNotes(getNoteUIParamJsonStr(), renderingNoteTree, getNotesCallback);
 
 

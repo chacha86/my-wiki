@@ -12,9 +12,9 @@ import { postFetch } from "../note_api.js";
 let selectedNoteId = null;
 let prevNoteId = null;
 
-function renderingNoteTree2() {
+function renderingNoteTree2(noteUIParam) {
     const url = "/api/notes";
-    postFetch(url, getNoteUIParamJsonStr(), function (data) {
+    postFetch(url, noteUIParam, function (data) {
         setNoteSideMenu(data.noteUIParam);
         setPageSideMenu(data.noteUIParam);
 

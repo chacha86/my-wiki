@@ -1,14 +1,19 @@
 import {getIdNoFromId} from "../ui/note_list_ui_util.js";
-import {addNotePage, addGroupNote} from "../ui/item_menu_renderer.js";
+import {addNotePage, addGroupNote, getNoteInfo} from "../ui/item_menu_renderer.js";
 import {selectedNoteId} from "../ui/note_renderer.js";
 
 let btn = document.querySelector("#add-note-btn");
+btn.setAttribute("class", btn.getAttribute("class") + " hover:cursor-pointer")
 btn.addEventListener("click", function() {
     if(selectedNoteId === null) {
         alert("Please select a note to add a new note");
         return;
     }
-    addNotePage(getIdNoFromId(selectedNoteId));
+
+    const noteElement = document.querySelector('#' + selectedNoteId);
+    const noteInfo = getNoteInfo(noteElement);
+    addNotePage(noteInfo);
+
 });
 
 let btn2 = document.querySelector("#add-group-note");

@@ -58,32 +58,28 @@
                         </ul>
                     </form>
                 </div>
-                <div id="async">
-
-                </div>
-
                 <div class="flex items-center text-center justify-center border border-gray-300 ">
                     <a id="add-group-note">새그룹 추가</a>
-                        <dialog id="my_modal_1" class="modal text-black">
-                            <div class="modal-box">
-                                <h3 class="font-bold text-lg">노트 이름 변경</h3>
-                                <div>
-                                    <form th:action method="post" onsubmit="return false;">
-                                        <div class="my-[10px]">
-                                            <input type="text" class="input input-bordered w-full max-w-xs"
-                                                   name="noteName" id="new-note-name">
-                                        </div>
-                                        <div>
-                                            <a th:href="@{|/api/notes/update/${noteDetail.id}|}" class="btn"
-                                               th:onclick="renameNote(this, [[${noteDetail.id}]]); return false;">Ok</a>
-                                        </div>
-                                    </form>
-                                    <form method="dialog">
-                                        <button class="btn">Close</button>
-                                    </form>
-                                </div>
+                    <dialog id="my_modal_1" class="modal text-black">
+                        <div class="modal-box">
+                            <h3 class="font-bold text-lg">노트 이름 변경</h3>
+                            <div>
+                                <form th:action method="post" onsubmit="return false;">
+                                    <div class="my-[10px]">
+                                        <input type="text" class="input input-bordered w-full max-w-xs"
+                                               name="noteName" id="new-note-name">
+                                    </div>
+                                    <div>
+<!--                                        <button id="rename-btn" class="btn">OK</button>-->
+                                        <a id="rename-btn" >OK</a>
+                                    </div>
+                                </form>
+                                <form method="dialog">
+                                    <button class="btn">Close</button>
+                                </form>
                             </div>
-                        </dialog>
+                        </div>
+                    </dialog>
                 </div>
             </div>
             <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>

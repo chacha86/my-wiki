@@ -1,19 +1,29 @@
-import {getNoteUIParamJsonStr, extractIdNoFromItem, getIdNoFromId} from "./note_list_ui_util.js";
+import {extractIdNoFromItem, getIdNoFromId, getNoteUIParamJsonStr} from "./note_list_ui_util.js";
 import {renderingNoteTree2, selectedNoteId} from "./note_renderer.js";
 import {renderingNotePage} from "./note_page_renderer.js";
 import {postFetch} from "../note_api.js";
 
+function getNoteInfo(element) {
+    return {
+        'noteIdNo': extractIdNoFromItem(element),
+        'noteName': element.getAttribute('data-note-name'),
+        'itemType': element.getAttribute('data-note-type') === "0" ? 'note' : 'group'
+    };
+}
 
+function getPageInfo(element) {
+    return {
+        'pageIdNo': extractIdNoFromItem(element),
+        'pageTitle': element.getAttribute('data-page-title'),
+        'itemType': 'page'
+    };
+}
 function addContextMenuEventToNote() {
     let noteItemList = document.querySelectorAll('#note-item-list li');
     noteItemList.forEach((noteItem) => {
 
         noteItem.addEventListener('contextmenu', (event) => {
-            let noteInfo = {
-                'noteIdNo': extractIdNoFromItem(noteItem),
-                'noteName': noteItem.getAttribute('data-note-name'),
-                'itemType': noteItem.getAttribute('data-note-type') === "0" ? 'note' : 'group'
-            }
+            let noteInfo = getNoteInfo(noteItem);
             event.preventDefault();
             event.stopPropagation();
             let mouseX = event.clientX;
@@ -28,11 +38,7 @@ function addContextMenuEventToPage() {
     console.log(pageItemList);
     pageItemList.forEach((pageItem) => {
         pageItem.addEventListener('contextmenu', (event) => {
-            let pageInfo = {
-                'pageIdNo': extractIdNoFromItem(pageItem),
-                'pageTitle': pageItem.getAttribute('data-page-title'),
-                'itemType' : 'page'
-            }
+            let pageInfo = getPageInfo(pageItem);
             event.preventDefault();
             event.stopPropagation();
             let mouseX = event.clientX;
@@ -71,12 +77,14 @@ function getMenuPopupEl(itemType, mouseX, mouseY, itemInfo) {
 function createMenuList(menuItemList) {
     let menuList = document.createElement('ul');
     menuItemList.forEach((element) => {
+        console.log('============================>>>>>>>>>>>>>>>>>>>>>>>>');
+        console.log(element);
         let listItem = document.createElement('li');
         let anchor = document.createElement('a');
         // anchor.setAttribute('href', element.href);
         anchor.setAttribute('class', 'block w-[100%] hover:bg-gray-500 rounded-md p-[5px]');
         anchor.addEventListener('click', (event) => {
-            getApiFunction(element.itemType, element.apiName)(element.itemIdNo);
+            getApiFunction(element.itemType, element.apiName)(element.itemInfo);
         });
         // if (element.onclick != null) {
         //     anchor.setAttribute('onclick', element.onclick);
@@ -88,18 +96,18 @@ function createMenuList(menuItemList) {
 
     return menuList;
 }
-function deleteNote(noteIdNo) {
+function deleteNote(noteInfo) {
     const noteUIParamJson = getNoteUIParamJsonStr();
-    const url = "/api/notes/delete/" + noteIdNo;
+    const url = "/api/notes/delete/" + noteInfo.noteIdNo;
 
     postFetch(url, noteUIParamJson, function (data) {
-        renderingNoteTree2();
+        renderingNoteTree2(noteUIParamJson);
     });
 }
 
-function deletePage(pageIdNo) {
+function deletePage(pageInfo) {
     const noteUIParamJson = getNoteUIParamJsonStr();
-    const url = "/api/pages/delete/" + pageIdNo;
+    const url = "/api/pages/delete/" + pageInfo.pageIdNo;
     console.log('============================');
     console.log(selectedNoteId);
 
@@ -128,41 +136,45 @@ function addOpenList(noteUIParamJson, noteIdNo) {
     noteUIParam.openList.push(noteIdNo);
     return JSON.stringify(noteUIParam);
 }
-function addGroupNote(noteIdNo) {
+function addGroupNote(noteInfo) {
+
     let url = "/api/notes/add-group";
     let noteUIParamJson = getNoteUIParamJsonStr();
-    if(noteIdNo != null) {
-        url = url + "/" + noteIdNo;
+
+    console.log(noteUIParamJson);
+    if(noteInfo != null) {
+        url = url + '/' + noteInfo.noteIdNo;
+        noteUIParamJson = addOpenList(noteUIParamJson, noteInfo.noteIdNo);
     }
-    noteUIParamJson = addOpenList(noteUIParamJson, noteIdNo);
+
     postFetch(url, noteUIParamJson, function (data) {
-        renderingNoteTree2();
+        renderingNoteTree2(noteUIParamJson);
     });
 }
 
-function addNote(noteIdNo) {
+function addNote(noteInfo) {
     let noteUIParamJson = getNoteUIParamJsonStr();
+    const noteIdNo = noteInfo.noteIdNo;
     const url = "/api/notes/add/" + noteIdNo;
     noteUIParamJson = addOpenList(noteUIParamJson, noteIdNo);
     postFetch(url, noteUIParamJson, function (data) {
-        renderingNoteTree2();
+        renderingNoteTree2(noteUIParamJson);
     });
 }
 
-function renameNote(noteIdNo) {
-    const noteUIParamJson = getNoteUIParamJsonStr();
-    const url = "/api/notes/update/" + noteIdNo;
-    const noteName = document.querySelector('#new-note-name').value;
-    const noteParam = {
-        'noteName': noteName,
-    }
-    postFetch(url, function (data) {
-        renderingNoteTree2();
-    });
+function renameNoteModal(noteInfo) {
+    const renameModal = document.querySelector('#my_modal_1');
+    const renameInput = document.querySelector('#new-note-name');
+    renameNote(renameModal, noteInfo, renameInput);
+    renameModal.show();
+}
+function renameNote(renameModal, noteInfo, renameInput) {
+    const url = "/api/notes/update/" + noteInfo.noteIdNo;
 }
 
-function addNotePage(noteIdNo) {
+function addNotePage(noteInfo) {
     const noteUIParamJson = getNoteUIParamJsonStr();
+    const noteIdNo = noteInfo.noteIdNo;
     let url = "/api/pages/add/" + noteIdNo;
     // let noteIdNo = null;
 
@@ -177,12 +189,12 @@ function addNotePage(noteIdNo) {
     });
 }
 
-function getNoteMenuItemList(noteIdNo) {
+function getNoteMenuItemList(itemInfo) {
 
     let del = {
         'text': '🗑️ 삭제',
-        'url' : '/api/notes/delete/' + noteIdNo,
-        'itemIdNo': noteIdNo,
+        'url' : '/api/notes/delete/' + itemInfo.noteIdNo,
+        'itemInfo': itemInfo,
         'itemType': 'note',
         'apiName' : 'deleteNote',
         // 'callback' : callback
@@ -190,17 +202,17 @@ function getNoteMenuItemList(noteIdNo) {
     }
     let update = {
         'text': '🛠️ 이름변경',
-        'url' : '/api/notes/update/' + noteIdNo,
-        'itemIdNo': noteIdNo,
+        'url' : '/api/notes/update/' + itemInfo.noteIdNo,
+        'itemInfo': itemInfo,
         'itemType': 'note',
-        'apiName' : 'renameNote',
+        'apiName' : 'renameNoteModal',
     }
     let move = {
         'text': '➡️ 노트이동',
-        'url' : '/api/notes/update/' + noteIdNo,
-        'itemIdNo': noteIdNo,
+        'url' : '/api/notes/update/' + itemInfo.noteIdNo,
+        'itemInfo': itemInfo,
         'itemType': 'note',
-        'apiName' : 'moveNote',
+        'apiName' : 'moveNoteModal',
     }
 
     return [del, update, move];
@@ -222,7 +234,7 @@ function createBaseMenuPopup(mouseX, mouseY, noteInfo, menuItemList) {
 }
 
 function createNoteMenuPopup(mouseX, mouseY, noteInfo) {
-    const noteMenuItemList = getNoteMenuItemList(noteInfo.noteIdNo);
+    const noteMenuItemList = getNoteMenuItemList(noteInfo);
     return createBaseMenuPopup(mouseX, mouseY, noteInfo, noteMenuItemList);
 }
 
@@ -232,14 +244,14 @@ function createGroupMenuPopup(mouseX, mouseY, noteInfo) {
 
     let addGroup = {
         'text': '🗂️ 새그룹 추가',
-        'itemIdNo': noteInfo.noteIdNo,
+        'itemInfo': noteInfo,
         'url' : '/api/notes/add-group/' + noteInfo.noteIdNo,
         'itemType': 'note',
         'apiName' : 'addGroupNote'
     }
     let addNote = {
         'text': '➕ 새노트 추가',
-        'itemIdNo': noteInfo.noteIdNo,
+        'itemInfo': noteInfo,
         'url' : '/api/notes/add/' + noteInfo.noteIdNo,
         'itemType': 'note',
         'apiName' : 'addNote'
@@ -253,25 +265,25 @@ function createGroupMenuPopup(mouseX, mouseY, noteInfo) {
     return baseMenuPopup;
 }
 
-function getPageMenuItemList(notePageIdNo) {
+function getPageMenuItemList(itemInfo) {
     let del = {
         'text': '🗑️ 삭제',
-        'url': '/api/pages/delete/' + notePageIdNo,
-        'itemIdNo': notePageIdNo,
+        'url': '/api/pages/delete/' + itemInfo.notePageIdNo,
+        'itemInfo': itemInfo,
         'itemType': 'page',
         'apiName' : 'deletePage'
     }
     let update = {
         'text': '🛠️ 이름변경',
-        'url': '/api/pages/update/' + notePageIdNo,
-        'itemIdNo': notePageIdNo,
+        'url': '/api/pages/update/' + itemInfo.notePageIdNo,
+        'itemInfo': itemInfo,
         'itemType': 'page',
         'apiName' : 'renamePage'
     }
     let move = {
         'text': '➡️ 페이지이동',
-        'url': '/page/move/' + notePageIdNo,
-        'itemIdNo': notePageIdNo,
+        'url': '/page/move/' + itemInfo.notePageIdNo,
+        'itemInfo': itemInfo,
         'itemType': 'page',
         'apiName' : 'movePage'
     }
@@ -280,7 +292,7 @@ function getPageMenuItemList(notePageIdNo) {
 }
 
 function createPageMenuPopup(mouseX, mouseY, pageInfo) {
-    const pageMenuItemList = getPageMenuItemList(pageInfo.pageIdNo);
+    const pageMenuItemList = getPageMenuItemList(pageInfo);
     return createBaseMenuPopup(mouseX, mouseY, pageInfo, pageMenuItemList);
 }
 
@@ -301,10 +313,10 @@ function getNoteApiFunction(apiName) {
             return addGroupNote;
         case 'addNote':
             return addNote;
-        case 'renameNote':
-            return renameNote;
-        // case 'moveNote':
-        //     return moveNote;
+        case 'renameNoteModal':
+            return renameNoteModal;
+        // case 'movemodal':
+        //     return moveNoteModal;
         default:
             return null;
     }
@@ -320,4 +332,4 @@ function getPageApiFunction(apiName) {
             return null;
     }
 }
-export {addContextMenuEventToNote, addContextMenuEventToPage, addNotePage, addGroupNote}
+export {addContextMenuEventToNote, addContextMenuEventToPage, addNotePage, addGroupNote, getNoteInfo}
