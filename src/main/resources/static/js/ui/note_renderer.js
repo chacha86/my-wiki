@@ -40,21 +40,7 @@ function renderingNoteTree2(noteUIParam) {
                 }
             });
         });
-        // renderingNotePage();
     });
-}
-
-function renderingNoteTree(data) {
-    setNoteSideMenu(data.noteUIParam);
-    setPageSideMenu(data.noteUIParam);
-
-    const noteItemList = document.querySelector("#note-item-list");
-
-    const html = `
-            ${createNoteTree(data.noteTree, data.noteUIParam)}
-        `;
-
-    noteItemList.innerHTML = html;
 }
 
 function createNoteTree(noteList, noteUIParam) {

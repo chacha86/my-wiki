@@ -1,6 +1,7 @@
 import {extractIdNoFromItem, getIdNoFromId, getNoteUIParamJsonStr} from "./note_list_ui_util.js";
 import {renderingNoteTree2, selectedNoteId} from "./note_renderer.js";
 import {renderingNotePage} from "./note_page_renderer.js";
+import {renderingMoveModalNoteTree} from "./move_modal_renderer.js";
 import {postFetch} from "../note_api.js";
 
 function getNoteInfo(element) {
@@ -162,14 +163,30 @@ function addNote(noteInfo) {
     });
 }
 
+let renameNoteInfo = null;
 function renameNoteModal(noteInfo) {
+    renameNoteInfo = noteInfo;
     const renameModal = document.querySelector('#my_modal_1');
-    const renameInput = document.querySelector('#new-note-name');
-    renameNote(renameModal, noteInfo, renameInput);
+    const noteNameInput = document.querySelector('#new-note-name');
+    const renameBtn = document.querySelector('#rename-btn');
+    noteNameInput.value = noteInfo.noteName;
+    renameBtn.removeEventListener('click', myEventListner);
+    renameBtn.addEventListener('click', myEventListner);
     renameModal.show();
 }
-function renameNote(renameModal, noteInfo, renameInput) {
+function myEventListner(event) {
+    console.log('============================sdkfjsdlkf');
+    renameNote(event, renameNoteInfo);
+}
+
+function renameNote(event, noteInfo) {
     const url = "/api/notes/update/" + noteInfo.noteIdNo;
+    const noteParam = {
+        'noteName': document.querySelector('#new-note-name').value
+    }
+    postFetch(url, JSON.stringify(noteParam), function (data) {
+        renderingNoteTree2(getNoteUIParamJsonStr());
+    });
 }
 
 function addNotePage(noteInfo) {
@@ -187,6 +204,12 @@ function addNotePage(noteInfo) {
     postFetch(url, noteUIParamJson, function (data) {
         renderingNotePage(noteIdNo);
     });
+}
+
+function moveNoteModal(noteInfo) {
+    const moveModal = document.querySelector('#my_modal_2');
+    moveModal.show();
+    // renderingMoveModalNoteTree(getNoteUIParamJsonStr());
 }
 
 function getNoteMenuItemList(itemInfo) {
@@ -315,8 +338,8 @@ function getNoteApiFunction(apiName) {
             return addNote;
         case 'renameNoteModal':
             return renameNoteModal;
-        // case 'movemodal':
-        //     return moveNoteModal;
+        case 'moveNoteModal':
+            return moveNoteModal;
         default:
             return null;
     }

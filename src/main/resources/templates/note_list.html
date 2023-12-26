@@ -7,6 +7,23 @@
 </head>
 <body>
 <div th:replace="fragments/common-js"></div>
+<div id="move-note-modal">
+    <dialog id="my_modal_2" class="modal text-black">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">노트 이동</h3>
+            <div>
+                <form th:action method="post" onsubmit="return false;">
+                    <div>
+                        <a id="move-btn" >OK</a>
+                    </div>
+                </form>
+                <form method="dialog">
+                    <button class="btn">Close</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
+</div>
 <div class="navbar bg-gray-800 text-white py-[20px] border-b-[3px] border-white">
     <div class="flex-1">
         <a class="btn btn-ghost normal-case text-[30px]">CNote</a>
