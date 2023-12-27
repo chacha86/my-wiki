@@ -173,4 +173,16 @@ public class NoteRestController {
 
         return "{\"msg\" : \"노트가 수정되었습니다.\"}";
     }
+
+    @Getter
+    @Setter
+    private static class UpdateMoveNoteParamDto {
+        private Long moveTargetId;
+        private Long destinationId;
+    }
+    @RequestMapping("/update/move")
+    public String move(@RequestBody UpdateMoveNoteParamDto updateMoveNoteParamDto) {
+        noteService.moveNoteTo(updateMoveNoteParamDto.getMoveTargetId(), updateMoveNoteParamDto.getDestinationId());
+        return "{\"msg\" : \"노트를 이동하였습니다.\"}";
+    }
 }
