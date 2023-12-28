@@ -11,6 +11,9 @@ modalCloseBtn.addEventListener('click', function () {
     modal.innerHTML = "";
 });
 
+let gCurrentSelectedNote = null;
+let gNoteInfo = null;
+
 function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
     const url = "/api/notes/move";
     console.log("------------------------------123");
@@ -45,7 +48,7 @@ function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
             if (childList != null) {
                 let collapseSpan = document.createElement("span");
                 // collapseSpan.setAttribute("class", "collapse");
-                collapseSpan.setAttribute("class", "my-collapse " + collapse + collapseHover);
+                collapseSpan.setAttribute("class", "move-tree-collapse " + collapse + collapseHover);
                 collapseSpan.innerHTML = "+";
                 let firstChild = item.firstChild;
                 item.insertBefore(collapseSpan, firstChild);
@@ -60,7 +63,7 @@ function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
             }
         });
 
-        let collapseItems = document.querySelectorAll(".parent .my-collapse");
+        let collapseItems = document.querySelectorAll(".parent .move-tree-collapse");
         collapseItems.forEach(function (item) {
             item.addEventListener("click", function () {
                 let parentItem = item.parentElement;
@@ -69,12 +72,12 @@ function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
                 if (parentItem.getAttribute("open") === "true") {
                     item.innerHTML = "+";
                     // item.classList.remove("collapse-neg");
-                    item.setAttribute("class", "my-collapse " + collapse + collapseHover);
+                    item.setAttribute("class", "move-tree-collapse " + collapse + collapseHover);
                     subItems.style.display = "none";
                     parentItem.setAttribute("open", "false");
                 } else {
                     item.innerHTML = "-";
-                    item.setAttribute("class", "my-collapse " + collapse + collapseHover + collapseNeg);
+                    item.setAttribute("class", "move-tree-collapse " + collapse + collapseHover + collapseNeg);
                     // item.classList.add("collapse-neg");
                     subItems.style.display = "block";
                     parentItem.setAttribute("open", "true");
@@ -82,7 +85,7 @@ function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
             });
         });
 
-        let noteItem = document.querySelectorAll(".content");
+        let noteItem = document.querySelectorAll(".move-tree-content");
         let prevSelectedNote = null;
         let currentSelectedNote = null;
 
@@ -90,6 +93,8 @@ function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
             item.addEventListener('click', function (e) {
                 prevSelectedNote = currentSelectedNote;
                 currentSelectedNote = e.target;
+                gCurrentSelectedNote = currentSelectedNote;
+                gNoteInfo = noteInfo;
                 if (prevSelectedNote != null) {
                     prevSelectedNote.classList.remove("bg-gray-500", "rounded-md");
                 }
@@ -98,28 +103,8 @@ function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
         });
 
         let moveBtn = document.querySelector("#move-btn");
-        moveBtn.addEventListener('click', function () {
-            if (currentSelectedNote == null) {
-                alert("이동할 노트를 선택해주세요.");
-                return;
-            }
-            const currentSelectedNoteId = currentSelectedNote.getAttribute("data-note-id");
-            console.log(currentSelectedNoteId);
-            console.log(noteInfo.noteIdNo);
-
-            if(currentSelectedNoteId === noteInfo.noteIdNo) {
-                alert("같은 곳으로는 이동이 불가능합니다.");
-                return;
-            }
-            const url = "/api/notes/update/move";
-            const updateMoveNoteParam = {
-                "moveTargetId": noteInfo.noteIdNo,
-                "destinationId": currentSelectedNote.getAttribute("data-note-id")
-            }
-            postFetch(url, JSON.stringify(updateMoveNoteParam), function (data) {
-                renderingNoteTree2(getNoteUIParamJsonStr());
-            });
-        });
+        moveBtn.removeEventListener('click', moveCompleteEventListener);
+        moveBtn.addEventListener('click', moveCompleteEventListener);
         // const noteItem = document.querySelectorAll("#move-note-modal summary");
         // noteItem.forEach((item) => {
         //     item.addEventListener('click', function (e) {
@@ -133,7 +118,32 @@ function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
         // });
     });
 }
+function moveCompleteEventListener() {
+    moveCompleteCallback(gCurrentSelectedNote, gNoteInfo);
+}
+function moveCompleteCallback(currentSelectedNote, noteInfo) {
+    if (currentSelectedNote == null) {
+        alert("이동할 노트를 선택해주세요.");
+        return;
+    }
+    const currentSelectedNoteId = currentSelectedNote.getAttribute("data-note-id");
+    console.log(currentSelectedNoteId);
+    console.log(noteInfo.noteIdNo);
 
+    if(currentSelectedNoteId === noteInfo.noteIdNo) {
+        alert("같은 곳으로는 이동이 불가능합니다.");
+        return;
+    }
+    const url = "/api/notes/update/move";
+    const updateMoveNoteParam = {
+        "moveTargetId": noteInfo.noteIdNo,
+        "destinationId": currentSelectedNote.getAttribute("data-note-id")
+    }
+    postFetch(url, JSON.stringify(updateMoveNoteParam), function (data) {
+        renderingNoteTree2(getNoteUIParamJsonStr());
+        renderingMoveModalNoteTree(getNoteUIParamJsonStr(), noteInfo);
+    });
+}
 function createNoteTree(noteList, noteUIParam) {
     return `
             ${noteList.map((note) => {
@@ -167,7 +177,7 @@ function createNoteItem(note, noteUIParam) {
     return `
             <div class="item-group">
                 <div class="${itemParent}" open="true">
-                    <span data-note-id="${note.id}" class="${"content" + itemContent + itemContentHover}" selected="false">${note.name}</span>
+                    <span data-note-id="${note.id}" class="${"move-tree-content" + itemContent + itemContentHover}" selected="false">${note.name}</span>
                 </div>
                 ${note.groupYn === 1 ? createChildNoteTree(note, noteUIParam, createNoteTree) : ''}
             </div>
