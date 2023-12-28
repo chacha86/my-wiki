@@ -11,8 +11,9 @@
     <div class="modal-box">
         <h3 class="font-bold text-lg">노트 이동</h3>
 
-<!--        <ul id="move-note-modal" class="menu">-->
-<!--        </ul>-->
+        <!--        <ul id="move-note-modal" class="menu">-->
+        <!--        </ul>-->
+
         <div id="move-note-modal" class="my-menu">
 
         </div>
@@ -146,19 +147,23 @@
         </div>
     </div>
     <div class="content h-[100vh-94px] w-[100%] overflow-x-hidden overflow-y-hidden">
-        <form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
-            <div class="flex justify-between">
+        <div class="content-header flex justify-between">
+        </div>
+        <!--        <form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">-->
+        <!--            <div class="flex justify-between">-->
 
-                <input class="title block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
-                       name="title">
-                <a href="#" class="font-bold text-red-500 p-[10px]"
-                   onclick="confirmDelete()">X</a>
-            </div>
-            <div>
-                <input type="hidden" name="pageId" th:value="${pageDetail.id}">
-                <input type="hidden" name="content">
-            </div>
-        </form>
+        <!--                <input class="title block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"-->
+        <!--                       name="title">-->
+        <!--                <div>-->
+        <!--                    <a href="#" class="font-bold text-blue-500 p-[10px]">🛠️ 저장하기</a>-->
+        <!--                    <a href="#" class="font-bold text-red-500 p-[10px]">🗑️ 삭제하기</a>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div>-->
+        <!--                <input type="hidden" name="pageId" th:value="${pageDetail.id}">-->
+        <!--                <input type="hidden" name="content">-->
+        <!--            </div>-->
+        <!--        </form>-->
         <div th:replace="~{fragments/toast_editor::test}">
         </div>
     </div>

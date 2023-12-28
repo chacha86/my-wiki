@@ -25,14 +25,14 @@
         wysiwygIframe.setAttribute('spellcheck', 'false');
         document.addEventListener('keydown', handleKeyDown, {capture: true});
 
-        titleInput = document.querySelector("input[name='title']");
-        titleInput.setAttribute('spellcheck', 'false');
-        titleInput.addEventListener('keydown', function (e) {
-            if (e.keyCode === 13) {
-                e.preventDefault();
-                editor.focus();
-            }
-        });
+        // titleInput = document.querySelector("input[name='title']");
+        // titleInput.setAttribute('spellcheck', 'false');
+        // titleInput.addEventListener('keydown', function (e) {
+        //     if (e.keyCode === 13) {
+        //         e.preventDefault();
+        //         editor.focus();
+        //     }
+        // });
 
         editor.on('change', () => {
             document.querySelectorAll(".toast-editor-container a").forEach((item) => {

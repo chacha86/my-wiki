@@ -17,7 +17,6 @@ function extractIdNoFromItem(item) {
 }
 
 function changeSelectedItem(currentItemId, prevItemId, customClass) {
-
     const currentItem = document.querySelector("#" + currentItemId);
     const prevItem = document.querySelector("#" + prevItemId);
     //

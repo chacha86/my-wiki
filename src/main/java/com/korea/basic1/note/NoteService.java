@@ -122,7 +122,11 @@ public class NoteService {
 
     public void moveNoteTo(Long moveTargetId, Long destinationId) {
         Note target = getNoteById(moveTargetId);
-        target.setParent(getNoteById(destinationId));
+        Note destinationNote = null;
+        if(destinationId != -1) {
+             destinationNote = getNoteById(destinationId);
+        }
+        target.setParent(destinationNote);
         noteRepository.save(target);
     }
 

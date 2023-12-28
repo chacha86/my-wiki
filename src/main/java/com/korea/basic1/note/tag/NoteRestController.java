@@ -83,11 +83,19 @@ public class NoteRestController {
     @Getter
     @Setter
     private static class NotePageResultDto {
+        private Long noteId;
+        private Long pageId;
         private List<NotePageDto> notePageDtoList;
         private NoteUIParam noteUIParam;
     }
+    @Getter
+    @Setter
+    private static class PageListParamDto {
+        private Long noteId;
+        private Long pageId;
+    }
     @RequestMapping("/{noteId}/pages")
-    public String getPages(@PathVariable Long noteId, @RequestBody NoteUIParam noteUIParam) {
+    public String getPages(@PathVariable Long noteId, @RequestBody PageListParamDto pageListParamDto) {
         List<NotePage> notePageList = notePageService.getNotePageListByNoteId(noteId);
         List<NotePageDto> notePageDtoList = notePageService.getNotePageDtoList(notePageList);
         String jsonStr = null;
@@ -96,8 +104,10 @@ public class NoteRestController {
             objectMapper.registerModule(new JavaTimeModule());
             NotePageResultDto notePageResultDto = new NotePageResultDto();
 
+            notePageResultDto.setNoteId(noteId);
+            notePageResultDto.setPageId(pageListParamDto.getPageId());
             notePageResultDto.setNotePageDtoList(notePageDtoList);
-            notePageResultDto.setNoteUIParam(noteUIParam);
+//            notePageResultDto.setNoteUIParam(noteUIParam);
 
             jsonStr = objectMapper.writeValueAsString(notePageResultDto);
 

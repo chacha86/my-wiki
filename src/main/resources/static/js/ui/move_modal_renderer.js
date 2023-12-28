@@ -29,7 +29,17 @@ function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
 
         const noteItemList = document.querySelector("#move-note-modal");
 
-        const html = `
+        let itemContent = " inline-block w-[90%] p-[5px] cursor-default";
+        let itemContentHover = " hover:bg-gray-200 hover:rounded-md";
+
+        let html = "";
+        html += `<div >
+            <span data-note-id="-1" class="${"move-tree-content" + itemContent + itemContentHover}" selected="false">
+                최상단
+            </span>
+        </div>`;
+
+        html += `
             ${createNoteTree(data.noteTree, data.noteUIParam)}
         `;
 
@@ -37,7 +47,6 @@ function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
 
         let parentItems = document.querySelectorAll(".parent");
 
-        let itemContentHover = " hover:bg-gray-200 hover:rounded-md";
         let collapse = " inline-block w-[20px] text-center text-[1.3rem] shadow border border-black select-none"
         let collapseHover = " hover:font-bold hover:bg-gray-200 cursor-pointer";
         let collapseNeg = " bg-gray-200 shadow-inner border border-black";
@@ -127,8 +136,6 @@ function moveCompleteCallback(currentSelectedNote, noteInfo) {
         return;
     }
     const currentSelectedNoteId = currentSelectedNote.getAttribute("data-note-id");
-    console.log(currentSelectedNoteId);
-    console.log(noteInfo.noteIdNo);
 
     if(currentSelectedNoteId === noteInfo.noteIdNo) {
         alert("같은 곳으로는 이동이 불가능합니다.");
@@ -167,8 +174,8 @@ function createChildNoteTree(note, noteUIParam, recurFunc) {
 
 function createNoteItem(note, noteUIParam) {
     let item = " h-[50px] p-[5px]";
-    let itemContent = " inline-block w-[90%] p-[5px]";
-    let itemContentHover = " hover:bg-gray-200 hover:rounded-md cursor-default";
+    let itemContent = " inline-block w-[90%] p-[5px] cursor-default";
+    let itemContentHover = " hover:bg-gray-200 hover:rounded-md";
     let collapse = " inline-block w-[20px] text-center text-[1.3rem] shadow border border-black select-none"
     let collapseHover = " hover:font-bold hover:bg-gray-200 cursor-pointer";
     let collapseNeg = " bg-gray-200 shadow-inner border border-black";
