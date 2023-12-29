@@ -59,11 +59,11 @@ public class NoteProcessingService {
 
     public SearchedResult getSearchedNoteAndPageList(NoteParam noteParam) {
         String keyword = noteParam.getKeyword();
-        List<Note> noteList = noteService.getNoteListByKeyword(keyword);
+        List<NoteDto> noteDtoList = noteService.getParentNoteDtoListByKeyword(keyword, 0);
         Sort sort = Sort.by(noteParam.getSortDirection(), noteParam.getSort());
-        List<NotePage> pageList = notePageService.getNotePageListByKeyword(keyword, sort);
+        List<NotePageDto> pageDtoList = notePageService.getNotePageDtoListByKeyword(keyword, sort);
 
-        return new SearchedResult(keyword, noteList, pageList);
+        return new SearchedResult(keyword, noteDtoList, pageDtoList);
     }
 
     public List<NotePage> getNotePageListByNoteParam(NoteParam noteParam) {

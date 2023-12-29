@@ -27,7 +27,7 @@ public class NoteParam {
     private String sort;
     private Sort.Direction sortDirection;
 
-    NoteParam() {
+    public NoteParam() {
         this.keyword = "";
         this.sort = SortTarget.UPDATE_DATE.getValue();
         this.sortDirection = Sort.Direction.DESC;

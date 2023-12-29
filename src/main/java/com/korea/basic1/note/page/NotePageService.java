@@ -4,6 +4,7 @@ import com.korea.basic1.note.Note;
 import com.korea.basic1.note.NotePageDto;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +60,16 @@ public class NotePageService {
         notePageRepository.deleteAll(notePageList);
     }
 
+    public List<NotePageDto> getNotePageDtoListByKeyword(String keyword, Sort sort) {
+        List<NotePage> notePageList = getNotePageListByKeyword(keyword, sort);
+        List<NotePageDto> notePageDtoList = new ArrayList<>();
+        for (NotePage notePage : notePageList) {
+            NotePageDto notePageDto = notePage.toDto();
+            notePageDto.setNotePageDetailDto(notePage.getNotePageDetail().toDto());
+            notePageDtoList.add(notePageDto);
+        }
+        return notePageDtoList;
+    }
     public List<NotePage> getNotePageListByKeyword(String keyword, Sort sort) {
         return notePageRepository.findByTitleContaining(keyword, sort);
     }

@@ -9,4 +9,5 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     List<Note> findByParentId(Long parentId);
 
     List<Note> findAllByNameContaining(String keyword);
+    List<Note> findAllByNameContainingAndGroupYn(String keyword, int groupYn);
 }

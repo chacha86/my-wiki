@@ -195,4 +195,27 @@ public class NoteRestController {
         noteService.moveNoteTo(updateMoveNoteParamDto.getMoveTargetId(), updateMoveNoteParamDto.getDestinationId());
         return "{\"msg\" : \"노트를 이동하였습니다.\"}";
     }
+
+    @Getter
+    @Setter
+    private static class SearchParamDto {
+        private String keyword;
+    }
+    @RequestMapping("/search")
+    public String search(@RequestBody SearchParamDto searchParamDto) {
+        NoteParam noteParam = new NoteParam();
+        noteParam.setKeyword(searchParamDto.getKeyword());
+        SearchedResult searchedResult = noteProcessingService.getSearchedNoteAndPageList(noteParam);
+
+        String jsonStr = null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            jsonStr = objectMapper.writeValueAsString(searchedResult);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return jsonStr;
+    }
 }

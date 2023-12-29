@@ -36,4 +36,13 @@ public class Note {
     @OneToMany(mappedBy = "note")
     private List<NotePage> pageList = new ArrayList<>();
 
+    public NoteDto toDto() {
+        return NoteDto.builder()
+                .id(id)
+                .name(name)
+                .createDate(createDate)
+                .updateDate(updateDate)
+                .groupYn(groupYn)
+                .build();
+    }
 }

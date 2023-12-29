@@ -132,4 +132,4 @@ function renderingNotePage(noteIdNo) {
     });
 }
 
-export {renderingNotePage}
+export {renderingNotePage, selectedPageId}

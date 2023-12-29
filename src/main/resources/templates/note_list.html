@@ -46,15 +46,12 @@
             <li>
                 <label class="swap swap-rotate hover:text-white hover:bg-gray-600 p-[5px]">
                     <input type="checkbox" id="nav-toggle"/>
-                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                         viewBox="0 0 512 512">
-                        <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/>
-                    </svg>
-                    <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                         viewBox="0 0 512 512">
-                        <polygon
-                                points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/>
-                    </svg>
+                    <i class="swap-off fill-current fa-solid fa-up-right-and-down-left-from-center"></i>
+                    <!--                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"-->
+                    <!--                         viewBox="0 0 512 512">-->
+                    <!--                        <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/>-->
+                    <!--                    </svg>-->
+                    <i class="swap-on fill-current fa-solid fa-down-left-and-up-right-to-center"></i>
                 </label>
             </li>
         </ul>
@@ -117,27 +114,29 @@
                 </ul>
                 <div class="absolute top-[90%]">
                     <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"
-                          class="flex relative justify-between items-center">
+                          class="flex relative justify-between items-center" onsubmit="return false;">
                         <input type="text" placeholder="Search" name="keyword"
                                class="input input-bordered text-black w-full max-w-xs"
                                id="search-input" autocomplete="off">
-                        <input type="submit" class="btn text-white hover:text-black" value="search">
-                        <div class="searchBox hidden absolute z-10 bottom-[100%] left-[0] bg-gray-600 bg-opacity-[98%] h-[50vh] w-[100%] p-[20px]">
+                        <div id="search-box" class="searchBox hidden absolute z-10 bottom-[100%] left-[0] bg-gray-600 bg-opacity-[98%] h-[50vh] w-[100%] p-[20px]">
                             <div class="content border h-[100%] border-white overflow-scroll">
-                                <ul class="m-[10px]" th:if="${searchedResult}">
-                                    <li th:each="note : ${searchedResult.searchedNoteList}"
-                                        class="hover:bg-gray-400 px-[0.5rem]"><a
-                                            th:href="@{|/note/${note.id}?keyword=${searchedResult.keyword}|}"
-                                            class="inline-block w-[100%]" th:text="${note.name}"
-                                            th:classappend="${note.id == noteDetail.id} ? 'bg-gray-400' : ''"></a></li>
-                                    <li th:unless="${#lists.isEmpty(searchedResult.searchedNotePageList)}"
-                                        th:each="notePage : ${searchedResult.searchedNotePageList}"
-                                        class="hover:bg-gray-400 px-[0.5rem]">
-                                        <a
-                                                class="inline-block w-[100%]"
-                                                th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "
-                                                th:text="${notePage.title}"></a></li>
+
+                                <ul id="search-result-list" class="m-[10px]">
                                 </ul>
+                                <!--                                <ul class="m-[10px]" th:if="${searchedResult}">-->
+                                <!--                                    <li th:each="note : ${searchedResult.searchedNoteList}"-->
+                                <!--                                        class="hover:bg-gray-400 px-[0.5rem]"><a-->
+                                <!--                                            th:href="@{|/note/${note.id}?keyword=${searchedResult.keyword}|}"-->
+                                <!--                                            class="inline-block w-[100%]" th:text="${note.name}"-->
+                                <!--                                            th:classappend="${note.id == noteDetail.id} ? 'bg-gray-400' : ''"></a></li>-->
+                                <!--                                    <li th:unless="${#lists.isEmpty(searchedResult.searchedNotePageList)}"-->
+                                <!--                                        th:each="notePage : ${searchedResult.searchedNotePageList}"-->
+                                <!--                                        class="hover:bg-gray-400 px-[0.5rem]">-->
+                                <!--                                        <a-->
+                                <!--                                                class="inline-block w-[100%]"-->
+                                <!--                                                th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "-->
+                                <!--                                                th:text="${notePage.title}"></a></li>-->
+                                <!--                                </ul>-->
                             </div>
                         </div>
                     </form>
@@ -149,21 +148,6 @@
     <div class="content h-[100vh-94px] w-[100%] overflow-x-hidden overflow-y-hidden">
         <div class="content-header flex justify-between">
         </div>
-        <!--        <form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">-->
-        <!--            <div class="flex justify-between">-->
-
-        <!--                <input class="title block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"-->
-        <!--                       name="title">-->
-        <!--                <div>-->
-        <!--                    <a href="#" class="font-bold text-blue-500 p-[10px]">🛠️ 저장하기</a>-->
-        <!--                    <a href="#" class="font-bold text-red-500 p-[10px]">🗑️ 삭제하기</a>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--            <div>-->
-        <!--                <input type="hidden" name="pageId" th:value="${pageDetail.id}">-->
-        <!--                <input type="hidden" name="content">-->
-        <!--            </div>-->
-        <!--        </form>-->
         <div th:replace="~{fragments/toast_editor::test}">
         </div>
     </div>

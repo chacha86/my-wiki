@@ -1,5 +1,6 @@
 package com.korea.basic1.note;
 
+import com.korea.basic1.note.page.NotePage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -133,6 +134,15 @@ public class NoteService {
     public List<Note> getNoteListByKeyword(String keyword) {
         return noteRepository.findAllByNameContaining(keyword);
     }
+    public List<NoteDto> getNoteDtoListByKeyword(String keyword) {
+        List<Note> noteList = noteRepository.findAllByNameContaining(keyword);
+        List<NoteDto> noteDtoList = new ArrayList<>();
+        for(Note note : noteList) {
+            noteDtoList.add(note.toDto());
+        }
+        return noteDtoList;
+    }
+
     public List<NoteTreeDto> buildNoteTreeDtoForMove(Long noteId) {
 
         List<NoteTreeDto> parentNoteList = new ArrayList<>();
@@ -157,7 +167,7 @@ public class NoteService {
     }
 
     public NoteTreeDto getHavingChildrenNoteTreeDto(Note parent, Long noteId) {
-        NoteTreeDto noteTreeDto = transformNoteToDto(parent);
+        NoteTreeDto noteTreeDto = transformNoteToTreeDto(parent);
 
         if(Objects.equals(parent.getId(), noteId)) {
             return noteTreeDto;
@@ -176,7 +186,7 @@ public class NoteService {
     }
 
     public NoteTreeDto getHavingChildrenNoteTreeDto(Note parent) {
-        NoteTreeDto noteTreeDto = transformNoteToDto(parent);
+        NoteTreeDto noteTreeDto = transformNoteToTreeDto(parent);
         if (parent.getChildren().isEmpty()) {
             return noteTreeDto;
         }
@@ -189,13 +199,22 @@ public class NoteService {
         return noteTreeDto;
     }
 
-    public NoteTreeDto transformNoteToDto(Note note) {
+    public NoteTreeDto transformNoteToTreeDto(Note note) {
         return NoteTreeDto.builder()
                 .id(note.getId())
                 .name(note.getName())
                 .children(new ArrayList<>())
                 .groupYn(note.getGroupYn())
                 .build();
+    }
+
+    public List<NoteDto> getParentNoteDtoListByKeyword(String keyword, int groupYn) {
+        List<Note> noteList = noteRepository.findAllByNameContainingAndGroupYn(keyword, groupYn);
+        List<NoteDto> noteDtoList = new ArrayList<>();
+        for(Note note : noteList) {
+            noteDtoList.add(note.toDto());
+        }
+        return noteDtoList;
     }
 
 //    private NoteTreeDto transformNoteToTreeDto(Note note) {
