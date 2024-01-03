@@ -1,8 +1,10 @@
 import {postFetch} from '../note_api.js'
 import {getNoteUIParamJsonStr, renderingNoteTree2, selectedNoteId} from "./note_renderer.js";
-import {selectedPageId} from "./note_page_renderer.js";
 
-function searchKeydownEvent() {
+let searchInput = document.querySelector("#search-input");
+searchInput.addEventListener('keyup', searchKeydownEvent);
+
+function searchKeydownEvent(currentNoteId, prevNoteId) {
     const url = "/api/notes/search";
     const searchInput = document.querySelector("#search-input");
     let keyword = "";
@@ -23,9 +25,9 @@ function searchKeydownEvent() {
                 console.log(noteId);
                 const pageId = item.getAttribute("data-page-id");
                 console.log(pageId);
-                selectedNoteId = noteId;
-                selectedPageId = pageId;
-                renderingNoteTree2(getNoteUIParamJsonStr());
+                // selectedNoteId = noteId;
+                // selectedPageId = pageId;
+                renderingNoteTree2(getNoteUIParamJsonStr(), currentNoteId, prevNoteId);
             });
         });
     });

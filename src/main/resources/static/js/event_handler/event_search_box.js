@@ -1,4 +1,3 @@
-import { searchKeydownEvent } from "../ui/search_result_renderer.js";
 let body = document.querySelector("body");
 let searchBox = document.querySelector(".searchBox");
 let searchInput = document.querySelector("#search-input");
@@ -15,7 +14,6 @@ if (searchInput.value !== '') {
 //     searchBox.style.display = 'none';
 // });
 
-searchInput.addEventListener('keyup', searchKeydownEvent);
 
 body.addEventListener('click', function (e) {
     console.log(e.target);
