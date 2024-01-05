@@ -69,9 +69,11 @@ class NotePageData {
 class NotePageRenderer {
     constructor(paramData) {
         this.paramData = paramData;
+        if(paramData["notePageData"] == null || paramData["notePageData"] === undefined) {
+            this.paramData["notePageData"] = new NotePageData(null, null);
+        }
         this.notePageApi = new NotePageApi();
         this.eventHandler = new NotePageEventHandler(this.paramData);
-        this.paramData["notePageData"] = new NotePageData(null, null);
     }
 
     async render() {

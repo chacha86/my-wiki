@@ -1,5 +1,6 @@
 import {aPostFetch, postFetch} from "../note_api.js";
 import {getNoteUIParamJsonStr} from "../ui/note_list_ui_util.js";
+import {NotePageData} from "./note_page_renderer.js";
 
 class NotePageContentApi {
     async getPageContentByPage(pageIdNo) {
@@ -78,9 +79,11 @@ class NotePageContentData {
 class NotePageContentRenderer {
     constructor(paramData) {
         this.paramData = paramData;
+        if(paramData["notePageContentData"] == null || paramData["notePageContentData"] === undefined) {
+            this.paramData["notePageContentData"] = new NotePageContentData(null, null);
+        }
         this.notePageContentApi = new NotePageContentApi();
         this.eventHandler = new NotePageContentEventHandler(this.paramData);
-        this.paramData["notePageContentData"] = new NotePageContentData();
     }
 
     async render() {

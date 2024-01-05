@@ -2,12 +2,14 @@ import {aPostFetch} from "../note_api.js";
 import {addContextMenuEventToNote} from "../ui/item_menu_renderer.js";
 import {changeSelectedItem, getNoteUIParamJsonStr} from "../ui/note_list_ui_util.js";
 import {NotePageData, NotePageApi, NotePageRenderer, NotePageEventHandler} from "./note_page_renderer.js"
+import {AddNoteRenderer} from "./menu/add_note_renderer.js";
 
 class NoteApi {
     async getAllNotes(param) {
         return await aPostFetch("/api/notes", param);
     }
 }
+
 
 class NoteEventHandler {
     constructor(paramData) {
@@ -30,6 +32,11 @@ class NoteEventHandler {
                     });
                 }
             });
+        });
+        let addNoteRenderer = new AddNoteRenderer(this.paramData);
+        console.log(addNoteRenderer);
+        addNoteRenderer.render().catch((e) => {
+            console.error(e);
         });
 
     }
@@ -59,9 +66,11 @@ class NoteRenderer {
             this.paramData = new Map();
         }
 
+        if(paramData["noteData"] == null || paramData["noteData"] === undefined) {
+            this.paramData["noteData"] = new NoteData(null, null, null);
+        }
+
         this.noteApi = new NoteApi();
-        this.noteData = new NoteData(null, null, null);
-        this.paramData["noteData"] = this.noteData;
         this.eventHandler = new NoteEventHandler(this.paramData);
     }
 

@@ -154,13 +154,15 @@ function addGroupNote(noteInfo) {
 }
 
 function addNote(noteInfo) {
-    let noteUIParamJson = getNoteUIParamJsonStr();
+    let noteUIParamJson = getNoteUIParamJsonStr(); // api 호출 후
     const noteIdNo = noteInfo.noteIdNo;
     const url = "/api/notes/add/" + noteIdNo;
     noteUIParamJson = addOpenList(noteUIParamJson, noteIdNo);
     postFetch(url, noteUIParamJson, function (data) {
-        renderingNoteTree2(noteUIParamJson);
+        renderingNoteTree2(noteUIParamJson); // 렌더링
     });
+
+    // 후처리
 }
 
 let renameNoteInfo = null;
@@ -175,7 +177,6 @@ function renameNoteModal(noteInfo) {
     renameModal.show();
 }
 function myEventListner(event) {
-    console.log('============================sdkfjsdlkf');
     renameNote(event, renameNoteInfo);
 }
 
