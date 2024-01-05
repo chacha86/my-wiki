@@ -14,15 +14,38 @@ class NoteApi {
     }
 }
 
-class NoteRenderer {
+class NoteEventHandler {
+    addEvent() {
+        addContextMenuEventToNote();
+        document.querySelectorAll("#note-item-list li a").forEach(item => {
+            item.addEventListener("click", (e) => {
+                const noteId = item.parentElement.getAttribute("id");
+                if (noteId != null) {
+                    const noteIdNo = noteId.split("-")[1];
+                    this.notePage.renderingNotePage(noteIdNo, null);
 
-    constructor(note) {
-        this.note = note;
+                    this.prevNoteId = this.selectedNoteId;
+                    changeSelectedItem(noteId, this.prevNoteId, " bg-gray-500 text-white rounded-md");
+                    this.selectedNoteId = noteId;
+
+                    console.log(this.prevNoteId);
+                    console.log(this.selectedNoteId);
+                }
+            });
+        });
+    }
+}
+
+class NoteRenderer {
+    constructor(noteApi, eventHandler) {
+        this.noteApi = noteApi;
+        this.eventHandler = eventHandler;
     }
 
-    renderSideNoteTree() {
+    async render() {
 
-        let data = this.note.getSideNoteTree(getNoteUIParamJsonStr());
+        let data = await this.noteApi.getAllNotes(getNoteUIParamJsonStr());
+
         const noteItemList = document.querySelector("#note-item-list");
 
         const html = `
@@ -30,6 +53,8 @@ class NoteRenderer {
         `;
 
         noteItemList.innerHTML = html;
+
+        this.eventHandler.addEvent();
     }
 
     createNoteTree(noteList, noteUIParam) {
@@ -235,4 +260,4 @@ function createNoteItem(note, noteUIParam) {
         `
 }
 
-export {Note, NoteRenderer, renderingNoteTree2, getNoteUIParamJsonStr, selectedNoteId, NoteApi}
+export {Note, NoteRenderer, renderingNoteTree2, getNoteUIParamJsonStr, selectedNoteId, NoteApi, NoteEventHandler}

@@ -10,4 +10,4 @@ console.log(eventTarget);
 eventTarget.addEvent(event);
 
 eventTarget.setEventAllElement();
-
+1
