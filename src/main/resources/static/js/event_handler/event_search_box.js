@@ -16,7 +16,6 @@ if (searchInput.value !== '') {
 
 
 body.addEventListener('click', function (e) {
-    console.log(e.target);
     if (e.target.id !== 'search-input' && e.target.id !== 'search-box') {
         searchBox.style.display = 'none';
     }

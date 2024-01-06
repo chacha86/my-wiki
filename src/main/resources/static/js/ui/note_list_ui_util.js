@@ -8,9 +8,11 @@ function initScrollPosition(noteSideScrollPosition, pageSideScrollPosition) {
 function getIdNoFromId(id) {
     return id.split('-')[1];
 }
+
 function getItemTypeFromId(id) {
     return id.split('-')[0];
 }
+
 function extractIdNoFromItem(item) {
     let itemId = item.getAttribute('id');
     return getIdNoFromId(itemId);
@@ -109,6 +111,7 @@ function submitWithOpenList(paramTag) {
 
     form.submit();
 }
+
 function openProfilePop() {
     let html = `
         <div class="w-[500px] h-[600px] bg-blue-500 absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-[999] flex flex-col justify-around items-center">

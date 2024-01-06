@@ -1,9 +1,6 @@
 import {aPostFetch} from "../note_api.js";
-import {addContextMenuEventToNote} from "../ui/item_menu_renderer.js";
 import {changeSelectedItem, getNoteUIParamJsonStr} from "../ui/note_list_ui_util.js";
-import {NotePageData, NotePageApi, NotePageRenderer, NotePageEventHandler} from "./note_page_renderer.js"
-import {AddNoteRenderer} from "./menu/add_note_renderer.js";
-
+import {NoteEventHandler} from "./note_event_handler.js";
 class NoteApi {
     async getAllNotes(param) {
         return await aPostFetch("/api/notes", param);
@@ -11,50 +8,27 @@ class NoteApi {
 }
 
 
-class NoteEventHandler {
-    constructor(paramData) {
-        this.paramData = paramData;
-        this.noteData = paramData["noteData"];
-    }
-
-    addEvent() {
-        addContextMenuEventToNote();
-        document.querySelectorAll("#note-item-list li a").forEach(item => {
-            item.addEventListener("click", (e) => {
-                const noteId = item.parentElement.getAttribute("id");
-                if (noteId != null) {
-                    this.noteData.prevNoteId = this.noteData.selectedNoteId;
-                    changeSelectedItem(noteId, this.noteData.prevNoteId, " bg-gray-500 text-white rounded-md");
-                    this.noteData.selectedNoteId = noteId;
-                    let notePageRenderer = new NotePageRenderer(this.paramData);
-                    notePageRenderer.render().catch((e) => {
-                        console.log(e)
-                    });
-                }
-            });
-        });
-        let addNoteRenderer = new AddNoteRenderer(this.paramData);
-        console.log(addNoteRenderer);
-        addNoteRenderer.render().catch((e) => {
-            console.error(e);
-        });
-
-    }
-}
 
 class NoteData {
-    constructor(selectedNoteId, prevNoteId) {
-        this.selectedNoteId = selectedNoteId;
-        this.prevNoteId = prevNoteId;
+    constructor() {
+        this.selectedNoteId = null;
+        this.prevNoteId = null;
+        this.noteInfo = null;
+        this.mousePos = null;
     }
 
     getSelectedNoteNo() {
         return this.getNo(this.selectedNoteId);
     }
+
     getPrevNoteNo() {
         return this.getNo(this.prevNoteId);
     }
+
     getNo(id) {
+        if (id == null) {
+            return null;
+        }
         return id.split("-")[1];
     }
 }
@@ -62,26 +36,30 @@ class NoteData {
 class NoteRenderer {
     constructor(paramData) {
         this.paramData = paramData;
-        if(paramData==null || !paramData instanceof Map) {
+        if (paramData == null || !paramData instanceof Map) {
             this.paramData = new Map();
         }
 
-        if(paramData["noteData"] == null || paramData["noteData"] === undefined) {
-            this.paramData["noteData"] = new NoteData(null, null, null);
+        if (paramData["noteData"] == null || paramData["noteData"] === undefined) {
+            this.paramData["noteData"] = new NoteData();
         }
 
         this.noteApi = new NoteApi();
         this.eventHandler = new NoteEventHandler(this.paramData);
+        this.renderTarget = "note-item-list";
     }
 
     async render() {
 
         let data = await this.noteApi.getAllNotes(getNoteUIParamJsonStr());
 
-        const noteItemList = document.querySelector("#note-item-list");
+        const noteItemList = document.querySelector("#" + this.renderTarget);
+        noteItemList.innerHTML = "";
 
         const html = `
-            ${this.createNoteTree(data.noteTree, data.noteUIParam)}
+            <ul>
+                ${this.createNoteTree(data.noteTree, data.noteUIParam)}
+            </ul>
         `;
 
         noteItemList.innerHTML = html;
@@ -89,6 +67,15 @@ class NoteRenderer {
     }
 
     postRender() {
+        let noteData = this.paramData["noteData"];
+
+        if(noteData.selectedNoteId != null) {
+            const selectedItem = document.querySelector("#" + noteData.selectedNoteId);
+            let originClass = selectedItem.getAttribute("class");
+            let customClass = " bg-gray-500 text-white rounded-md";
+            let newClass = originClass + customClass;
+            selectedItem.setAttribute("class", newClass);
+        }
         this.eventHandler.addEvent();
     }
 
@@ -125,4 +112,4 @@ class NoteRenderer {
     }
 }
 
-export {NoteApi, NoteEventHandler, NoteRenderer, NoteData};
+export {NoteApi, NoteRenderer, NoteData};

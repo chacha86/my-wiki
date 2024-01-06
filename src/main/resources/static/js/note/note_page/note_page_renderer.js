@@ -1,7 +1,8 @@
-import {aPostFetch, postFetch} from "../note_api.js";
-import {addContextMenuEventToNote, addContextMenuEventToPage} from "../ui/item_menu_renderer.js";
-import {changeSelectedItem, getNoteUIParamJsonStr} from "../ui/note_list_ui_util.js";
-import {NotePageContentRenderer} from "./note_page_content_renderer.js";
+import {aPostFetch, postFetch} from "../../note_api.js";
+import {addContextMenuEventToNote, addContextMenuEventToPage} from "../../ui/item_menu_renderer.js";
+import {changeSelectedItem, getNoteUIParamJsonStr} from "../../ui/note_list_ui_util.js";
+import {NotePageContentRenderer} from "../note_page_content/note_page_content_renderer.js";
+
 
 class NotePageApi {
     async getAllPagesByNote(noteIdNo, param) {
@@ -15,12 +16,15 @@ class NotePageEventHandler {
         this.paramData = paramData;
     }
 
-    addEvent() {addContextMenuEventToPage()
+    addEvent() {
+        addContextMenuEventToPage()
         console.log(this.paramData);
         let notePageData = this.paramData["notePageData"];
-        let data = notePageData.getData();
-        if(data.pageId != null) {
-            const page = document.querySelector("#page-" + data.pageId);
+        console.log("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+        console.log(notePageData);
+        // let data = notePageData.getData();
+        if(notePageData.selectedPageId != null) {
+            const page = document.querySelector("#" + notePageData.selectedPageId);
             let customClass = " bg-gray-500 text-white rounded-md";
             let originClass = page.getAttribute("class")
             let newClass = originClass + customClass;
@@ -45,9 +49,9 @@ class NotePageEventHandler {
 }
 
 class NotePageData {
-    constructor(selectedPageId, prevPageId) {
-        this.selectedPageId = selectedPageId;
-        this.prevPageId = prevPageId;
+    constructor() {
+        this.selectedPageId = null;
+        this.prevPageId = null;
     }
     getSelectedPageNo() {
         return this.getNo(this.selectedPageId);
@@ -70,10 +74,11 @@ class NotePageRenderer {
     constructor(paramData) {
         this.paramData = paramData;
         if(paramData["notePageData"] == null || paramData["notePageData"] === undefined) {
-            this.paramData["notePageData"] = new NotePageData(null, null);
+            this.paramData["notePageData"] = new NotePageData();
         }
         this.notePageApi = new NotePageApi();
         this.eventHandler = new NotePageEventHandler(this.paramData);
+        this.renderTarget = "page-item-list";
     }
 
     async render() {
@@ -90,9 +95,12 @@ class NotePageRenderer {
         const data = await this.notePageApi.getAllPagesByNote(noteData.getSelectedNoteNo(), pageListParam);
 
         notePageData.setData(data);
-        const pageItemList = document.querySelector("#page-item-list");
+        const pageItemList = document.querySelector("#" + this.renderTarget);
+        pageItemList.innerHTML = "";
         const html = `
-            ${this.createNotePage(data.notePageDtoList)}
+            <ul>
+                ${this.createNotePage(data.notePageDtoList)}
+            </ul>
             `
         pageItemList.innerHTML = html;
         this.postRender();

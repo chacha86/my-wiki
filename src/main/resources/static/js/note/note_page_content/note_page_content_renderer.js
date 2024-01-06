@@ -1,6 +1,6 @@
-import {aPostFetch, postFetch} from "../note_api.js";
-import {getNoteUIParamJsonStr} from "../ui/note_list_ui_util.js";
-import {NotePageData} from "./note_page_renderer.js";
+import {aPostFetch, postFetch} from "../../note_api.js";
+import {getNoteUIParamJsonStr} from "../../ui/note_list_ui_util.js";
+import {NotePageData} from "../note_page/note_page_renderer.js";
 
 class NotePageContentApi {
     async getPageContentByPage(pageIdNo) {
@@ -84,6 +84,7 @@ class NotePageContentRenderer {
         }
         this.notePageContentApi = new NotePageContentApi();
         this.eventHandler = new NotePageContentEventHandler(this.paramData);
+        this.renderTarget = "content-header";
     }
 
     async render() {
@@ -99,31 +100,13 @@ class NotePageContentRenderer {
                     <a id="page-delete-btn" class="font-bold text-red-500 p-[10px]">🗑️ 삭제하기</a>
                 </div>`;
 
-        const contentHeader = document.querySelector(".content-header");
+        const contentHeader = document.querySelector("#" + this.renderTarget);
         contentHeader.innerHTML = html;
         this.postRender();
     }
 
     postRender() {
         this.eventHandler.addEvent();
-    }
-
-    createNotePageItem(notePageDto) {
-        let pageClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
-        let pageLinkClass = "block p-[10px] text-[15px] hover:cursor-pointer";
-        return `
-            <li class="${pageClass}" id="page-${notePageDto.id}" data-page-title="${notePageDto.title}">
-                <a class="${pageLinkClass}" id="page-${notePageDto.id}">${notePageDto.title}</a>
-            </li>
-        `
-    }
-
-    createNotePage(pageDtoList) {
-        return `
-            ${pageDtoList.map((notePageDto) => {
-            return `${this.createNotePageItem(notePageDto)}`;
-        }).join('')}
-        `
     }
 }
 

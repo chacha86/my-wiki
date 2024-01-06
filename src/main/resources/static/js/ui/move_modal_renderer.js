@@ -16,8 +16,6 @@ let gNoteInfo = null;
 
 function renderingMoveModalNoteTree(noteUIParam, noteInfo) {
     const url = "/api/notes/move";
-    console.log("------------------------------123");
-    console.log(noteInfo);
     const moveNoteParam = {
         "noteId": noteInfo.noteIdNo,
         "noteUIParam": JSON.parse(noteUIParam)

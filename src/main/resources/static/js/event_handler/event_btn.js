@@ -2,7 +2,7 @@ import {getIdNoFromId} from "../ui/note_list_ui_util.js";
 import {addNotePage, addGroupNote, getNoteInfo} from "../ui/item_menu_renderer.js";
 import {selectedNoteId} from "../ui/note_renderer.js";
 
-let btn = document.querySelector("#add-note-btn");
+let btn = document.querySelector("#add-page-btn");
 btn.setAttribute("class", btn.getAttribute("class") + " hover:cursor-pointer")
 btn.addEventListener("click", function() {
     if(selectedNoteId === null) {
