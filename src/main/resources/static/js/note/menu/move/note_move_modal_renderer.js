@@ -2,12 +2,14 @@ import {NoteData} from "../../note_renderer.js";
 import {NoteMenuBusiness} from "../note_menu_business.js";
 import {NoteMoveModalEventHandler} from "./note_move_modal_event_handler.js";
 import {getNoteUIParamJsonStr} from "../../../ui/note_list_ui_util.js";
+import {NoteMenuApi} from "../note_menu_api.js";
 
 class NoteMoveModalData {
 
     constructor() {
         this.selectedNoteIdNo = null;
         this.targetNoteIdNo = null;
+        this.moveNoteTree = null;
     }
 
     getSelectedNoteId() {
@@ -17,13 +19,12 @@ class NoteMoveModalData {
 class NoteMoveModalRenderer {
     constructor(paramData) {
         this.paramData = paramData;
-        console.log(paramData);
         let dataName = "noteMoveModalData";
         if (paramData[dataName] == null || paramData[dataName] === undefined) {
             this.paramData[dataName] = new NoteMoveModalData();
         }
         this.eventHandler = new NoteMoveModalEventHandler(this.paramData);
-        this.business = new NoteMenuBusiness(this.paramData);
+        this.noteMenuApi = new NoteMenuApi();
         this.renderTarget = "move-note-modal";
     }
 
@@ -34,10 +35,10 @@ class NoteMoveModalRenderer {
         noteMoveModalData.targetNoteIdNo = noteData.noteInfo.noteIdNo;
 
         const noteItemList = document.querySelector("#" + this.renderTarget);
-        let data = await this.business.moveNote(getNoteUIParamJsonStr());
         let itemContent = " inline-block w-[90%] p-[5px] cursor-default";
         let itemContentHover = " hover:bg-gray-200 hover:rounded-md";
 
+        let data = await this.noteMenuApi.moveNote(getNoteUIParamJsonStr());
 
         noteItemList.innerHTML = "";
         let html = "";

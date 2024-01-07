@@ -4,12 +4,13 @@ import {postFetch} from "../../../note_api.js";
 import {getNoteUIParamJsonStr, renderingNoteTree2} from "../../../ui/note_renderer.js";
 import {renderingMoveModalNoteTree} from "../../../ui/move_modal_renderer.js";
 import {NoteMoveModalRenderer} from "./note_move_modal_renderer.js";
+import {NoteMenuApi} from "../note_menu_api.js";
 
 class NoteMoveModalEventHandler {
     constructor(paramData) {
         this.paramData = paramData;
         this.noteMoveModalData = this.paramData["noteMoveModalData"];
-        this.noteMenuBusiness = new NoteMenuBusiness(this.paramData);
+        this.noteMenuApi = new NoteMenuApi();
     }
 
     addEvent() {
@@ -79,7 +80,7 @@ class NoteMoveModalEventHandler {
             "destinationId": currentSelectedNoteId
         }
 
-        let msg = await this.noteMenuBusiness.updateMove(updateMoveNoteParam);
+        let msg = await this.noteMenuApi.updateMove(JSON.stringify(updateMoveNoteParam));
         console.log(msg);
         let noteRenderer = new NoteRenderer(this.paramData);
         noteRenderer.render().catch((e) => {

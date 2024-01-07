@@ -1,5 +1,6 @@
 import {NoteMenuApi} from "./note_menu_api.js";
 import {NoteMoveModalRenderer} from "./move/note_move_modal_renderer.js";
+import {getNoteUIParamJsonStr} from "../../ui/note_list_ui_util.js";
 
 class NoteMenuBusiness {
     constructor(paramData) {
@@ -45,7 +46,7 @@ class NoteMenuBusiness {
     }
     async moveNoteModal(noteId, noteUIParam) {
         const moveModal = document.querySelector('#my_modal_2');
-
+        this.paramData["moveNoteTree"] = await this.moveNote(getNoteUIParamJsonStr());
         let noteMoveModalRenderer = new NoteMoveModalRenderer(this.paramData);
         noteMoveModalRenderer.render();
         moveModal.show();

@@ -8,7 +8,6 @@ class NoteEventHandler {
     constructor(paramData) {
         this.paramData = paramData;
         this.noteData = paramData["noteData"];
-        this.noteMenuBusiness = new NoteMenuBusiness();
     }
 
     addEvent() {
