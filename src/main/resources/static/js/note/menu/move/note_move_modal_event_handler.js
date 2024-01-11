@@ -1,25 +1,20 @@
-import {NoteMenuBusiness} from "../note_menu_business.js";
-import {NoteRenderer} from "../../note_renderer.js";
-import {postFetch} from "../../../note_api.js";
-import {getNoteUIParamJsonStr, renderingNoteTree2} from "../../../ui/note_renderer.js";
-import {renderingMoveModalNoteTree} from "../../../ui/move_modal_renderer.js";
+import {NoteData, NoteRenderer} from "../../note_renderer.js";
 import {NoteMoveModalRenderer} from "./note_move_modal_renderer.js";
 import {NoteMenuApi} from "../note_menu_api.js";
+import {getNoteUIParamJsonStr} from "../../../ui/note_list_ui_util.js";
 
 class NoteMoveModalEventHandler {
-    constructor(paramData) {
-        this.paramData = paramData;
-        this.noteMoveModalData = this.paramData["noteMoveModalData"];
+    constructor(renderer) {
+        this.renderer = renderer;
         this.noteMenuApi = new NoteMenuApi();
     }
 
-    addEvent() {
-        let collapseItems = document.querySelectorAll(".parent .move-tree-collapse");
+    renderCollapseIcon(collapseItems) {
+
         let collapse = " inline-block w-[20px] text-center text-[1.3rem] shadow border border-black select-none"
         let collapseHover = " hover:font-bold hover:bg-gray-200 cursor-pointer";
         let collapseNeg = " bg-gray-200 shadow-inner border border-black";
 
-        console.log(this.noteMoveModalData)
         collapseItems.forEach((item) => {
             item.addEventListener("click", () => {
                 let parentItem = item.parentElement;
@@ -39,56 +34,72 @@ class NoteMoveModalEventHandler {
                 }
             });
         });
+    }
 
-        let noteItem = document.querySelectorAll(".move-tree-content");
+    setSelectEffect(noteItemList, noteMoveModalData) {
+
         let prevSelectedNoteElement = null;
         let currentSelectedNoteElement = null;
 
-        noteItem.forEach((item) => {
+        noteItemList.forEach((item) => {
             item.addEventListener('click', (e) => {
-                prevSelectedNoteElement = this.getElementByDataNoteId(this.noteMoveModalData.selectedNoteIdNo);
+                prevSelectedNoteElement = this.getElementByDataNoteId(NoteData.getNo(noteMoveModalData.selectedNoteId));
+                console.log(noteMoveModalData);
                 currentSelectedNoteElement = e.target;
-                this.noteMoveModalData.selectedNoteIdNo = this.getNoteIdFromElement(currentSelectedNoteElement);
+                noteMoveModalData.selectedNoteId = NoteData.getId(this.getNoteIdFromElement(currentSelectedNoteElement));
                 if (prevSelectedNoteElement != null) {
                     prevSelectedNoteElement.classList.remove("bg-gray-500", "rounded-md");
                 }
                 currentSelectedNoteElement.classList.add("bg-gray-500", "rounded-md");
+
             });
         });
-
+    }
+    setUpdateApiToMoveBtn(moveBtn, renderParam) {
         let moveBtnDiv = document.querySelector("#move-btn");
         moveBtnDiv.innerHTML = "";
         moveBtnDiv.innerHTML = `<a>이동</a>`
-        document.querySelector("#move-btn a").addEventListener("click", this.moveCompleteCallback.bind(this));
-    }
 
-    async moveCompleteCallback() {
-        let currentSelectedNoteId = this.noteMoveModalData.selectedNoteIdNo;
-        let targetNoteId = this.noteMoveModalData.targetNoteIdNo;
-        console.log(this.noteMoveModalData);
-        if (currentSelectedNoteId == null) {
-            alert("이동할 노트를 선택해주세요.");
-            return;
-        }
-        if (currentSelectedNoteId === targetNoteId) {
-            alert("같은 곳으로는 이동이 불가능합니다.");
-            return;
-        }
+        console.log("setUpdateApiToMoveBtn");
+        console.log(renderParam);
+        document.querySelector("#move-btn a").addEventListener("click",  async () => {
 
-        const updateMoveNoteParam = {
-            "moveTargetId": targetNoteId,
-            "destinationId": currentSelectedNoteId
-        }
+            let currentSelectedNoteId = renderParam.noteMoveModalData.selectedNoteId;
 
-        let msg = await this.noteMenuApi.updateMove(JSON.stringify(updateMoveNoteParam));
-        console.log(msg);
-        let noteRenderer = new NoteRenderer(this.paramData);
-        noteRenderer.render().catch((e) => {
-            console.error(e);
-        });
-        let noteMoveModalRenderer = new NoteMoveModalRenderer(this.paramData);
-        noteMoveModalRenderer.render().catch((e) => {
-            console.error(e);
+            if (currentSelectedNoteId == null) {
+                alert("이동할 노트를 선택해주세요.");
+                return;
+            }
+            if (currentSelectedNoteId === renderParam.targetNoteId) {
+                alert("같은 곳으로는 이동이 불가능합니다.");
+                return;
+            }
+
+            const updateMoveNoteParam = {
+                "moveTargetId": NoteData.getNo(renderParam.targetNoteId),
+                "destinationId": NoteData.getNo(currentSelectedNoteId)
+            }
+            console.log(updateMoveNoteParam);
+
+            let msg = await this.noteMenuApi.updateMove(JSON.stringify(updateMoveNoteParam));
+
+            let noteRenderer = new NoteRenderer(new Map());
+            noteRenderer.render().catch((e) => {
+                console.error(e);
+            });
+            let handleParam = new Map();
+            handleParam["noteMoveModalData"] = {
+                'targetNoteId': renderParam.targetNoteId,
+                'moveNoteTree' : await this.noteMenuApi.moveNote(getNoteUIParamJsonStr())
+            };
+
+            // this.renderer.render().catch((e) => {
+            //     console.error(e);
+            // });
+            let noteMoveModalRenderer = new NoteMoveModalRenderer(handleParam);
+            noteMoveModalRenderer.render().catch((e) => {
+                console.error(e);
+            });
         });
     }
 

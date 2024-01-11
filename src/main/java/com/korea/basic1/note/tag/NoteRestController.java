@@ -59,18 +59,17 @@ public class NoteRestController {
         private NoteUIParam noteUIParam;
     }
 
-    @RequestMapping("move")
-    public String moveNote(@RequestBody MoveNoteParamDto moveNoteParamDto) {
-        List<NoteTreeDto> noteTreeForMove = noteService.buildNoteTreeDtoForMove(moveNoteParamDto.getNoteId());
+    @RequestMapping("move/{noteId}")
+    public String moveNote(@PathVariable("noteId") Long noteId) {
+        List<NoteTreeDto> noteTreeForMove = noteService.buildNoteTreeDtoForMove(noteId);
         String jsonStr = null;
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             NoteResultDto noteResultDto = new NoteResultDto();
 
-            noteResultDto.setNoteId(moveNoteParamDto.getNoteId());
+            noteResultDto.setNoteId(noteId);
             noteResultDto.setNoteTree(noteTreeForMove);
-            noteResultDto.setNoteUIParam(moveNoteParamDto.getNoteUIParam());
 
             jsonStr = objectMapper.writeValueAsString(noteResultDto);
 
@@ -83,10 +82,10 @@ public class NoteRestController {
     @Getter
     @Setter
     private static class NotePageResultDto {
-        private Long noteId;
-        private Long pageId;
+//        private Long noteId;
+//        private Long pageId;
         private List<NotePageDto> notePageDtoList;
-        private NoteUIParam noteUIParam;
+//        private NoteUIParam noteUIParam;
     }
     @Getter
     @Setter
@@ -95,7 +94,7 @@ public class NoteRestController {
         private Long pageId;
     }
     @RequestMapping("/{noteId}/pages")
-    public String getPages(@PathVariable Long noteId, @RequestBody PageListParamDto pageListParamDto) {
+    public String getPages(@PathVariable Long noteId) {
         List<NotePage> notePageList = notePageService.getNotePageListByNoteId(noteId);
         List<NotePageDto> notePageDtoList = notePageService.getNotePageDtoList(notePageList);
         String jsonStr = null;
@@ -104,8 +103,8 @@ public class NoteRestController {
             objectMapper.registerModule(new JavaTimeModule());
             NotePageResultDto notePageResultDto = new NotePageResultDto();
 
-            notePageResultDto.setNoteId(noteId);
-            notePageResultDto.setPageId(pageListParamDto.getPageId());
+//            notePageResultDto.setNoteId(noteId);
+//            notePageResultDto.setPageId(pageListParamDto.getPageId());
             notePageResultDto.setNotePageDtoList(notePageDtoList);
 //            notePageResultDto.setNoteUIParam(noteUIParam);
 

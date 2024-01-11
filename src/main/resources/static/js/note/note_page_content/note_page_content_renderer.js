@@ -1,97 +1,25 @@
-import {aPostFetch, postFetch} from "../../note_api.js";
-import {getNoteUIParamJsonStr} from "../../ui/note_list_ui_util.js";
-import {NotePageData} from "../note_page/note_page_renderer.js";
+import {NotePageContentEventHandler} from "./note_page_content_handler.js";
+import {NotePageContentApi} from "./note_page_content_api.js";
+import {NoteData} from "../note_renderer.js";
 
-class NotePageContentApi {
-    async getPageContentByPage(pageIdNo) {
-        const url = "/api/notes/pages/" + pageIdNo;
-        return await aPostFetch(url, getNoteUIParamJsonStr());
-    }
-}
-class NotePageContentEventHandler {
-    constructor(paramData) {
-        this.paramData = paramData;
-    }
 
-    addEvent() {
-        let notePageContentData = this.paramData["notePageContentData"];
-        let data = notePageContentData.getData();
-        const pageUpdateBtn = document.querySelector("#page-update-btn");
-        const pageDeleteBtn = document.querySelector("#page-delete-btn");
 
-        pageUpdateBtn.addEventListener("click", (e) => {
-            const title = document.querySelector(".title").value;
-            const content = editor.getMarkdown();
-            const url = "/api/pages/update/" + notePageIdNo;
-            console.log("---------------------> notePageIdNo : " + data.notePageDto.noteId);
-            const notePageParamDto = {
-                noteId: data.notePageDto.noteId,
-                title: title,
-                content: content
-            }
-            postFetch(url, JSON.stringify(notePageParamDto), (data) => {
-                this.note.renderingNotePage(data.noteId);
-            });
-        });
-
-        pageDeleteBtn.addEventListener("click", (e) => {
-            const url = "/api/pages/delete/" + notePageIdNo;
-            const deleteParamDto = {
-                noteId: data.notePageDto.noteId,
-            }
-
-            postFetch(url, JSON.stringify(deleteParamDto), (data) => {
-                // selectedPageId = null;
-                const contentHeader = document.querySelector(".content-header");
-                contentHeader.innerHTML = "";
-                editor.setMarkdown("");
-                this.note.renderingNotePage(data.noteId);
-            });
-        });
-
-        const titleInput = document.querySelector(".title");
-        titleInput.setAttribute('spellcheck', 'false');
-        titleInput.addEventListener('keydown', (e) => {
-            if (e.keyCode === 13) {
-                e.preventDefault();
-                editor.focus();
-            }
-        });
-
-        titleInput.value = data.notePageDto.title;
-        editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
-    }
-}
-
-class NotePageContentData {
-    constructor(data) {
-        this.data = data;
-    }
-
-    setData(data) {
-        this.data = data;
-    }
-
-    getData() {
-        return this.data;
-    }
-}
 class NotePageContentRenderer {
-    constructor(paramData) {
-        this.paramData = paramData;
-        if(paramData["notePageContentData"] == null || paramData["notePageContentData"] === undefined) {
-            this.paramData["notePageContentData"] = new NotePageContentData(null, null);
-        }
+    constructor(param) {
+        this.param = param;
         this.notePageContentApi = new NotePageContentApi();
-        this.eventHandler = new NotePageContentEventHandler(this.paramData);
+        this.eventHandler = new NotePageContentEventHandler();
+        this.notePageContentData = {
+            'data' : null
+        };
         this.renderTarget = "content-header";
     }
 
     async render() {
-        let notePageData = this.paramData["notePageData"];
-        let notePageContentData = this.paramData["notePageContentData"];
-        let data = await this.notePageContentApi.getPageContentByPage(notePageData.getSelectedPageNo());
-        notePageContentData.setData(data);
+        let notePageData = this.param["notePageData"];
+        let data = await this.notePageContentApi.getPageContentByPage(NoteData.getNo(notePageData.selectedPageId));
+        this.notePageContentData.data = data;
+
         let html = `
             <input class="title block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
                    name="title">
@@ -103,11 +31,15 @@ class NotePageContentRenderer {
         const contentHeader = document.querySelector("#" + this.renderTarget);
         contentHeader.innerHTML = html;
         this.postRender();
+        this.eventHandle();
     }
 
     postRender() {
-        this.eventHandler.addEvent();
+    }
+
+    eventHandle() {
+        this.eventHandler.addEvent(this.notePageContentData);
     }
 }
 
-export {NotePageContentData, NotePageContentEventHandler, NotePageContentRenderer}
+export {NotePageContentEventHandler, NotePageContentRenderer}

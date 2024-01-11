@@ -23,9 +23,9 @@ class NoteMenuApi {
 
         return await aPostFetch(url, noteUIParamJson);
     }
-    async moveNote(param) {
-        const url = "/api/notes/move";
-        return await aPostFetch(url, param);
+    async moveNote(noteIdNo) {
+        const url = "/api/notes/move/" + noteIdNo;
+        return await aPostFetch(url, getNoteUIParamJsonStr());
     }
 
     async updateMove(param) {

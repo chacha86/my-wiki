@@ -1,8 +1,5 @@
-import {NoteData} from "../../note_renderer.js";
-import {NoteMenuBusiness} from "../note_menu_business.js";
 import {NoteMoveModalEventHandler} from "./note_move_modal_event_handler.js";
-import {getNoteUIParamJsonStr} from "../../../ui/note_list_ui_util.js";
-import {NoteMenuApi} from "../note_menu_api.js";
+import {NoteData} from "../../note_renderer.js";
 
 class NoteMoveModalData {
 
@@ -17,30 +14,28 @@ class NoteMoveModalData {
     }
 }
 class NoteMoveModalRenderer {
-    constructor(paramData) {
-        this.paramData = paramData;
-        let dataName = "noteMoveModalData";
-        if (paramData[dataName] == null || paramData[dataName] === undefined) {
-            this.paramData[dataName] = new NoteMoveModalData();
-        }
-        this.eventHandler = new NoteMoveModalEventHandler(this.paramData);
-        this.noteMenuApi = new NoteMenuApi();
+    constructor(param) {
+        this.param = param;
+        this.eventHandler = new NoteMoveModalEventHandler(this);
         this.renderTarget = "move-note-modal";
+        this.noteMoveModalParamData = this.param["noteMoveModalData"];
+        this.noteMoveModalData = {
+            'selectedNoteId': null,
+        };
     }
 
     async render() {
 
-        let noteData = this.paramData["noteData"];
-        let noteMoveModalData = this.paramData["noteMoveModalData"];
-        noteMoveModalData.targetNoteIdNo = noteData.noteInfo.noteIdNo;
+        let data = this.noteMoveModalParamData.moveNoteTree;
+
+        console.log(data);
 
         const noteItemList = document.querySelector("#" + this.renderTarget);
         let itemContent = " inline-block w-[90%] p-[5px] cursor-default";
         let itemContentHover = " hover:bg-gray-200 hover:rounded-md";
 
-        let data = await this.noteMenuApi.moveNote(getNoteUIParamJsonStr());
-
         noteItemList.innerHTML = "";
+
         let html = "";
         html += `<div>
             <span data-note-id="-1" class="${"move-tree-content" + itemContent + itemContentHover}" selected="false">
@@ -54,13 +49,48 @@ class NoteMoveModalRenderer {
 
         noteItemList.innerHTML = html;
 
+        this.postRender();
+        this.eventHandle();
+    }
+
+    postRender() {
+        this.renderCollapseIcon();
+        this.renderSelectEffect()
+    }
+
+    eventHandle() {
+        let collapseItems = document.querySelectorAll(".parent .move-tree-collapse");
+        this.eventHandler.renderCollapseIcon(collapseItems);
+
+        let noteItemList = document.querySelectorAll(".move-tree-content");
+        this.eventHandler.setSelectEffect(noteItemList, this.noteMoveModalData);
+
+        let moveBtn = document.querySelector("#move-btn");
+        let param = {
+            'targetNoteId' : this.noteMoveModalParamData.targetNoteId,
+            'moveNoteTree' : this.noteMoveModalParamData.moveNoteTree,
+            'noteMoveModalData' : this.noteMoveModalData,
+        }
+        this.eventHandler.setUpdateApiToMoveBtn(moveBtn, param);
+    }
+    renderSelectEffect() {
+        let noteMoveModalData = this.param["noteMoveModalData"];
+        if(noteMoveModalData.targetNoteId != null) {
+            let targetNoteIdNo = NoteData.getNo(noteMoveModalData.targetNoteId);
+            const selectedItem = document.querySelector(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
+            let originClass = selectedItem.getAttribute("class");
+            let customClass = " bg-gray-300 rounded-md";
+            let newClass = originClass + customClass;
+            selectedItem.setAttribute("class", newClass);
+        }
+    }
+    renderCollapseIcon() {
         let parentItems = document.querySelectorAll(".parent");
 
         let collapse = " inline-block w-[20px] text-center text-[1.3rem] shadow border border-black select-none"
         let collapseHover = " hover:font-bold hover:bg-gray-200 cursor-pointer";
-        // let collapseNeg = " bg-gray-200 shadow-inner border border-black";
 
-        parentItems.forEach(function (item) {
+        parentItems.forEach((item) => {
 
             const childList = item.parentElement.querySelector(".child-list");
             if (childList != null) {
@@ -80,20 +110,6 @@ class NoteMoveModalRenderer {
                 }
             }
         });
-
-        this.postRender();
-    }
-
-    postRender() {
-        let noteMoveModalData = this.paramData["noteMoveModalData"];
-        if(noteMoveModalData.selectedNoteIdNo != null) {
-            const selectedItem = document.querySelector(".move-tree-content[data-note-id='" + noteMoveModalData.selectedNoteIdNo + "']");
-            let originClass = selectedItem.getAttribute("class");
-            let customClass = " bg-gray-500 rounded-md";
-            let newClass = originClass + customClass;
-            selectedItem.setAttribute("class", newClass);
-        }
-        this.eventHandler.addEvent();
     }
     createNoteTree(noteList, noteUIParam) {
         return `

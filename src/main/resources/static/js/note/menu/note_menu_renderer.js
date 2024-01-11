@@ -1,24 +1,19 @@
 import {NoteMenuApi} from "./note_menu_api.js";
-import {NoteMenuEventHandle} from "./note_menu_event_handler.js";
+import {NoteMenuHandler} from "./note_menu_handler.js";
+import {NoteMenuData} from "./note_menu_data.js";
 
 class NoteMenuRenderer {
-    constructor(paramData) {
-        this.paramData = paramData;
-        let dataName = "noteMenuData";
-        // if (paramData[dataName] == null || paramData[dataName] === undefined) {
-        //     this.paramData[dataName] = new NoteMenuData();
-        // }
-        // this.noteMenuApi = new NoteMenuApi();
-        this.eventHandler = new NoteMenuEventHandle(this.paramData);
+    constructor(param) {
+        this.param = param;
+        this.eventHandler = new NoteMenuHandler();
     }
 
     async render() {
-        let noteData = this.paramData["noteData"];
+        let noteMenuData = this.param["noteMenuData"];
+        let mouseX = noteMenuData.mousePos.mouseX;
+        let mouseY = noteMenuData.mousePos.mouseY;
 
-        let mouseX = noteData.mousePos.mouseX;
-        let mouseY = noteData.mousePos.mouseY;
-
-        let menuItemList = this.getMenuItemList(noteData.noteInfo);
+        let menuItemList = this.eventHandler.getMenuItemList(noteMenuData.noteInfo);
 
         let itemMenuPopup = document.querySelector('#item-menu-popup');
         let body = document.querySelector('body');
@@ -41,61 +36,17 @@ class NoteMenuRenderer {
         `;
         body.insertAdjacentHTML('beforeend', html);
         this.postRender();
+        this.eventHandle();
     }
 
     postRender() {
-        this.eventHandler.addEvent();
     }
 
-    getMenuItemList(noteInfo) {
-        if (noteInfo == null) {
-            return [];
-        }
-
-        let del = {
-            'text': '🗑️ 삭제',
-            'url': '/api/notes/delete/' + noteInfo.noteIdNo,
-            'itemInfo': noteInfo,
-            'itemType': 'note',
-            'apiName': 'deleteNote',
-        }
-        let update = {
-            'text': '🛠️ 이름변경',
-            'url': '/api/notes/update/' + noteInfo.noteIdNo,
-            'itemInfo': noteInfo,
-            'itemType': 'note',
-            'apiName': 'renameNoteModal',
-        }
-        let move = {
-            'text': '➡️ 노트이동',
-            'url': '/api/notes/update/' + noteInfo.noteIdNo,
-            'itemInfo': noteInfo,
-            'itemType': 'note',
-            'apiName': 'moveNoteModal',
-        }
-        let addGroup = {
-            'text': '🗂️ 새그룹 추가',
-            'itemInfo': noteInfo,
-            'url': '/api/notes/add-group/' + noteInfo.noteIdNo,
-            'itemType': 'note',
-            'apiName': 'addGroupNote'
-        }
-        let addNote = {
-            'text': '➕ 새노트 추가',
-            'itemInfo': noteInfo,
-            'url': '/api/notes/add/' + noteInfo.noteIdNo,
-            'itemType': 'note',
-            'apiName': 'addNote'
-        }
-
-        let menuItemList = [del, update, move];
-
-        if (noteInfo.noteType === 'group') {
-            menuItemList.push(addGroup, addNote);
-        }
-
-        return menuItemList;
+    eventHandle() {
+        let menuItemAnchorList = document.querySelectorAll("#item-menu-popup a");
+        this.eventHandler.setApiToMenuItem(menuItemAnchorList);
     }
+
 }
 
 export {NoteMenuRenderer}

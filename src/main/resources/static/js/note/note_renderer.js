@@ -1,12 +1,12 @@
 import {aPostFetch} from "../note_api.js";
-import {changeSelectedItem, getNoteUIParamJsonStr} from "../ui/note_list_ui_util.js";
-import {NoteEventHandler} from "./note_event_handler.js";
+import {NoteMenuHandler} from "./menu/note_menu_handler.js";
+import {NoteHandler} from "./note_handler.js";
+
 class NoteApi {
     async getAllNotes(param) {
         return await aPostFetch("/api/notes", param);
     }
 }
-
 
 
 class NoteData {
@@ -18,41 +18,51 @@ class NoteData {
     }
 
     getSelectedNoteNo() {
-        return this.getNo(this.selectedNoteId);
+        return NoteData.getNo(this.selectedNoteId);
     }
 
     getPrevNoteNo() {
-        return this.getNo(this.prevNoteId);
+        return NoteData.getNo(this.prevNoteId);
     }
 
-    getNo(id) {
+    static getNo(id) {
         if (id == null) {
             return null;
         }
         return id.split("-")[1];
     }
+
+    static getId(no) {
+        return "note-" + no;
+    }
 }
 
 class NoteRenderer {
-    constructor(paramData) {
-        this.paramData = paramData;
-        if (paramData == null || !paramData instanceof Map) {
-            this.paramData = new Map();
-        }
-
-        if (paramData["noteData"] == null || paramData["noteData"] === undefined) {
-            this.paramData["noteData"] = new NoteData();
-        }
+    constructor(param) {
+        this.param = param;
+        // if (paramData == null || !paramData instanceof Map) {
+        //     this.paramData = new Map();
+        // }
+        //
+        // if (paramData["noteData"] == null || paramData["noteData"] === undefined) {
+        //     this.paramData["noteData"] = new NoteData();
+        // }
 
         this.noteApi = new NoteApi();
-        this.eventHandler = new NoteEventHandler(this.paramData);
         this.renderTarget = "note-item-list";
+        this.noteData = {
+            'selectedNoteId': null,
+            'prevNoteId': null,
+        }
+        this.noteHandler = new NoteHandler();
+        this.noteMenuHandler = new NoteMenuHandler();
     }
 
     async render() {
 
-        let data = await this.noteApi.getAllNotes(getNoteUIParamJsonStr());
-
+        // const data = await this.noteApi.getAllNotes(getNoteUIParamJsonStr());
+        // this.noteData = data;
+        let data = await this.noteHandler.getNoteData();
         const noteItemList = document.querySelector("#" + this.renderTarget);
         noteItemList.innerHTML = "";
 
@@ -64,19 +74,26 @@ class NoteRenderer {
 
         noteItemList.innerHTML = html;
         this.postRender();
+        this.eventHandle();
     }
 
     postRender() {
-        let noteData = this.paramData["noteData"];
-
-        if(noteData.selectedNoteId != null) {
-            const selectedItem = document.querySelector("#" + noteData.selectedNoteId);
+        // let noteData = this.paramData["noteData"];
+        if (this.noteData.selectedNoteId != null) {
+            const selectedItem = document.querySelector("#" + this.noteData.selectedNoteId);
             let originClass = selectedItem.getAttribute("class");
             let customClass = " bg-gray-500 text-white rounded-md";
             let newClass = originClass + customClass;
             selectedItem.setAttribute("class", newClass);
         }
-        this.eventHandler.addEvent();
+    }
+
+    eventHandle() {
+        let noteItemList = document.querySelectorAll('#note-item-list li');
+        this.noteMenuHandler.setMenuToNoteItem(noteItemList);
+
+        let noteItemAnchorList = document.querySelectorAll('#note-item-list li a');
+        this.noteHandler.setRenderPageBySelect(noteItemAnchorList, this.noteData);
     }
 
     createNoteTree(noteList, noteUIParam) {
