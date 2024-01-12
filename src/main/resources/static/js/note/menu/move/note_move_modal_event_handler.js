@@ -87,10 +87,11 @@ class NoteMoveModalEventHandler {
             noteRenderer.render().catch((e) => {
                 console.error(e);
             });
+
             let handleParam = new Map();
             handleParam["noteMoveModalData"] = {
                 'targetNoteId': renderParam.targetNoteId,
-                'moveNoteTree' : await this.noteMenuApi.moveNote(getNoteUIParamJsonStr())
+                'moveNoteTree' : await this.noteMenuApi.moveNote(NoteData.getNo(renderParam.targetNoteId)),
             };
 
             // this.renderer.render().catch((e) => {

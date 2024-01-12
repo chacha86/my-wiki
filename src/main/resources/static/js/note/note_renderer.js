@@ -29,7 +29,8 @@ class NoteData {
         if (id == null) {
             return null;
         }
-        return id.split("-")[1];
+        let idBits = id.split("-");
+        return idBits[idBits.length - 1];
     }
 
     static getId(no) {

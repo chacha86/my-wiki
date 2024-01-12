@@ -38,7 +38,7 @@ class NoteMoveModalRenderer {
 
         let html = "";
         html += `<div>
-            <span data-note-id="-1" class="${"move-tree-content" + itemContent + itemContentHover}" selected="false">
+            <span data-note-id="0" class="${"move-tree-content" + itemContent + itemContentHover}" selected="false">
                 최상단
             </span>
         </div>`;
@@ -66,12 +66,12 @@ class NoteMoveModalRenderer {
         this.eventHandler.setSelectEffect(noteItemList, this.noteMoveModalData);
 
         let moveBtn = document.querySelector("#move-btn");
-        let param = {
+        let handleParam = {
             'targetNoteId' : this.noteMoveModalParamData.targetNoteId,
             'moveNoteTree' : this.noteMoveModalParamData.moveNoteTree,
             'noteMoveModalData' : this.noteMoveModalData,
         }
-        this.eventHandler.setUpdateApiToMoveBtn(moveBtn, param);
+        this.eventHandler.setUpdateApiToMoveBtn(moveBtn, handleParam);
     }
     renderSelectEffect() {
         let noteMoveModalData = this.param["noteMoveModalData"];

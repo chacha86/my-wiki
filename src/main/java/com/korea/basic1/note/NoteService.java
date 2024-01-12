@@ -124,7 +124,7 @@ public class NoteService {
     public void moveNoteTo(Long moveTargetId, Long destinationId) {
         Note target = getNoteById(moveTargetId);
         Note destinationNote = null;
-        if(destinationId != -1) {
+        if(destinationId != 0) {
              destinationNote = getNoteById(destinationId);
         }
         target.setParent(destinationNote);
