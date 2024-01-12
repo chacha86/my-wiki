@@ -5,6 +5,10 @@ import {NoteMenuData} from "./note_menu_data.js";
 class NoteMenuRenderer {
     constructor(param) {
         this.param = param;
+        this.renderTarget = "";
+        this.noteMenuData = {
+
+        };
         this.eventHandler = new NoteMenuHandler();
     }
 

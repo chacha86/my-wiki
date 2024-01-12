@@ -24,6 +24,25 @@ class NoteData {
     getPrevNoteNo() {
         return NoteData.getNo(this.prevNoteId);
     }
+    static getElementByNoteIdNo(noteIdNo) {
+        return document.querySelector("#note-" + noteIdNo);
+    }
+
+    static getNoteIdByElement(noteElement) {
+        return noteElement.getAttribute('id');
+    }
+    static getNoteIdNoByElement(noteElement) {
+        return noteElement.getAttribute('data-note-id');
+    }
+    static getNoteInfoByNoteIdNo(noteIdNo) {
+        let noteElement = NoteData.getElementByNoteIdNo(noteIdNo);
+        console.log(noteElement);
+        return {
+            'noteIdNo': noteIdNo,
+            'noteName': noteElement.getAttribute('data-note-name'),
+            'noteType': noteElement.getAttribute('data-note-type') === "0" ? 'note' : 'group'
+        };
+    }
 
     static getNo(id) {
         if (id == null) {
@@ -41,28 +60,20 @@ class NoteData {
 class NoteRenderer {
     constructor(param) {
         this.param = param;
-        // if (paramData == null || !paramData instanceof Map) {
-        //     this.paramData = new Map();
-        // }
-        //
-        // if (paramData["noteData"] == null || paramData["noteData"] === undefined) {
-        //     this.paramData["noteData"] = new NoteData();
-        // }
 
-        this.noteApi = new NoteApi();
         this.renderTarget = "note-item-list";
         this.noteData = {
             'selectedNoteId': null,
             'prevNoteId': null,
         }
+
+        this.noteApi = new NoteApi();
         this.noteHandler = new NoteHandler();
         this.noteMenuHandler = new NoteMenuHandler();
     }
 
     async render() {
 
-        // const data = await this.noteApi.getAllNotes(getNoteUIParamJsonStr());
-        // this.noteData = data;
         let data = await this.noteHandler.getNoteData();
         const noteItemList = document.querySelector("#" + this.renderTarget);
         noteItemList.innerHTML = "";
@@ -79,7 +90,6 @@ class NoteRenderer {
     }
 
     postRender() {
-        // let noteData = this.paramData["noteData"];
         if (this.noteData.selectedNoteId != null) {
             const selectedItem = document.querySelector("#" + this.noteData.selectedNoteId);
             let originClass = selectedItem.getAttribute("class");

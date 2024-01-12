@@ -4,7 +4,7 @@ import {NotePageApi} from "./note_page_api.js";
 import {NoteData} from "../note_renderer.js";
 
 class NotePageHandler {
-    constructor(paramData) {
+    constructor() {
         this.notePageApi = new NotePageApi();
     }
 

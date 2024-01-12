@@ -1,4 +1,4 @@
-import {aPostFetch} from "../../note_api.js";
+import {aPostFetch, postFetch} from "../../note_api.js";
 import {getNoteUIParamJsonStr} from "../../ui/note_list_ui_util.js";
 
 class NoteMenuApi {
@@ -31,6 +31,15 @@ class NoteMenuApi {
     async updateMove(param) {
         const url = "/api/notes/update/move";
         return await aPostFetch(url, param);
+    }
+
+
+    async renameNote(noteInfo) {
+        const url = "/api/notes/update/" + noteInfo.noteIdNo;
+        const param = {
+            noteName: noteInfo.newNoteName
+        }
+        return await aPostFetch(url, JSON.stringify(param));
     }
 }
 

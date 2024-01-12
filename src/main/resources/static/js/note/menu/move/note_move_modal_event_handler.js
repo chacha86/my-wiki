@@ -4,8 +4,7 @@ import {NoteMenuApi} from "../note_menu_api.js";
 import {getNoteUIParamJsonStr} from "../../../ui/note_list_ui_util.js";
 
 class NoteMoveModalEventHandler {
-    constructor(renderer) {
-        this.renderer = renderer;
+    constructor() {
         this.noteMenuApi = new NoteMenuApi();
     }
 
@@ -94,9 +93,6 @@ class NoteMoveModalEventHandler {
                 'moveNoteTree' : await this.noteMenuApi.moveNote(NoteData.getNo(renderParam.targetNoteId)),
             };
 
-            // this.renderer.render().catch((e) => {
-            //     console.error(e);
-            // });
             let noteMoveModalRenderer = new NoteMoveModalRenderer(handleParam);
             noteMoveModalRenderer.render().catch((e) => {
                 console.error(e);

@@ -4,13 +4,15 @@ import {NoteMenuHandler} from "../menu/note_menu_handler.js";
 class NotePageRenderer {
     constructor(param) {
         this.param = param;
+
+        this.renderTarget = "page-item-list";
         this.notePageData = {
             'selectedPageId': null,
             'prevPageId': null,
         };
+
         this.pageHandler = new NotePageHandler();
         this.menuHandler = new NoteMenuHandler();
-        this.renderTarget = "page-item-list";
     }
 
     async render() {

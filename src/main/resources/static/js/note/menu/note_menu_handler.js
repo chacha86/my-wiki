@@ -3,10 +3,10 @@ import {NoteData, NoteRenderer} from "../note_renderer.js";
 import {NoteMoveModalRenderer} from "./move/note_move_modal_renderer.js";
 import {NoteMenuApi} from "./note_menu_api.js";
 import {NoteMenuRenderer} from "./note_menu_renderer.js";
+import {RenameModalRenderer} from "./rename/rename_modal_renderer.js";
 
 class NoteMenuHandler {
-    constructor(noteMenuData) {
-        this.noteMenuData = noteMenuData;
+    constructor() {
         this.noteMenuApi = new NoteMenuApi();
     }
 
@@ -18,13 +18,12 @@ class NoteMenuHandler {
             anchor.addEventListener('click', (event) => {
                 let apiFunc = this.getApiFunction(apiName);
                 apiFunc(noteIdNo).then((data) => {
-                    new NoteRenderer(this.noteMenuData).render().catch((error) => {
+                    new NoteRenderer(new Map()).render().catch((error) => {
                         console.error(error);
                     });
                 });
             });
         })
-
     }
 
     setMenuToNoteItem(noteItemList) {
@@ -36,7 +35,7 @@ class NoteMenuHandler {
                     'mouseX': event.clientX,
                     'mouseY': event.clientY
                 };
-                let noteInfo = this.getNoteInfoFromElement(noteItem);
+                let noteInfo = NoteData.getNoteInfoByNoteIdNo(NoteData.getNo(NoteData.getNoteIdByElement(noteItem)));
                 let data = {
                     'noteInfo': noteInfo,
                     'mousePos': mousePos
@@ -94,18 +93,14 @@ class NoteMenuHandler {
     createMenuList(menuItemList) {
         let menuList = document.createElement('ul');
         menuItemList.forEach((element) => {
-            console.log('============================>>>>>>>>>>>>>>>>>>>>>>>>');
-            console.log(element);
             let listItem = document.createElement('li');
             let anchor = document.createElement('a');
-            // anchor.setAttribute('href', element.href);
+
             anchor.setAttribute('class', 'block w-[100%] hover:bg-gray-500 rounded-md p-[5px]');
             anchor.addEventListener('click', (event) => {
                 this.getApiFunction(element.itemType, element.apiName)(element.itemInfo);
             });
-            // if (element.onclick != null) {
-            //     anchor.setAttribute('onclick', element.onclick);
-            // }
+
             anchor.innerText = element.text;
             listItem.appendChild(anchor);
             menuList.appendChild(listItem);
@@ -119,10 +114,6 @@ class NoteMenuHandler {
         baseMenuPopup.setAttribute('class', 'absolute p-[5px] left-[' + mouseX + 'px] top-[' + mouseY + 'px] bg-gray-200 w-64 h-64');
         baseMenuPopup.setAttribute('id', 'item-menu-popup');
 
-        // let baseMenuList = document.createElement('ul');
-        let noteIdNo = noteInfo.noteIdNo;
-
-        // let baseMenuListItems = getNoteMenuItemList(noteIdNo);
         let baseMenuListResult = this.createMenuList(menuItemList);
         baseMenuPopup.appendChild(baseMenuListResult);
 
@@ -137,8 +128,6 @@ class NoteMenuHandler {
     createGroupMenuPopup(mouseX, mouseY, noteInfo) {
 
         let baseMenuPopup = this.createNoteMenuPopup(mouseX, mouseY, noteInfo);
-
-
         let groupMenuItemList = this.getGroupMenuItemList(noteInfo);
         let groupMenuList = this.createMenuList(groupMenuItemList);
 
@@ -153,21 +142,21 @@ class NoteMenuHandler {
             'url': '/api/pages/delete/' + itemInfo.notePageIdNo,
             'itemInfo': itemInfo,
             'itemType': 'page',
-            'apiName': 'deletePage'
+            'apiName': '_deletePage'
         }
         let update = {
             'text': '🛠️ 이름변경',
             'url': '/api/pages/update/' + itemInfo.notePageIdNo,
             'itemInfo': itemInfo,
             'itemType': 'page',
-            'apiName': 'renamePage'
+            'apiName': '_renamePage'
         }
         let move = {
             'text': '➡️ 페이지이동',
             'url': '/page/move/' + itemInfo.notePageIdNo,
             'itemInfo': itemInfo,
             'itemType': 'page',
-            'apiName': 'movePage'
+            'apiName': '_movePage'
         }
 
         return [del, update, move];
@@ -180,7 +169,7 @@ class NoteMenuHandler {
             'url': '/api/notes/delete/' + itemInfo.noteIdNo,
             'itemInfo': itemInfo,
             'itemType': 'note',
-            'apiName': 'deleteNote',
+            'apiName': '_deleteNote',
             // 'callback' : callback
             // 'onclick': 'deleteItem(this, "note-' + noteIdNo + '"); return false;'
         }
@@ -189,14 +178,14 @@ class NoteMenuHandler {
             'url': '/api/notes/update/' + itemInfo.noteIdNo,
             'itemInfo': itemInfo,
             'itemType': 'note',
-            'apiName': 'renameNoteModal',
+            'apiName': '_renameNoteModal',
         }
         let move = {
             'text': '➡️ 노트이동',
             'url': '/api/notes/update/' + itemInfo.noteIdNo,
             'itemInfo': itemInfo,
             'itemType': 'note',
-            'apiName': 'moveNoteModal',
+            'apiName': '_moveNoteModal',
         }
 
         return [del, update, move];
@@ -235,17 +224,10 @@ class NoteMenuHandler {
 
         return menuItemList;
     }
+
     createPageMenuPopup(mouseX, mouseY, pageInfo) {
         const pageMenuItemList = this.getPageMenuItemList(pageInfo);
         return this.createBaseMenuPopup(mouseX, mouseY, pageInfo, pageMenuItemList);
-    }
-
-    getNoteInfoFromElement(element) {
-        return {
-            'noteIdNo': NoteData.getNo(element.getAttribute('id')),
-            'noteName': element.getAttribute('data-note-name'),
-            'noteType': element.getAttribute('data-note-type') === "0" ? 'note' : 'group'
-        };
     }
 
     getPageInfoFromElement(element) {
@@ -257,6 +239,7 @@ class NoteMenuHandler {
     }
 
     getApiFunction(apiName) {
+        console.log(apiName);
         switch (apiName) {
             case 'deleteNote':
                 return this.deleteNote.bind(this);
@@ -264,10 +247,10 @@ class NoteMenuHandler {
                 return this.addGroupNote.bind(this);
             case 'addNote':
                 return this.addNote.bind(this);
-            case 'renameNoteModal':
-            // return renameNoteModal;
-            case 'moveNoteModal':
-                return this.moveNoteModal.bind(this);
+            case '_renameNoteModal':
+                return this._renameNoteModal.bind(this);
+            case '_moveNoteModal':
+                return this._moveNoteModal.bind(this);
             default:
                 return null;
         }
@@ -289,20 +272,41 @@ class NoteMenuHandler {
         return await this.noteMenuApi.moveNote(noteIdNo);
     }
 
-    async moveNoteModal(moveTargetNoteIdNo, noteUIParam) {
+    async renameNote(noteIdNo) {
+        let noteInfo = NoteData.getNoteInfoByNoteIdNo(noteIdNo);
+        return await this.noteMenuApi.renameNote(noteInfo);
+    }
+
+    async _moveNoteModal(moveTargetNoteIdNo, noteUIParam) {
         const moveModal = document.querySelector('#my_modal_2');
         let param = new Map();
         param["noteMoveModalData"] = {
             'targetNoteId': NoteData.getId(moveTargetNoteIdNo),
-            'moveNoteTree' : await this.moveNote(moveTargetNoteIdNo)
+            'moveNoteTree': await this.moveNote(moveTargetNoteIdNo)
         };
-        console.log("moveNoteModal");
-        console.log(param);
         let noteMoveModalRenderer = new NoteMoveModalRenderer(param);
         noteMoveModalRenderer.render();
         moveModal.show();
     }
 
+    async _renameNoteModal(renameTargetNoteIdNo) {
+        const renameModal = document.querySelector('#my_modal_1');
+        const noteNameInput = document.querySelector('#new-note-name');
+        const renameBtn = document.querySelector('#rename-btn');
+
+        let noteInfo = NoteData.getNoteInfoByNoteIdNo(renameTargetNoteIdNo);
+        noteNameInput.value = noteInfo.noteName;
+
+        let param = new Map();
+        param["renameModalData"] = {
+            'noteInfo': noteInfo
+        };
+
+        let renameModalRenderer = new RenameModalRenderer(param);
+        renameModalRenderer.render();
+
+        renameModal.show();
+    }
 }
 
 

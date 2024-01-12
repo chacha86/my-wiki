@@ -3,7 +3,6 @@ import {postFetch} from "../../note_api.js";
 
 class NotePageContentEventHandler {
     constructor() {
-        this.notePageContentApi = new NotePageContentApi();
     }
 
     addEvent(notePageContentData) {
@@ -15,7 +14,7 @@ class NotePageContentEventHandler {
             const title = document.querySelector(".title").value;
             const content = editor.getMarkdown();
             const url = "/api/pages/update/" + notePageIdNo;
-            console.log("---------------------> notePageIdNo : " + data.notePageDto.noteId);
+
             const notePageParamDto = {
                 noteId: data.notePageDto.noteId,
                 title: title,

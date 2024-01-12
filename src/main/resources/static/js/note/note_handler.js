@@ -1,10 +1,9 @@
-import {NoteMenuRenderer} from "./menu/note_menu_renderer.js";
 import {changeSelectedItem, getNoteUIParamJsonStr} from "../ui/note_list_ui_util.js";
 import {NotePageRenderer} from "./note_page/note_page_renderer.js";
-import {NoteData, NoteApi} from "./note_renderer.js";
+import {NoteApi} from "./note_renderer.js";
 
 class NoteHandler {
-    constructor(paramData) {
+    constructor() {
         this.noteApi = new NoteApi();
     }
 

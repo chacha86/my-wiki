@@ -7,12 +7,14 @@ import {NoteData} from "../note_renderer.js";
 class NotePageContentRenderer {
     constructor(param) {
         this.param = param;
-        this.notePageContentApi = new NotePageContentApi();
-        this.eventHandler = new NotePageContentEventHandler();
+
+        this.renderTarget = "content-header";
         this.notePageContentData = {
             'data' : null
         };
-        this.renderTarget = "content-header";
+
+        this.notePageContentApi = new NotePageContentApi();
+        this.eventHandler = new NotePageContentEventHandler();
     }
 
     async render() {

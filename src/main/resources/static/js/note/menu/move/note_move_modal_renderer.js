@@ -13,6 +13,7 @@ class NoteMoveModalData {
         return "note-" + this.selectedNoteIdNo;
     }
 }
+
 class NoteMoveModalRenderer {
     constructor(param) {
         this.param = param;
@@ -21,6 +22,7 @@ class NoteMoveModalRenderer {
         this.noteMoveModalParamData = this.param["noteMoveModalData"];
         this.noteMoveModalData = {
             'selectedNoteId': null,
+            'targetNoteId': null,
         };
     }
 
@@ -67,16 +69,20 @@ class NoteMoveModalRenderer {
 
         let moveBtn = document.querySelector("#move-btn");
         let handleParam = {
-            'targetNoteId' : this.noteMoveModalParamData.targetNoteId,
-            'moveNoteTree' : this.noteMoveModalParamData.moveNoteTree,
-            'noteMoveModalData' : this.noteMoveModalData,
+            'targetNoteId': this.noteMoveModalParamData.targetNoteId,
+            'moveNoteTree': this.noteMoveModalParamData.moveNoteTree,
+            'noteMoveModalData': this.noteMoveModalData,
         }
         this.eventHandler.setUpdateApiToMoveBtn(moveBtn, handleParam);
     }
+
     renderSelectEffect() {
         let noteMoveModalData = this.param["noteMoveModalData"];
-        if(noteMoveModalData.targetNoteId != null) {
+        console.log("-==--=-=-=");
+        console.log(noteMoveModalData);
+        if (noteMoveModalData.targetNoteId != null) {
             let targetNoteIdNo = NoteData.getNo(noteMoveModalData.targetNoteId);
+            console.log(targetNoteIdNo);
             const selectedItem = document.querySelector(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
             let originClass = selectedItem.getAttribute("class");
             let customClass = " bg-gray-300 rounded-md";
@@ -84,21 +90,20 @@ class NoteMoveModalRenderer {
             selectedItem.setAttribute("class", newClass);
         }
     }
+
     renderCollapseIcon() {
         let parentItems = document.querySelectorAll(".parent");
-
         let collapse = " inline-block w-[20px] text-center text-[1.3rem] shadow border border-black select-none"
         let collapseHover = " hover:font-bold hover:bg-gray-200 cursor-pointer";
 
         parentItems.forEach((item) => {
-
             const childList = item.parentElement.querySelector(".child-list");
             if (childList != null) {
                 let collapseSpan = document.createElement("span");
-                // collapseSpan.setAttribute("class", "collapse");
+                let firstChild = item.firstChild;
+
                 collapseSpan.setAttribute("class", "move-tree-collapse " + collapse + collapseHover);
                 collapseSpan.innerHTML = "+";
-                let firstChild = item.firstChild;
                 item.insertBefore(collapseSpan, firstChild);
             }
             if (item.getAttribute("open") === "false") {
@@ -111,10 +116,12 @@ class NoteMoveModalRenderer {
             }
         });
     }
+
     createNoteTree(noteList, noteUIParam) {
-        return `
+        let targetNoteIdNo = Number(NoteData.getNo(this.noteMoveModalParamData.targetNoteId));
+        return`
             ${noteList.map((note) => {
-            if (note.groupYn === 0) {
+            if (note.groupYn === 0 && note.id !== targetNoteIdNo) {
                 return '';
             }
             return `${this.createNoteItem(note, noteUIParam)}`;
@@ -136,9 +143,6 @@ class NoteMoveModalRenderer {
         let item = " h-[50px] p-[5px]";
         let itemContent = " inline-block w-[90%] p-[5px] cursor-default";
         let itemContentHover = " hover:bg-gray-200 hover:rounded-md";
-        let collapse = " inline-block w-[20px] text-center text-[1.3rem] shadow border border-black select-none"
-        let collapseHover = " hover:font-bold hover:bg-gray-200 cursor-pointer";
-        let collapseNeg = " bg-gray-200 shadow-inner border border-black";
 
         let itemParent = "item parent" + item;
         return `
@@ -151,4 +155,5 @@ class NoteMoveModalRenderer {
         `
     }
 }
+
 export {NoteMoveModalRenderer};
