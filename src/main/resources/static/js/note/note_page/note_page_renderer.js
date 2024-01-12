@@ -6,6 +6,7 @@ class NotePageRenderer {
         this.param = param;
 
         this.renderTarget = "page-item-list";
+        this.notePageParamData = this.param["notePageData"];
         this.notePageData = {
             'selectedPageId': null,
             'prevPageId': null,
@@ -17,7 +18,7 @@ class NotePageRenderer {
 
     async render() {
 
-        const data = await this.pageHandler.getNotePageData(this.param["noteData"]);
+        const data = await this.pageHandler.getNotePageData(this.notePageParamData);
         const pageItemList = document.querySelector("#" + this.renderTarget);
         pageItemList.innerHTML = "";
         const html = `
@@ -41,11 +42,14 @@ class NotePageRenderer {
     }
 
     eventHandle() {
-        let pageItemList = document.querySelectorAll("#page-item-list li");
+        const pageItemList = document.querySelectorAll("#page-item-list li");
         this.menuHandler.setMenuToPageItem(pageItemList);
 
-        let pageItemAnchorList = document.querySelectorAll("#page-item-list li a");
+        const pageItemAnchorList = document.querySelectorAll("#page-item-list li a");
         this.pageHandler.setRenderContentByPage(pageItemAnchorList, this.notePageData);
+
+        const addPageBtn = document.querySelector("#add-page-btn");
+        this.pageHandler.setAddApiToBtn(addPageBtn, this.notePageParamData);
     }
 
     createNotePageItem(notePageDto) {

@@ -142,7 +142,7 @@ class NoteMenuHandler {
             'url': '/api/pages/delete/' + itemInfo.notePageIdNo,
             'itemInfo': itemInfo,
             'itemType': 'page',
-            'apiName': '_deletePage'
+            'apiName': 'deletePage'
         }
         let update = {
             'text': '🛠️ 이름변경',
@@ -169,7 +169,7 @@ class NoteMenuHandler {
             'url': '/api/notes/delete/' + itemInfo.noteIdNo,
             'itemInfo': itemInfo,
             'itemType': 'note',
-            'apiName': '_deleteNote',
+            'apiName': 'deleteNote',
             // 'callback' : callback
             // 'onclick': 'deleteItem(this, "note-' + noteIdNo + '"); return false;'
         }
@@ -257,11 +257,21 @@ class NoteMenuHandler {
     }
 
     async addNote(noteIdNo) {
+        this._openAddedGroupNote(noteIdNo);
         return await this.noteMenuApi.addNote(noteIdNo);
     }
 
     async addGroupNote(noteIdNo) {
+        this._openAddedGroupNote(noteIdNo);
         return await this.noteMenuApi.addGroupNote(noteIdNo);
+    }
+
+    _openAddedGroupNote(noteIdNo) {
+        const detailsElement = NoteData.getGroupNoteDetailsElementByNoteIdNo(noteIdNo);
+        const open = detailsElement.getAttribute('open')
+        if(open === null || open === undefined) {
+            detailsElement.setAttribute('open', '');
+        }
     }
 
     async deleteNote(noteIdNo) {
@@ -307,6 +317,7 @@ class NoteMenuHandler {
 
         renameModal.show();
     }
+
 }
 
 

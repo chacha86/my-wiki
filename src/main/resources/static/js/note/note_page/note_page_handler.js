@@ -2,6 +2,7 @@ import {changeSelectedItem, getNoteUIParamJsonStr} from "../../ui/note_list_ui_u
 import {NotePageContentRenderer} from "../note_page_content/note_page_content_renderer.js";
 import {NotePageApi} from "./note_page_api.js";
 import {NoteData} from "../note_renderer.js";
+import {NotePageRenderer} from "./note_page_renderer.js";
 
 class NotePageHandler {
     constructor() {
@@ -33,6 +34,37 @@ class NotePageHandler {
                         console.log(e)
                     });
                 }
+            });
+        });
+    }
+
+    setAddApiToBtn(addPageDiv, noteData) {
+
+        console.log("setAddApiToBtn");
+        console.log(noteData);
+
+        addPageDiv.innerHTML = "";
+        addPageDiv.innerHTML = "<a>+</a>";
+
+        const addPageBtn = addPageDiv.querySelector("a");
+        addPageBtn.addEventListener("click", async () => {
+            if(noteData.selectedNoteId === null) {
+                alert("Please select a note to add a new note");
+                return;
+            }
+
+            const noteElement = document.querySelector('#' + noteData.selectedNoteId);
+            console.log("noteElement");
+            console.log(noteElement);
+            const noteInfo = NoteData.getNoteInfoByNoteIdNo(NoteData.getNo(NoteData.getNoteIdByElement(noteElement)));
+            const msg = await this.notePageApi.addPage(noteInfo);
+
+            let param = new Map();
+            param["notePageData"] = noteData;
+
+            let notePageRenderer = new NotePageRenderer(param);
+            notePageRenderer.render().catch((e) => {
+                console.log(e)
             });
         });
     }

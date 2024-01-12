@@ -1,4 +1,3 @@
-import {getIdNoFromId} from "../ui/note_list_ui_util.js";
 import {addNotePage, addGroupNote, getNoteInfo} from "../ui/item_menu_renderer.js";
 import {selectedNoteId} from "../ui/note_renderer.js";
 

@@ -55,6 +55,12 @@ class NoteData {
     static getId(no) {
         return "note-" + no;
     }
+
+    static getGroupNoteDetailsElementByNoteIdNo(noteIdNo) {
+        const noteId = this.getId(noteIdNo)
+        const noteElement = document.querySelector("#" + noteId);
+        return noteElement.firstElementChild;
+    }
 }
 
 class NoteRenderer {
