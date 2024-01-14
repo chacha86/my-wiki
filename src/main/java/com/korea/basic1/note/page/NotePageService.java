@@ -24,7 +24,7 @@ public class NotePageService {
 
     public NotePage getNotePageById(Long id) {
         Optional<NotePage> optional = notePageRepository.findById(id);
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             return optional.get();
         }
         return null;
@@ -70,6 +70,7 @@ public class NotePageService {
         }
         return notePageDtoList;
     }
+
     public List<NotePage> getNotePageListByKeyword(String keyword, Sort sort) {
         return notePageRepository.findByTitleContaining(keyword, sort);
     }
@@ -91,5 +92,16 @@ public class NotePageService {
         }
 
         return notePageDtoList;
+    }
+
+    public NotePage movePage(NotePage target, Note destination) {
+
+        final int GROUP = 1;
+        if(destination == null || destination.getGroupYn() == GROUP) {
+            throw new IllegalArgumentException("페이지를 이동할 수 없습니다.");
+        }
+
+        target.setNote(destination);
+        return notePageRepository.save(target);
     }
 }

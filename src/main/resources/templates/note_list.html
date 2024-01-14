@@ -37,10 +37,10 @@
             <form th:action method="post" onsubmit="return false;">
                 <div class="my-[10px]">
                     <input type="text" class="input input-bordered w-full max-w-xs"
-                           name="noteName" id="new-note-name">
+                           name="noteName" id="new-item-text">
                 </div>
-                <div>
-                    <a id="rename-btn">OK</a>
+                <div id="rename-btn">
+                    <a>OK</a>
                 </div>
             </form>
             <form method="dialog">
@@ -105,8 +105,7 @@
             <div class="custom-scroll left-second-menu-content min-w-[150px] bg-gray-800 text-white overflow-scroll w-[250px]">
                 <div class="h-[10%] flex items-center justify-around border-white border-b">
                     <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
-                    <div id="add-page-btn" class="border p-[5px] hover:bg-gray-300 hover:text-black hover:cursor-pointer">
-                        <a>+</a>
+                    <div id="add-page-btn">
                     </div>
                 </div>
                 <div id="page-item-list">

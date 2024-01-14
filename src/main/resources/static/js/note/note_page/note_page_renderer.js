@@ -4,21 +4,17 @@ import {NoteMenuHandler} from "../menu/note_menu_handler.js";
 class NotePageRenderer {
     constructor(param) {
         this.param = param;
-
         this.renderTarget = "page-item-list";
-        this.notePageParamData = this.param["notePageData"];
-        this.notePageData = {
-            'selectedPageId': null,
-            'prevPageId': null,
-        };
-
         this.pageHandler = new NotePageHandler();
         this.menuHandler = new NoteMenuHandler();
     }
 
     async render() {
 
-        const data = await this.pageHandler.getNotePageData(this.notePageParamData);
+        console.log("render");
+        console.log(this.param);
+
+        const data = await this.pageHandler.getNotePageData(this.param);
         const pageItemList = document.querySelector("#" + this.renderTarget);
         pageItemList.innerHTML = "";
         const html = `
@@ -28,35 +24,46 @@ class NotePageRenderer {
             `
         pageItemList.innerHTML = html;
         this.postRender();
-        this.eventHandle();
     }
     postRender() {
+        let notePageData = {
+            'selectedPageId': null,
+            'prevPageId': null,
+            'selectedNoteId': this.param.selectedNoteId,
+            'prevNoteId': this.param.prevNoteId
+        };
 
-        if(this.notePageData.selectedPageId != null) {
-            const page = document.querySelector("#" + this.notePageData.selectedPageId);
+        if(notePageData.selectedPageId != null) {
+            const page = document.querySelector("#" + notePageData.selectedPageId);
             let customClass = " bg-gray-500 text-white rounded-md";
             let originClass = page.getAttribute("class")
             let newClass = originClass + customClass;
             page.setAttribute("class", newClass);
         }
+
+        this.eventHandle(notePageData);
     }
 
-    eventHandle() {
+    eventHandle(notePageData) {
+
+        console.log("eventHandle");
+        console.log(notePageData);
+
         const pageItemList = document.querySelectorAll("#page-item-list li");
-        this.menuHandler.setMenuToPageItem(pageItemList);
+        this.menuHandler.setMenuToItem(pageItemList, notePageData);
 
         const pageItemAnchorList = document.querySelectorAll("#page-item-list li a");
-        this.pageHandler.setRenderContentByPage(pageItemAnchorList, this.notePageData);
+        this.pageHandler.setRenderContentByPage(pageItemAnchorList, notePageData);
 
         const addPageBtn = document.querySelector("#add-page-btn");
-        this.pageHandler.setAddApiToBtn(addPageBtn, this.notePageParamData);
+        this.pageHandler.setAddApiToBtn(addPageBtn, notePageData);
     }
 
     createNotePageItem(notePageDto) {
         let pageClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
         let pageLinkClass = "block p-[10px] text-[15px] hover:cursor-pointer";
         return `
-            <li class="${pageClass}" id="page-${notePageDto.id}" data-page-title="${notePageDto.title}">
+            <li class="${pageClass}" id="page-${notePageDto.id}" data-item-text="${notePageDto.title}" data-item-type="page">
                 <a class="${pageLinkClass}" id="page-${notePageDto.id}">${notePageDto.title}</a>
             </li>
         `

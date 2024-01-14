@@ -1,4 +1,4 @@
-import {NoteData, NoteRenderer} from "../../note_renderer.js";
+import {NoteData, ItemData, NoteRenderer} from "../../note_renderer.js";
 import {NoteMoveModalRenderer} from "./note_move_modal_renderer.js";
 import {NoteMenuApi} from "../note_menu_api.js";
 import {getNoteUIParamJsonStr} from "../../../ui/note_list_ui_util.js";
@@ -35,17 +35,18 @@ class NoteMoveModalEventHandler {
         });
     }
 
-    setSelectEffect(noteItemList, noteMoveModalData) {
+    setSelectEffect(noteItemList, param) {
 
+        let noteMoveModalDataRefer = param.noteMoveModalDataRefer;
         let prevSelectedNoteElement = null;
         let currentSelectedNoteElement = null;
 
         noteItemList.forEach((item) => {
             item.addEventListener('click', (e) => {
-                prevSelectedNoteElement = this.getElementByDataNoteId(NoteData.getNo(noteMoveModalData.selectedNoteId));
-                console.log(noteMoveModalData);
+                prevSelectedNoteElement = this.getElementByDataNoteId(NoteData.getNo(noteMoveModalDataRefer.destinationNoteId));
+
                 currentSelectedNoteElement = e.target;
-                noteMoveModalData.selectedNoteId = NoteData.getId(this.getNoteIdFromElement(currentSelectedNoteElement));
+                noteMoveModalDataRefer.destinationNoteId = NoteData.getId(this.getNoteIdFromElement(currentSelectedNoteElement));
                 if (prevSelectedNoteElement != null) {
                     prevSelectedNoteElement.classList.remove("bg-gray-500", "rounded-md");
                 }
@@ -54,46 +55,44 @@ class NoteMoveModalEventHandler {
             });
         });
     }
-    setUpdateApiToMoveBtn(moveBtn, renderParam) {
+
+    setUpdateApiToMoveBtn(moveBtn, param) {
         let moveBtnDiv = document.querySelector("#move-btn");
         moveBtnDiv.innerHTML = "";
         moveBtnDiv.innerHTML = `<a>이동</a>`
 
-        console.log("setUpdateApiToMoveBtn");
-        console.log(renderParam);
-        document.querySelector("#move-btn a").addEventListener("click",  async () => {
+        let noteMoveModalDataRefer = param.noteMoveModalDataRefer;
 
-            let currentSelectedNoteId = renderParam.noteMoveModalData.selectedNoteId;
+        document.querySelector("#move-btn a").addEventListener("click", async () => {
+            let currentSelectedNoteId = noteMoveModalDataRefer.destinationNoteId;
 
             if (currentSelectedNoteId == null) {
                 alert("이동할 노트를 선택해주세요.");
                 return;
             }
-            if (currentSelectedNoteId === renderParam.targetNoteId) {
+            if (currentSelectedNoteId === noteMoveModalDataRefer.moveTargetNoteId) {
                 alert("같은 곳으로는 이동이 불가능합니다.");
                 return;
             }
 
             const updateMoveNoteParam = {
-                "moveTargetId": NoteData.getNo(renderParam.targetNoteId),
+                "moveTargetId": NoteData.getNo(noteMoveModalDataRefer.moveTargetNoteId),
                 "destinationId": NoteData.getNo(currentSelectedNoteId)
-            }
-            console.log(updateMoveNoteParam);
+            };
 
-            let msg = await this.noteMenuApi.updateMove(JSON.stringify(updateMoveNoteParam));
+            let msg = await this.noteMenuApi.updateMoveNote(updateMoveNoteParam);
 
             let noteRenderer = new NoteRenderer(new Map());
             noteRenderer.render().catch((e) => {
                 console.error(e);
             });
 
-            let handleParam = new Map();
-            handleParam["noteMoveModalData"] = {
-                'targetNoteId': renderParam.targetNoteId,
-                'moveNoteTree' : await this.noteMenuApi.moveNote(NoteData.getNo(renderParam.targetNoteId)),
+            const param = {
+                "targetNoteId": noteMoveModalDataRefer.moveTargetNoteId,
+                "moveNoteTree": await this.noteMenuApi.moveNote(ItemData.getItemNoById(noteMoveModalDataRefer.moveTargetNoteId))
             };
 
-            let noteMoveModalRenderer = new NoteMoveModalRenderer(handleParam);
+            let noteMoveModalRenderer = new NoteMoveModalRenderer(param);
             noteMoveModalRenderer.render().catch((e) => {
                 console.error(e);
             });

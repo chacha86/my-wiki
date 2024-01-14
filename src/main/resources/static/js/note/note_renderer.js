@@ -9,6 +9,52 @@ class NoteApi {
 }
 
 
+class ItemData {
+    static _typeIndex = 0;
+    static _noIndex = 1;
+    static _pageIdPrefix = "page-";
+    static _noteIdPrefix = "note-";
+
+    static getItemIdByElement(itemElement) {
+        return itemElement.getAttribute('id');
+    }
+
+    static getItemTypeById(itemId) {
+        let idBits = itemId.split("-");
+    console.assert(idBits.length === 2, "itemId is not valid");
+        return idBits[this._typeIndex];
+    }
+
+    static getItemNoById(itemId) {
+        let idBits = itemId.split("-");
+        console.assert(idBits.length === 2, "itemId is not valid");
+        return idBits[this._noIndex];
+    }
+
+    static getPageIdByItemNo(itemNo) {
+        return this._pageIdPrefix + itemNo;
+    }
+
+    static getNoteIdByItemNo(itemNo) {
+        return this._noteIdPrefix + itemNo;
+    }
+    static getItemElementById(itemId) {
+        return document.querySelector("#" + itemId);
+    }
+    static getItemInfoById(itemId) {
+
+        let itemElement = this.getItemElementById(itemId);
+        let itemText = itemElement.getAttribute('data-item-text');
+        let itemType = itemElement.getAttribute('data-item-type');
+        return {
+            'itemIdNo': this.getItemNoById(itemId),
+            'itemText': itemText,
+            'itemType': itemType
+        };
+
+    }
+}
+
 class NoteData {
     constructor() {
         this.selectedNoteId = null;
@@ -24,6 +70,7 @@ class NoteData {
     getPrevNoteNo() {
         return NoteData.getNo(this.prevNoteId);
     }
+
     static getElementByNoteIdNo(noteIdNo) {
         return document.querySelector("#note-" + noteIdNo);
     }
@@ -31,9 +78,11 @@ class NoteData {
     static getNoteIdByElement(noteElement) {
         return noteElement.getAttribute('id');
     }
+
     static getNoteIdNoByElement(noteElement) {
         return noteElement.getAttribute('data-note-id');
     }
+
     static getNoteInfoByNoteIdNo(noteIdNo) {
         let noteElement = NoteData.getElementByNoteIdNo(noteIdNo);
         console.log(noteElement);
@@ -73,7 +122,6 @@ class NoteRenderer {
             'prevNoteId': null,
         }
 
-        this.noteApi = new NoteApi();
         this.noteHandler = new NoteHandler();
         this.noteMenuHandler = new NoteMenuHandler();
     }
@@ -106,11 +154,19 @@ class NoteRenderer {
     }
 
     eventHandle() {
+
+        let param = {
+            'selectedNoteId': this.noteData.selectedNoteId,
+            'prevNoteId': this.noteData.prevNoteId,
+            'prevPageId': null,
+            'selectedPageId': null,
+        };
+
         let noteItemList = document.querySelectorAll('#note-item-list li');
-        this.noteMenuHandler.setMenuToNoteItem(noteItemList);
+        this.noteMenuHandler.setMenuToItem(noteItemList, param);
 
         let noteItemAnchorList = document.querySelectorAll('#note-item-list li a');
-        this.noteHandler.setRenderPageBySelect(noteItemAnchorList, this.noteData);
+        this.noteHandler.setRenderPageBySelect(noteItemAnchorList, param);
     }
 
     createNoteTree(noteList, noteUIParam) {
@@ -133,17 +189,19 @@ class NoteRenderer {
     }
 
     createNoteItem(note, noteUIParam) {
+        const group = 1;
         let noteItemClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
         let groupItemClass = note.groupYn === 0 ? noteItemClass : "";
         let noteAnchorClass = "min-w-[120px]";
+        let isGroup = note.groupYn === group;
 
         return `
-            <li id="${'note-' + note.id}" data-note-name="${note.name}" data-note-type="${note.groupYn}" class="${groupItemClass}">
-                ${note.groupYn === 0 ? `<a class=${noteAnchorClass}">${note.name}</a>` : ``}
-                ${note.groupYn === 1 ? this.createChildNoteTree(note, noteUIParam, noteItemClass, noteAnchorClass, this.createNoteTree.bind(this)) : ''}
+            <li id="${'note-' + note.id}" data-item-text="${note.name}" data-item-type="${isGroup ? 'group' : 'note'}" class="${groupItemClass}">
+                ${(!isGroup) ? `<a class=${noteAnchorClass}">${note.name}</a>` : ``}
+                ${isGroup ? this.createChildNoteTree(note, noteUIParam, noteItemClass, noteAnchorClass, this.createNoteTree.bind(this)) : ''}
             </li>
         `
     }
 }
 
-export {NoteApi, NoteRenderer, NoteData};
+export {NoteApi, NoteRenderer, NoteData, ItemData};

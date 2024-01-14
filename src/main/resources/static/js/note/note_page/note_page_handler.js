@@ -1,7 +1,7 @@
 import {changeSelectedItem, getNoteUIParamJsonStr} from "../../ui/note_list_ui_util.js";
 import {NotePageContentRenderer} from "../note_page_content/note_page_content_renderer.js";
 import {NotePageApi} from "./note_page_api.js";
-import {NoteData} from "../note_renderer.js";
+import {ItemData, NoteData} from "../note_renderer.js";
 import {NotePageRenderer} from "./note_page_renderer.js";
 
 class NotePageHandler {
@@ -22,8 +22,8 @@ class NotePageHandler {
             item.addEventListener("click", (e) => {
                 const pageId = item.parentElement.getAttribute("id");
                 if(pageId != null) {
-                    notePageData.prevNotePageId = notePageData.selectedPageId;
-                    changeSelectedItem(pageId, notePageData.prevNotePageId, " bg-gray-500 text-white rounded-md");
+                    notePageData.prevPageId = notePageData.selectedPageId;
+                    changeSelectedItem(pageId, notePageData.prevPageId, " bg-gray-500 text-white rounded-md");
                     notePageData.selectedPageId = pageId;
 
                     let param = new Map();
@@ -38,29 +38,27 @@ class NotePageHandler {
         });
     }
 
-    setAddApiToBtn(addPageDiv, noteData) {
-
-        console.log("setAddApiToBtn");
-        console.log(noteData);
+    setAddApiToBtn(addPageDiv, notePageData) {
 
         addPageDiv.innerHTML = "";
-        addPageDiv.innerHTML = "<a>+</a>";
+        addPageDiv.innerHTML = `<a class="border p-[5px] hover:bg-gray-300 hover:text-black hover:cursor-pointer">+</a>`;
 
         const addPageBtn = addPageDiv.querySelector("a");
         addPageBtn.addEventListener("click", async () => {
-            if(noteData.selectedNoteId === null) {
+            if(notePageData.selectedNoteId === null) {
                 alert("Please select a note to add a new note");
                 return;
             }
 
-            const noteElement = document.querySelector('#' + noteData.selectedNoteId);
-            console.log("noteElement");
-            console.log(noteElement);
-            const noteInfo = NoteData.getNoteInfoByNoteIdNo(NoteData.getNo(NoteData.getNoteIdByElement(noteElement)));
-            const msg = await this.notePageApi.addPage(noteInfo);
+            const itemInfo = ItemData.getItemInfoById(notePageData.selectedNoteId);
+            const msg = await this.notePageApi.addPage(itemInfo.itemIdNo);
 
-            let param = new Map();
-            param["notePageData"] = noteData;
+            let param = {
+                'selectedNoteId': notePageData.selectedNoteId,
+                'selectedPageId': notePageData.selectedPageId,
+                'prevNoteId': notePageData.prevNoteId,
+                'prevPageId': notePageData.prevPageId,
+            };
 
             let notePageRenderer = new NotePageRenderer(param);
             notePageRenderer.render().catch((e) => {

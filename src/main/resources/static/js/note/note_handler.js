@@ -20,8 +20,10 @@ class NoteHandler {
                     noteData.selectedNoteId = noteId;
                     changeSelectedItem(noteId, noteData.prevNoteId, " bg-gray-500 text-white rounded-md");
 
-                    let param = new Map();
-                    param["notePageData"] = noteData;
+                    let param = {
+                        selectedNoteId: noteData.selectedNoteId,
+                        prevNoteId: noteData.prevNoteId,
+                    };
 
                     let notePageRenderer = new NotePageRenderer(param);
                     notePageRenderer.render().catch((e) => {

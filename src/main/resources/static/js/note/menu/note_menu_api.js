@@ -25,20 +25,42 @@ class NoteMenuApi {
     }
     async moveNote(noteIdNo) {
         const url = "/api/notes/move/" + noteIdNo;
+
         return await aPostFetch(url, getNoteUIParamJsonStr());
     }
 
-    async updateMove(param) {
+    async updateMoveNote(param) {
         const url = "/api/notes/update/move";
-        return await aPostFetch(url, param);
+        return await aPostFetch(url, JSON.stringify(param));
     }
 
 
-    async renameNote(noteInfo) {
-        const url = "/api/notes/update/" + noteInfo.noteIdNo;
+    async renameNote(itemInfo) {
+        const url = "/api/notes/update/" + itemInfo.itemIdNo;
         const param = {
-            noteName: noteInfo.newNoteName
+            noteName: itemInfo.newNoteName
         }
+        return await aPostFetch(url, JSON.stringify(param));
+    }
+
+    async deletePage(pageIdNo) {
+        const url = "/api/pages/delete/" + pageIdNo;
+        return await aPostFetch(url, getNoteUIParamJsonStr());
+    }
+
+    async renamePage(renamePageParam) {
+        const url = "/api/notes/update/" + renamePageParam.itemIdNo;
+        const param = {
+            noteName: renamePageParam.newNoteName
+        }
+        return await aPostFetch(url, JSON.stringify(param));
+    }
+
+    async updateMovePage(movePageParam) {
+        const url = "/api/pages/move/" + movePageParam.pageIdNo;
+        const param = {
+            noteId: movePageParam.noteIdNo,
+        };
         return await aPostFetch(url, JSON.stringify(param));
     }
 }

@@ -5,19 +5,17 @@ import {NoteMenuData} from "./note_menu_data.js";
 class NoteMenuRenderer {
     constructor(param) {
         this.param = param;
-        this.renderTarget = "";
-        this.noteMenuData = {
-
-        };
         this.eventHandler = new NoteMenuHandler();
     }
 
     async render() {
-        let noteMenuData = this.param["noteMenuData"];
-        let mouseX = noteMenuData.mousePos.mouseX;
-        let mouseY = noteMenuData.mousePos.mouseY;
+        let mousePos = this.param.mousePos;
+        let itemInfo = this.param.itemInfo;
 
-        let menuItemList = this.eventHandler.getMenuItemList(noteMenuData.noteInfo);
+        let mouseX = mousePos.mouseX;
+        let mouseY = mousePos.mouseY;
+
+        let menuItemList = this.eventHandler.getMenuItemList(itemInfo);
 
         let itemMenuPopup = document.querySelector('#item-menu-popup');
         let body = document.querySelector('body');
@@ -32,7 +30,7 @@ class NoteMenuRenderer {
                 <ul>
                     ${menuItemList.map((element) => {
             return `
-                            <li><a data-api-name=${element.apiName} data-note-no=${element.itemInfo.noteIdNo} class="${menuItemClass}">${element.text}</a></li>
+                            <li><a data-api-name=${element.apiName} data-item-no=${element.itemInfo.itemIdNo} class="${menuItemClass}">${element.text}</a></li>
                         `;
         }).join('')}
                 </ul>
@@ -48,7 +46,28 @@ class NoteMenuRenderer {
 
     eventHandle() {
         let menuItemAnchorList = document.querySelectorAll("#item-menu-popup a");
-        this.eventHandler.setApiToMenuItem(menuItemAnchorList);
+        // let itemInfo = this.param.itemInfo;
+        // let itemType = itemInfo.itemType;
+        //
+        // console.log("itemType");
+        // console.log(this.param);
+        // let param = {
+        //     "itemInfo": itemInfo,
+        // }
+        // if(itemType === "note") {
+        //     this.eventHandler.setApiToNoteMenuItem(menuItemAnchorList, param);
+        //     return;
+        // }
+        console.log("itemType");
+        let param = {
+            'selectedNoteId': this.param.selectedNoteId,
+            'prevNoteId': this.param.prevNoteId,
+            'selectedPageId': this.param.selectedPageId,
+            'prevPageId': this.param.prevPageId,
+            'itemInfo': this.param.itemInfo,
+        };
+
+        this.eventHandler.setApiToMenuItem(menuItemAnchorList, param);
     }
 
 }

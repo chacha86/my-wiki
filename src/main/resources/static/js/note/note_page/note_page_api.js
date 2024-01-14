@@ -6,8 +6,7 @@ class NotePageApi {
         return await aPostFetch(url, null);
     }
 
-    async addPage(noteInfo) {
-        const noteIdNo = noteInfo.noteIdNo;
+    async addPage(noteIdNo) {
         let url = "/api/pages/add/" + noteIdNo;
         return await aPostFetch(url, null);
     }

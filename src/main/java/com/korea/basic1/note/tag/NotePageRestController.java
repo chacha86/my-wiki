@@ -54,6 +54,19 @@ public class NotePageRestController {
     @RequestMapping("/delete/{pageId}")
     public String delete(@PathVariable Long pageId, @RequestBody DeleteUpdateParamDto deleteUpdateParamDto) {
         notePageService.delete(pageId);
-        return "{\"msg\" : \"노트가 삭제되었습니다.\", \"noteId\" : " + deleteUpdateParamDto.getNoteId() + "}";
+        return "{\"msg\" : \"페이지가 삭제되었습니다.\", \"noteId\" : " + deleteUpdateParamDto.getNoteId() + "}";
+    }
+
+    @Getter
+    @Setter
+    private static class UpdateMovePageParamDto {
+        private Long noteId;
+    }
+    @RequestMapping("/update/move/{pageId}")
+    public String move(@PathVariable Long pageId, @RequestBody UpdateMovePageParamDto updateMovePageParamDto) {
+        NotePage target = notePageService.getNotePageById(pageId);
+        Note destination = noteService.getNoteById(updateMovePageParamDto.getNoteId());
+        NotePage result = notePageService.movePage(target, destination);
+        return "{\"msg\" : \"페이지를 이동하였습니다.\"}";
     }
 }

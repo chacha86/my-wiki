@@ -1,11 +1,10 @@
 import {NoteMoveModalEventHandler} from "./note_move_modal_event_handler.js";
-import {NoteData} from "../../note_renderer.js";
+import {ItemData, NoteData} from "../../note_renderer.js";
 
 class NoteMoveModalData {
 
     constructor() {
         this.selectedNoteIdNo = null;
-        this.targetNoteIdNo = null;
         this.moveNoteTree = null;
     }
 
@@ -17,20 +16,20 @@ class NoteMoveModalData {
 class NoteMoveModalRenderer {
     constructor(param) {
         this.param = param;
-        this.eventHandler = new NoteMoveModalEventHandler(this);
+        this.eventHandler = new NoteMoveModalEventHandler();
         this.renderTarget = "move-note-modal";
-        this.noteMoveModalParamData = this.param["noteMoveModalData"];
-        this.noteMoveModalData = {
-            'selectedNoteId': null,
-            'targetNoteId': null,
+
+        this.noteMoveModalDataRefer = {
+            'destinationNoteId': null,
+            'moveTargetNoteId': null,
         };
+
     }
 
     async render() {
 
-        let data = this.noteMoveModalParamData.moveNoteTree;
-
-        console.log(data);
+        let data = this.param.moveNoteTree;
+        let targetNoteIdNo = Number(ItemData.getItemNoById(this.param.targetNoteId));
 
         const noteItemList = document.querySelector("#" + this.renderTarget);
         let itemContent = " inline-block w-[90%] p-[5px] cursor-default";
@@ -46,43 +45,47 @@ class NoteMoveModalRenderer {
         </div>`;
 
         html += `
-            ${this.createNoteTree(data.noteTree, data.noteUIParam)}
+            ${this.createNoteTree(data.noteTree, data.noteUIParam, targetNoteIdNo)}
         `;
 
         noteItemList.innerHTML = html;
 
         this.postRender();
-        this.eventHandle();
     }
 
     postRender() {
         this.renderCollapseIcon();
         this.renderSelectEffect()
+
+        this.noteMoveModalDataRefer.moveTargetNoteId = this.param.targetNoteId;
+        this.noteMoveModalDataRefer.moveTargetPageId = this.param.targetPageId;
+
+        const param = {
+            'moveNoteTree': this.param.moveNoteTree,
+            'itemInfo': this.param.itemInfo,
+            'noteMoveModalDataRefer': this.noteMoveModalDataRefer,
+            'selectedNoteId': this.param.selectedNoteId,
+            'selectedNoteIdNo': this.param.selectedPageId,
+            'prevNoteId': this.param.prevNoteId,
+            'prevPageId': this.param.prevPageId,
+        };
+        this.eventHandle(param);
     }
 
-    eventHandle() {
+    eventHandle(param) {
         let collapseItems = document.querySelectorAll(".parent .move-tree-collapse");
         this.eventHandler.renderCollapseIcon(collapseItems);
 
         let noteItemList = document.querySelectorAll(".move-tree-content");
-        this.eventHandler.setSelectEffect(noteItemList, this.noteMoveModalData);
+        this.eventHandler.setSelectEffect(noteItemList, param);
 
         let moveBtn = document.querySelector("#move-btn");
-        let handleParam = {
-            'targetNoteId': this.noteMoveModalParamData.targetNoteId,
-            'moveNoteTree': this.noteMoveModalParamData.moveNoteTree,
-            'noteMoveModalData': this.noteMoveModalData,
-        }
-        this.eventHandler.setUpdateApiToMoveBtn(moveBtn, handleParam);
+        this.eventHandler.setUpdateApiToMoveBtn(moveBtn, param);
     }
 
     renderSelectEffect() {
-        let noteMoveModalData = this.param["noteMoveModalData"];
-        console.log("-==--=-=-=");
-        console.log(noteMoveModalData);
-        if (noteMoveModalData.targetNoteId != null) {
-            let targetNoteIdNo = NoteData.getNo(noteMoveModalData.targetNoteId);
-            console.log(targetNoteIdNo);
+        if (this.param.targetNoteId != null) {
+            let targetNoteIdNo = ItemData.getItemNoById(this.param.targetNoteId);
             const selectedItem = document.querySelector(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
             let originClass = selectedItem.getAttribute("class");
             let customClass = " bg-gray-300 rounded-md";
@@ -117,29 +120,28 @@ class NoteMoveModalRenderer {
         });
     }
 
-    createNoteTree(noteList, noteUIParam) {
-        let targetNoteIdNo = Number(NoteData.getNo(this.noteMoveModalParamData.targetNoteId));
+    createNoteTree(noteList, noteUIParam, targetNoteIdNo) {
         return`
             ${noteList.map((note) => {
             if (note.groupYn === 0 && note.id !== targetNoteIdNo) {
                 return '';
             }
-            return `${this.createNoteItem(note, noteUIParam)}`;
+            return `${this.createNoteItem(note, noteUIParam, targetNoteIdNo)}`;
         }).join('')}
         `
     }
 
-    createChildNoteTree(note, noteUIParam, recurFunc) {
+    createChildNoteTree(note, noteUIParam, recurFunc, targetNoteIdNo) {
         let childList = " child-list pl-[30px]";
 
         return `
             <div class="${childList}">
-                ${note.children.length > 0 ? recurFunc(note.children, noteUIParam) : ''}
+                ${note.children.length > 0 ? recurFunc(note.children, noteUIParam, targetNoteIdNo) : ''}
             </div>
         `
     }
 
-    createNoteItem(note, noteUIParam) {
+    createNoteItem(note, noteUIParam, targetNoteIdNo) {
         let item = " h-[50px] p-[5px]";
         let itemContent = " inline-block w-[90%] p-[5px] cursor-default";
         let itemContentHover = " hover:bg-gray-200 hover:rounded-md";
@@ -150,7 +152,7 @@ class NoteMoveModalRenderer {
                 <div class="${itemParent}" open="true">
                     <span data-note-id="${note.id}" class="${"move-tree-content" + itemContent + itemContentHover}" selected="false">${note.name}</span>
                 </div>
-                ${note.groupYn === 1 ? this.createChildNoteTree(note, noteUIParam, this.createNoteTree.bind(this)) : ''}
+                ${note.groupYn === 1 ? this.createChildNoteTree(note, noteUIParam, this.createNoteTree.bind(this), targetNoteIdNo) : ''}
             </div>
         `
     }
