@@ -5,17 +5,29 @@ class NotePageRenderer {
     constructor(param) {
         this.param = param;
         this.renderTarget = "page-item-list";
+        this.notePageData = {
+            'selectedPageId': null,
+            'prevPageId': null,
+        };
         this.pageHandler = new NotePageHandler();
         this.menuHandler = new NoteMenuHandler();
     }
 
+    preRender() {
+        if(this.param.selectedPageId !== undefined) {
+            this.notePageData.selectedPageId = this.param.prevPageId;
+        }
+        if(this.param.prevPageId !== undefined) {
+            this.notePageData.prevPageId = this.param.prevPageId;
+        }
+    }
+
     async render() {
-
-        console.log("render");
-        console.log(this.param);
-
-        const data = await this.pageHandler.getNotePageData(this.param);
+        this.preRender();
+        let noteData = this.param;
+        const data = await this.pageHandler.getNotePageData(noteData);
         const pageItemList = document.querySelector("#" + this.renderTarget);
+
         pageItemList.innerHTML = "";
         const html = `
             <ul>
@@ -26,37 +38,35 @@ class NotePageRenderer {
         this.postRender();
     }
     postRender() {
-        let notePageData = {
-            'selectedPageId': null,
-            'prevPageId': null,
+        const param = {
+            'selectedPageId': this.notePageData.selectedPageId,
+            'prevPageId': this.notePageData.prevPageId,
             'selectedNoteId': this.param.selectedNoteId,
             'prevNoteId': this.param.prevNoteId
         };
 
-        if(notePageData.selectedPageId != null) {
-            const page = document.querySelector("#" + notePageData.selectedPageId);
+        if(this.notePageData.selectedPageId != null) {
+            const page = document.querySelector("#" + this.notePageData.selectedPageId);
             let customClass = " bg-gray-500 text-white rounded-md";
             let originClass = page.getAttribute("class")
             let newClass = originClass + customClass;
             page.setAttribute("class", newClass);
         }
 
-        this.eventHandle(notePageData);
+
+        this.eventHandle(param);
     }
 
-    eventHandle(notePageData) {
-
-        console.log("eventHandle");
-        console.log(notePageData);
+    eventHandle(param) {
 
         const pageItemList = document.querySelectorAll("#page-item-list li");
-        this.menuHandler.setMenuToItem(pageItemList, notePageData);
+        this.menuHandler.setMenuToItem(pageItemList, param);
 
         const pageItemAnchorList = document.querySelectorAll("#page-item-list li a");
-        this.pageHandler.setRenderContentByPage(pageItemAnchorList, notePageData);
+        this.pageHandler.setRenderContentByPage(pageItemAnchorList, param);
 
         const addPageBtn = document.querySelector("#add-page-btn");
-        this.pageHandler.setAddApiToBtn(addPageBtn, notePageData);
+        this.pageHandler.setAddApiToBtn(addPageBtn, param);
     }
 
     createNotePageItem(notePageDto) {

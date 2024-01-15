@@ -17,17 +17,14 @@ class NotePageHandler {
         }
         return data;
     }
-    setRenderContentByPage(pageItemList, notePageData) {
+    setRenderContentByPage(pageItemList, param) {
         pageItemList.forEach(item => {
             item.addEventListener("click", (e) => {
                 const pageId = item.parentElement.getAttribute("id");
                 if(pageId != null) {
-                    notePageData.prevPageId = notePageData.selectedPageId;
-                    changeSelectedItem(pageId, notePageData.prevPageId, " bg-gray-500 text-white rounded-md");
-                    notePageData.selectedPageId = pageId;
-
-                    let param = new Map();
-                    param["notePageData"] = notePageData;
+                    param.prevPageId = param.selectedPageId;
+                    changeSelectedItem(pageId, param.prevPageId, " bg-gray-500 text-white rounded-md");
+                    param.selectedPageId = pageId;
 
                     let notePageContentRenderer = new NotePageContentRenderer(param);
                     notePageContentRenderer.render().catch((e) => {

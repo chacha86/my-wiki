@@ -42,23 +42,6 @@ class NoteMenuRenderer {
     }
 
     postRender() {
-    }
-
-    eventHandle() {
-        let menuItemAnchorList = document.querySelectorAll("#item-menu-popup a");
-        // let itemInfo = this.param.itemInfo;
-        // let itemType = itemInfo.itemType;
-        //
-        // console.log("itemType");
-        // console.log(this.param);
-        // let param = {
-        //     "itemInfo": itemInfo,
-        // }
-        // if(itemType === "note") {
-        //     this.eventHandler.setApiToNoteMenuItem(menuItemAnchorList, param);
-        //     return;
-        // }
-        console.log("itemType");
         let param = {
             'selectedNoteId': this.param.selectedNoteId,
             'prevNoteId': this.param.prevNoteId,
@@ -67,6 +50,11 @@ class NoteMenuRenderer {
             'itemInfo': this.param.itemInfo,
         };
 
+        this.eventHandle(param);
+    }
+
+    eventHandle(param) {
+        let menuItemAnchorList = document.querySelectorAll("#item-menu-popup a");
         this.eventHandler.setApiToMenuItem(menuItemAnchorList, param);
     }
 

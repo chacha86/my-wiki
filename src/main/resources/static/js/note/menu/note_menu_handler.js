@@ -4,6 +4,7 @@ import {NoteMenuApi} from "./note_menu_api.js";
 import {NoteMenuRenderer} from "./note_menu_renderer.js";
 import {RenameModalRenderer} from "./rename/rename_modal_renderer.js";
 import {NotePageRenderer} from "../note_page/note_page_renderer.js";
+import {PageMoveModalRenderer} from "./move/page_move_modal_renderer.js";
 
 class NoteMenuHandler {
     constructor() {
@@ -322,12 +323,12 @@ class NoteMenuHandler {
         const moveModal = document.querySelector('#my_modal_2');
         const itemInfo = param.itemInfo;
 
-        param.targetNoteId = ItemData.getNoteIdByItemNo(param.selectedNoteId);
+        param.targetNoteId = param.selectedNoteId;
         param.targetPageId = ItemData.getPageIdByItemNo(itemInfo.itemIdNo);
         param.moveNoteTree = await this.moveNote(itemInfo);
 
-        let noteMoveModalRenderer = new NoteMoveModalRenderer(param);
-        noteMoveModalRenderer.render();
+        let pageMoveModalRenderer = new PageMoveModalRenderer(param);
+        pageMoveModalRenderer.render();
         moveModal.show();
     }
 

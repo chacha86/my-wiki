@@ -1,30 +1,56 @@
 import {NotePageContentApi} from "./note_page_content_api.js";
+import {NotePageContentRenderer} from "./note_page_content_renderer.js";
+import {ItemData} from "../note_renderer.js";
+import {NotePageRenderer} from "../note_page/note_page_renderer.js";
 import {postFetch} from "../../note_api.js";
 
 class NotePageContentEventHandler {
     constructor() {
+        this.notePageContentApi = new NotePageContentApi();
     }
 
-    addEvent(notePageContentData) {
-        let data = notePageContentData.data;
-        const pageUpdateBtn = document.querySelector("#page-update-btn");
-        const pageDeleteBtn = document.querySelector("#page-delete-btn");
+    setContentUpdateBtn(pageUpdateBtn, param) {
 
-        pageUpdateBtn.addEventListener("click", (e) => {
+        pageUpdateBtn.addEventListener("click", async (e) => {
             const title = document.querySelector(".title").value;
             const content = editor.getMarkdown();
-            const url = "/api/pages/update/" + notePageIdNo;
 
-            const notePageParamDto = {
-                noteId: data.notePageDto.noteId,
+            const updateContentParam = {
+                pageIdNo: ItemData.getItemNoById(param.selectedPageId),
                 title: title,
                 content: content
             }
-            postFetch(url, JSON.stringify(notePageParamDto), (data) => {
-                this.note.renderingNotePage(data.noteId);
+
+            let msg = await this.notePageContentApi.updateContent(updateContentParam);
+
+            let notePageRenderer = new NotePageRenderer(param);
+            notePageRenderer.render().catch((e) => {
+                console.error(e);
+            });
+            let notePageContentRenderer = new NotePageContentRenderer(param);
+            notePageContentRenderer.render().catch((e) => {
+                console.error(e);
             });
         });
+    }
 
+    setContentDeleteBtn(pageDeleteBtn, param) {
+        pageDeleteBtn.addEventListener("click", async (e) => {
+            const deleteContentParam = {
+                pageIdNo: ItemData.getItemNoById(param.selectedPageId)
+            }
+
+            let msg = await this.notePageContentApi.deleteContent(deleteContentParam);
+
+            let renderer = new NotePageRenderer(param);
+            renderer.render().catch((e) => {
+                console.error(e);
+            });
+        });
+    }
+
+    addEvent(notePageContentData) {
+        const pageDeleteBtn = document.querySelector("#page-delete-btn");
         pageDeleteBtn.addEventListener("click", (e) => {
             const url = "/api/pages/delete/" + notePageIdNo;
             const deleteParamDto = {

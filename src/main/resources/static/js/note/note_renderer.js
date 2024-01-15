@@ -6,6 +6,11 @@ class NoteApi {
     async getAllNotes(param) {
         return await aPostFetch("/api/notes", param);
     }
+
+    async addGroupNote(noteIdNo) {
+        let url = "/api/notes/add-group";
+        return await aPostFetch(url, null);
+    }
 }
 
 
@@ -117,7 +122,7 @@ class NoteRenderer {
         this.param = param;
 
         this.renderTarget = "note-item-list";
-        this.noteData = {
+        this.noteDataRefer = {
             'selectedNoteId': null,
             'prevNoteId': null,
         }
@@ -140,33 +145,39 @@ class NoteRenderer {
 
         noteItemList.innerHTML = html;
         this.postRender();
-        this.eventHandle();
     }
 
     postRender() {
-        if (this.noteData.selectedNoteId != null) {
-            const selectedItem = document.querySelector("#" + this.noteData.selectedNoteId);
+        if (this.noteDataRefer.selectedNoteId != null) {
+            const selectedItem = document.querySelector("#" + this.noteDataRefer.selectedNoteId);
             let originClass = selectedItem.getAttribute("class");
             let customClass = " bg-gray-500 text-white rounded-md";
             let newClass = originClass + customClass;
             selectedItem.setAttribute("class", newClass);
         }
-    }
-
-    eventHandle() {
 
         let param = {
-            'selectedNoteId': this.noteData.selectedNoteId,
-            'prevNoteId': this.noteData.prevNoteId,
+            'noteDataRefer': this.noteDataRefer,
             'prevPageId': null,
             'selectedPageId': null,
         };
+
+        this.eventHandle(param);
+    }
+
+    eventHandle(param) {
+
 
         let noteItemList = document.querySelectorAll('#note-item-list li');
         this.noteMenuHandler.setMenuToItem(noteItemList, param);
 
         let noteItemAnchorList = document.querySelectorAll('#note-item-list li a');
         this.noteHandler.setRenderPageBySelect(noteItemAnchorList, param);
+
+
+        let addGroupDiv = document.querySelector("#add-group-note");
+        this.noteHandler.setApiAddGroupNoteBtn(addGroupDiv);
+
     }
 
     createNoteTree(noteList, noteUIParam) {

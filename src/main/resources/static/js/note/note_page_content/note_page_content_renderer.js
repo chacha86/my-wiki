@@ -7,9 +7,8 @@ import {NoteData} from "../note_renderer.js";
 class NotePageContentRenderer {
     constructor(param) {
         this.param = param;
-
         this.renderTarget = "content-header";
-        this.notePageContentData = {
+        this.notePageContentDataRefer = {
             'data' : null
         };
 
@@ -18,11 +17,14 @@ class NotePageContentRenderer {
     }
 
     async render() {
-        let notePageData = this.param["notePageData"];
-        let data = await this.notePageContentApi.getPageContentByPage(NoteData.getNo(notePageData.selectedPageId));
-        this.notePageContentData.data = data;
+        console.log("NotePageContentRenderer render");
+        console.log(this.param);
 
-        let html = `
+        let data = await this.notePageContentApi.getPageContentByPage(NoteData.getNo(this.param.selectedPageId));
+        console.log(data);
+        this.notePageContentDataRefer.data = data;
+        let html = "";
+        html = `
             <input class="title block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
                    name="title">
                 <div>
@@ -32,15 +34,23 @@ class NotePageContentRenderer {
 
         const contentHeader = document.querySelector("#" + this.renderTarget);
         contentHeader.innerHTML = html;
+
+        const titleInput = document.querySelector(".title");
+        titleInput.value = data.notePageDto.title;
+        editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
+
         this.postRender();
-        this.eventHandle();
     }
 
     postRender() {
+        this.eventHandle(this.param);
     }
 
-    eventHandle() {
-        this.eventHandler.addEvent(this.notePageContentData);
+    eventHandle(param) {
+        const updateBtn = document.querySelector("#page-update-btn");
+        this.eventHandler.setContentUpdateBtn(updateBtn, param);
+        const deleteBtn = document.querySelector("#page-delete-btn");
+        this.eventHandler.setContentDeleteBtn(deleteBtn, param);
     }
 }
 

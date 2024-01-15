@@ -1,5 +1,5 @@
 import {NoteMenuApi} from "../note_menu_api.js";
-import {NoteRenderer} from "../../note_renderer.js";
+import {ItemData, NoteRenderer} from "../../note_renderer.js";
 import {NotePageRenderer} from "../../note_page/note_page_renderer.js";
 
 class RenameModalHandler {
@@ -20,19 +20,39 @@ class RenameModalHandler {
             let renderer = new NoteRenderer(new Map());
             let msg = "";
 
-            itemInfo.newNoteName = noteNameInput.value;
+            param.newNoteName = noteNameInput.value;
 
             if(itemInfo.itemType === 'page') {
                 renderer = new NotePageRenderer(param);
-                msg = await this.noteMenuApi.renamePage(itemInfo);
-            }
+                msg = await this._renamePage(param);
 
-            msg = await this.noteMenuApi.renameNote(itemInfo);
+            }
+            else {
+                msg = await this._renameNote(param);
+            }
 
             renderer.render().catch((err) => {
                 console.log(err);
             });
         });
+    }
+
+    async _renameNote(param) {
+        const renameNoteParam = {
+            itemIdNo: param.itemInfo.itemIdNo,
+            noteName: param.newNoteName,
+        }
+        await this.noteMenuApi.renameNote(renameNoteParam);
+    }
+
+    async _renamePage(param) {
+        const renamePageParam = {
+            pageIdNo: param.itemInfo.itemIdNo,
+            title: param.newNoteName,
+            content: editor.getMarkdown()
+        }
+
+        return await this.noteMenuApi.renamePage(renamePageParam);
     }
 }
 

@@ -47,6 +47,9 @@ public class NotePageService {
 
     public void updateNotePage(Long pageId, String title, String content) {
         NotePage notePage = getNotePageById(pageId);
+        if(title.isEmpty()) {
+            title = "제목";
+        }
         if (notePage == null) {
             new IllegalArgumentException("해당 게시물은 존재하지 않습니다.");
         } else {

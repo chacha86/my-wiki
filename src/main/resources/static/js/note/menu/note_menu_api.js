@@ -35,12 +35,9 @@ class NoteMenuApi {
     }
 
 
-    async renameNote(itemInfo) {
-        const url = "/api/notes/update/" + itemInfo.itemIdNo;
-        const param = {
-            noteName: itemInfo.newNoteName
-        }
-        return await aPostFetch(url, JSON.stringify(param));
+    async renameNote(renameNoteParam) {
+        const url = "/api/notes/update/" + renameNoteParam.itemIdNo;
+        return await aPostFetch(url, JSON.stringify(renameNoteParam));
     }
 
     async deletePage(pageIdNo) {
@@ -49,15 +46,12 @@ class NoteMenuApi {
     }
 
     async renamePage(renamePageParam) {
-        const url = "/api/notes/update/" + renamePageParam.itemIdNo;
-        const param = {
-            noteName: renamePageParam.newNoteName
-        }
-        return await aPostFetch(url, JSON.stringify(param));
+        const url = "/api/pages/update/" + renamePageParam.pageIdNo;
+        return await aPostFetch(url, JSON.stringify(renamePageParam));
     }
 
     async updateMovePage(movePageParam) {
-        const url = "/api/pages/move/" + movePageParam.pageIdNo;
+        const url = "/api/pages/update/move/" + movePageParam.pageIdNo;
         const param = {
             noteId: movePageParam.noteIdNo,
         };
