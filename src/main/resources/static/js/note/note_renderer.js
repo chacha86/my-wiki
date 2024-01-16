@@ -134,7 +134,18 @@ class NoteRenderer {
         this.noteMenuHandler = new NoteMenuHandler();
     }
 
+    preRender() {
+        if(this.param.selectedNoteId != null || this.param.selectedNoteId !== undefined) {
+            this.noteDataRefer.selectedNoteId = this.param.selectedNoteId;
+        }
+
+        if(this.param.prevNoteId != null || this.param.prevNoteId !== undefined) {
+            this.noteDataRefer.prevNoteId = this.param.prevNoteId;
+        }
+    }
+
     async render() {
+        this.preRender();
 
         let data = await this.noteHandler.getNoteData();
         const noteItemList = document.querySelector("#" + this.renderTarget);
@@ -157,7 +168,10 @@ class NoteRenderer {
             let customClass = " bg-gray-500 text-white rounded-md";
             let newClass = originClass + customClass;
             selectedItem.setAttribute("class", newClass);
+
+            this.openSelectedTree(this.noteDataRefer.selectedNoteId);
         }
+
 
         let param = {
             'noteDataRefer': this.noteDataRefer,
@@ -179,6 +193,26 @@ class NoteRenderer {
 
         let addGroupDiv = document.querySelector("#add-group-note");
         this.noteHandler.setApiAddGroupNoteBtn(addGroupDiv);
+    }
+
+    openSelectedTree(selectedNoteId) {
+
+        let target = document.querySelector("#" + selectedNoteId);
+
+        while(target.getAttribute("id") !== "note-item-list") {
+            target = target.parentElement;
+
+            console.log(target.tagName);
+            if(target.tagName !== "LI") {
+                continue;
+            }
+
+            let type = target.getAttribute("data-item-type");
+
+            if(type === "group") {
+                target.querySelector("details").setAttribute("open", true);
+            }
+        }
     }
 
     createNoteTree(noteList, noteUIParam) {

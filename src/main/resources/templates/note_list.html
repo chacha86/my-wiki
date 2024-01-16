@@ -97,7 +97,8 @@
                         </div>
                     </form>
                 </div>
-                <div id="add-group-note" class="flex items-center text-center justify-center border border-gray-300 hover:bg-gray-300 hover:">
+                <div id="add-group-note"
+                     class="flex items-center text-center justify-center border border-gray-300 hover:bg-gray-300 hover:">
                     <a>새그룹 추가</a>
                 </div>
             </div>
@@ -111,33 +112,32 @@
                 <div id="page-item-list" class="p-[10px]">
                 </div>
                 <div id="search-area" class="absolute top-[90%] w-[90%]">
-<!--                    <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"-->
-<!--                          class="flex relative justify-between items-center" onsubmit="return false;">-->
-                        <input type="text" placeholder="Search" name="keyword"
-                               class="input input-bordered text-black w-full max-w-xs"
-                               id="search-input" autocomplete="off">
-                        <div id="search-box"
-                             class="searchBox hidden absolute z-10 bottom-[100%] left-[0] bg-gray-600 bg-opacity-[98%] h-[50vh] w-[100%] p-[20px]">
-                            <div class="content border h-[100%] border-white overflow-scroll">
-
-                                <ul id="search-result-list" class="m-[10px]">
-                                </ul>
-                                <!--                                <ul class="m-[10px]" th:if="${searchedResult}">-->
-                                <!--                                    <li th:each="note : ${searchedResult.searchedNoteList}"-->
-                                <!--                                        class="hover:bg-gray-400 px-[0.5rem]"><a-->
-                                <!--                                            th:href="@{|/note/${note.id}?keyword=${searchedResult.keyword}|}"-->
-                                <!--                                            class="inline-block w-[100%]" th:text="${note.name}"-->
-                                <!--                                            th:classappend="${note.id == noteDetail.id} ? 'bg-gray-400' : ''"></a></li>-->
-                                <!--                                    <li th:unless="${#lists.isEmpty(searchedResult.searchedNotePageList)}"-->
-                                <!--                                        th:each="notePage : ${searchedResult.searchedNotePageList}"-->
-                                <!--                                        class="hover:bg-gray-400 px-[0.5rem]">-->
-                                <!--                                        <a-->
-                                <!--                                                class="inline-block w-[100%]"-->
-                                <!--                                                th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "-->
-                                <!--                                                th:text="${notePage.title}"></a></li>-->
-                                <!--                                </ul>-->
-                            </div>
+                    <!--                    <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"-->
+                    <!--                          class="flex relative justify-between items-center" onsubmit="return false;">-->
+                    <input type="text" placeholder="Search" name="keyword"
+                           class="input input-bordered text-black w-full max-w-xs"
+                           id="search-input" autocomplete="off">
+                    <div id="search-box"
+                         class="searchBox hidden absolute z-10 bottom-[100%] left-[0] bg-gray-600 bg-opacity-[98%] h-[50vh] w-[100%] p-[20px]">
+                        <div class="content border h-[100%] border-white overflow-scroll">
+                            <ul id="search-result-list" class="m-[10px]">
+                            </ul>
+                            <!--                                <ul class="m-[10px]" th:if="${searchedResult}">-->
+                            <!--                                    <li th:each="note : ${searchedResult.searchedNoteList}"-->
+                            <!--                                        class="hover:bg-gray-400 px-[0.5rem]"><a-->
+                            <!--                                            th:href="@{|/note/${note.id}?keyword=${searchedResult.keyword}|}"-->
+                            <!--                                            class="inline-block w-[100%]" th:text="${note.name}"-->
+                            <!--                                            th:classappend="${note.id == noteDetail.id} ? 'bg-gray-400' : ''"></a></li>-->
+                            <!--                                    <li th:unless="${#lists.isEmpty(searchedResult.searchedNotePageList)}"-->
+                            <!--                                        th:each="notePage : ${searchedResult.searchedNotePageList}"-->
+                            <!--                                        class="hover:bg-gray-400 px-[0.5rem]">-->
+                            <!--                                        <a-->
+                            <!--                                                class="inline-block w-[100%]"-->
+                            <!--                                                th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "-->
+                            <!--                                                th:text="${notePage.title}"></a></li>-->
+                            <!--                                </ul>-->
                         </div>
+                    </div>
                     </form>
                 </div>
             </div>

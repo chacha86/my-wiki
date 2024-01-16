@@ -4,22 +4,24 @@ class SearchBoxRenderer {
     constructor(param) {
         this.param = param;
         this.renderTarget = "search-result-list";
+        this.searchBoxDataRefer = {
+            'keyword': "",
+        }
         this.eventHandler = new SearchBoxHandler();
     }
 
+    preRender() {
+    }
+
     async render() {
+
+        this.preRender();
+
         const renderTarget = document.querySelector("#" + this.renderTarget);
-        const searchInput = document.querySelector("#search-input");
-
-        let keyword = "";
-        if (searchInput != null) {
-            keyword = searchInput.value;
-        }
-
+        const keyword = this.param.keyword;
         const resultData = await this.eventHandler.getSearchList(keyword);
 
-        let html = "";
-        html = `
+        renderTarget.innerHTML = `
         ${resultData.searchedNoteList.map((resultNote) => {
             return `
                 <li data-note-id="note-${resultNote.id}" class="hover:bg-gray-400 px-[0.5rem]">
@@ -36,7 +38,18 @@ class SearchBoxRenderer {
         }).join('')}
     `;
 
-        renderTarget.innerHTML = html;
+        this.postRender();
+    }
+
+    postRender() {
+        this.eventHandle();
+    }
+
+    eventHandle() {
+
+        const searchResultItems = document.querySelectorAll('#search-result-list li');
+        this.eventHandler.setClickToItems(searchResultItems, this.param);
+
     }
 }
 
