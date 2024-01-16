@@ -38,7 +38,7 @@ class NoteHandler {
     setApiAddGroupNoteBtn(addGroupDiv) {
 
         addGroupDiv.innerHTML = "";
-        addGroupDiv.innerHTML = `<a class="flex w-[100%] items-center text-center justify-center hover:cursor-pointer">새그룹 추가</a>`;
+        addGroupDiv.innerHTML = `<a class="flex w-[100%] items-center text-center justify-center hover:cursor-pointer hover:bg-gray-300 hover:text-black">새그룹 추가</a>`;
         const addGroupBtn = addGroupDiv.querySelector("a");
         addGroupBtn.addEventListener("click", async () => {
             const msg = await this.noteApi.addGroupNote();

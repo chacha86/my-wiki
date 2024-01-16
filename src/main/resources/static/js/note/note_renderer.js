@@ -56,7 +56,10 @@ class ItemData {
             'itemText': itemText,
             'itemType': itemType
         };
+    }
 
+    static getElementByItemId(itemId) {
+        return document.querySelector("#" + itemId);
     }
 }
 
@@ -174,10 +177,8 @@ class NoteRenderer {
         let noteItemAnchorList = document.querySelectorAll('#note-item-list li a');
         this.noteHandler.setRenderPageBySelect(noteItemAnchorList, param);
 
-
         let addGroupDiv = document.querySelector("#add-group-note");
         this.noteHandler.setApiAddGroupNoteBtn(addGroupDiv);
-
     }
 
     createNoteTree(noteList, noteUIParam) {
@@ -201,7 +202,7 @@ class NoteRenderer {
 
     createNoteItem(note, noteUIParam) {
         const group = 1;
-        let noteItemClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
+        let noteItemClass = "hover:bg-gray-500 hover:text-white hover:rounded-md mb-[5px]";
         let groupItemClass = note.groupYn === 0 ? noteItemClass : "";
         let noteAnchorClass = "min-w-[120px]";
         let isGroup = note.groupYn === group;

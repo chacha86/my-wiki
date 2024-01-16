@@ -5,6 +5,7 @@ import {NoteMenuRenderer} from "./note_menu_renderer.js";
 import {RenameModalRenderer} from "./rename/rename_modal_renderer.js";
 import {NotePageRenderer} from "../note_page/note_page_renderer.js";
 import {PageMoveModalRenderer} from "./move/page_move_modal_renderer.js";
+import {NotePageContentRenderer} from "../note_page_content/note_page_content_renderer.js";
 
 class NoteMenuHandler {
     constructor() {
@@ -13,22 +14,12 @@ class NoteMenuHandler {
 
     setApiToMenuItem(menuItemAnchorList, param) {
 
-        let itemInfo = param.itemInfo;
-
         menuItemAnchorList.forEach((anchor) => {
             let apiName = anchor.getAttribute('data-api-name');
-            let renderer = new NoteRenderer(param);
-            if (itemInfo.itemType === 'page') {
-                renderer = new NotePageRenderer(param);
-            }
 
             anchor.addEventListener('click', (event) => {
                 let apiFunc = this.getApiFunction(apiName);
-                apiFunc(param).then(() => {
-                    renderer.render().catch((error) => {
-                        console.error(error);
-                    });
-                });
+                apiFunc(param);
             });
         });
     }
@@ -39,7 +30,6 @@ class NoteMenuHandler {
                 event.preventDefault();
                 event.stopPropagation();
 
-                console.log(data);
                 let itemId = ItemData.getItemIdByElement(item);
                 let itemInfo = ItemData.getItemInfoById(itemId);
                 let mousePos = {
@@ -185,7 +175,7 @@ class NoteMenuHandler {
             'url': '/api/notes/delete/' + itemInfo.itemIdNo,
             'itemInfo': itemInfo,
             'itemType': 'note',
-            'apiName': 'deleteNote',
+            'apiName': '_deleteNote',
             // 'callback' : callback
             // 'onclick': 'deleteItem(this, "note-' + noteIdNo + '"); return false;'
         }
@@ -213,14 +203,14 @@ class NoteMenuHandler {
             'itemInfo': itemInfo,
             'url': '/api/notes/add-group/' + itemInfo.itemIdNo,
             'itemType': 'note',
-            'apiName': 'addGroupNote'
+            'apiName': '_addGroupNote'
         }
         let addNote = {
             'text': '➕ 새노트 추가',
             'itemInfo': itemInfo,
             'url': '/api/notes/add/' + itemInfo.itemIdNo,
             'itemType': 'note',
-            'apiName': 'addNote'
+            'apiName': '_addNote'
         }
 
         return [addGroup, addNote];
@@ -252,12 +242,12 @@ class NoteMenuHandler {
 
     getApiFunction(apiName) {
         switch (apiName) {
-            case 'deleteNote':
-                return this.deleteNote.bind(this);
-            case 'addGroupNote':
-                return this.addGroupNote.bind(this);
-            case 'addNote':
-                return this.addNote.bind(this);
+            case '_deleteNote':
+                return this._deleteNote.bind(this);
+            case '_addGroupNote':
+                return this._addGroupNote.bind(this);
+            case '_addNote':
+                return this._addNote.bind(this);
             case '_renameNoteModal':
                 return this._renameModal.bind(this);
             case '_moveNoteModal':
@@ -273,16 +263,18 @@ class NoteMenuHandler {
         }
     }
 
-    async addNote(param) {
+    async _addNote(param) {
         let itemInfo = param.itemInfo;
         this._openAddedGroupNote(itemInfo);
-        return await this.noteMenuApi.addNote(itemInfo.itemIdNo);
+        const msg = await this.noteMenuApi.addNote(itemInfo.itemIdNo);
+        await new NoteRenderer(param).render();
     }
 
-    async addGroupNote(param) {
+    async _addGroupNote(param) {
         let itemInfo = param.itemInfo;
         this._openAddedGroupNote(itemInfo);
-        return await this.noteMenuApi.addGroupNote(itemInfo.itemIdNo);
+        const msg = await this.noteMenuApi.addGroupNote(itemInfo.itemIdNo);
+        await new NoteRenderer(param).render();
     }
 
     _openAddedGroupNote(itemInfo) {
@@ -293,18 +285,26 @@ class NoteMenuHandler {
         }
     }
 
-    async deleteNote(param) {
+    async _deleteNote(param) {
         let itemInfo = param.itemInfo;
-        return await this.noteMenuApi.deleteNote(itemInfo.itemIdNo);
-    }
+        const msg = await this.noteMenuApi.deleteNote(itemInfo.itemIdNo);
 
-    async moveNote(itemInfo) {
-        return await this.noteMenuApi.moveNote(itemInfo.itemIdNo);
+        param.selectedNoteId = null;
+        param.selectedPageId = null;
+
+        await new NoteRenderer(param).render();
     }
 
     async _deletePage(param) {
-        let itemInfo = param.itemInfo;
-        return await this.noteMenuApi.deletePage(itemInfo.itemIdNo);
+        const itemInfo = param.itemInfo;
+        const msg = await this.noteMenuApi.deletePage(itemInfo.itemIdNo);
+
+        if(param.selectedPageId === ItemData.getPageIdByItemNo(itemInfo.itemIdNo)) {
+            param.selectedPageId = null;
+        }
+
+        await new NotePageRenderer(param).render();
+        await new NotePageContentRenderer(param).render();
     }
 
     async _moveNoteModal(param) {
@@ -312,11 +312,14 @@ class NoteMenuHandler {
         const itemInfo = param.itemInfo;
 
         param.targetNoteId = ItemData.getNoteIdByItemNo(itemInfo.itemIdNo);
-        param.moveNoteTree = await this.moveNote(itemInfo);
+        param.moveNoteTree = await this._getMoveNoteTree(itemInfo);
 
         let noteMoveModalRenderer = new NoteMoveModalRenderer(param);
-        noteMoveModalRenderer.render();
+        await noteMoveModalRenderer.render();
         moveModal.show();
+    }
+    async _getMoveNoteTree(itemInfo) {
+        return await this.noteMenuApi.moveNote(itemInfo.itemIdNo);
     }
 
     async _movePageModal(param) {
@@ -325,10 +328,10 @@ class NoteMenuHandler {
 
         param.targetNoteId = param.selectedNoteId;
         param.targetPageId = ItemData.getPageIdByItemNo(itemInfo.itemIdNo);
-        param.moveNoteTree = await this.moveNote(itemInfo);
+        param.moveNoteTree = await this._getMoveNoteTree(itemInfo);
 
         let pageMoveModalRenderer = new PageMoveModalRenderer(param);
-        pageMoveModalRenderer.render();
+        await pageMoveModalRenderer.render();
         moveModal.show();
     }
 
@@ -338,7 +341,7 @@ class NoteMenuHandler {
         itemTextInput.value = param.itemInfo.itemText;
 
         let renameModalRenderer = new RenameModalRenderer(param);
-        renameModalRenderer.render();
+        await renameModalRenderer.render();
 
         renameModal.show();
     }

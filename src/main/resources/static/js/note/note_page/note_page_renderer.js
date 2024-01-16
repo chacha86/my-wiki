@@ -15,7 +15,7 @@ class NotePageRenderer {
 
     preRender() {
         if(this.param.selectedPageId !== undefined) {
-            this.notePageData.selectedPageId = this.param.prevPageId;
+            this.notePageData.selectedPageId = this.param.selectedPageId;
         }
         if(this.param.prevPageId !== undefined) {
             this.notePageData.prevPageId = this.param.prevPageId;
@@ -70,7 +70,7 @@ class NotePageRenderer {
     }
 
     createNotePageItem(notePageDto) {
-        let pageClass = "hover:bg-gray-500 hover:text-white hover:rounded-md";
+        let pageClass = "hover:bg-gray-500 hover:text-white hover:rounded-md mb-[5px]";
         let pageLinkClass = "block p-[10px] text-[15px] hover:cursor-pointer";
         return `
             <li class="${pageClass}" id="page-${notePageDto.id}" data-item-text="${notePageDto.title}" data-item-type="page">

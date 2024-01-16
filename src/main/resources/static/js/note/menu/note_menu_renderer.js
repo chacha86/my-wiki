@@ -38,7 +38,6 @@ class NoteMenuRenderer {
         `;
         body.insertAdjacentHTML('beforeend', html);
         this.postRender();
-        this.eventHandle();
     }
 
     postRender() {

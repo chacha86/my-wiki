@@ -27,10 +27,11 @@ class NotePageContentEventHandler {
             notePageRenderer.render().catch((e) => {
                 console.error(e);
             });
-            let notePageContentRenderer = new NotePageContentRenderer(param);
-            notePageContentRenderer.render().catch((e) => {
-                console.error(e);
-            });
+
+            // let notePageContentRenderer = new NotePageContentRenderer(param);
+            // notePageContentRenderer.render().catch((e) => {
+            //     console.error(e);
+            // });
         });
     }
 
@@ -42,11 +43,31 @@ class NotePageContentEventHandler {
 
             let msg = await this.notePageContentApi.deleteContent(deleteContentParam);
 
-            let renderer = new NotePageRenderer(param);
-            renderer.render().catch((e) => {
+            let notePageParam = {
+                'selectedNoteId': param.selectedNoteId,
+                'selectedPageId': null,
+            };
+            let notePageRenderer = new NotePageRenderer(notePageParam);
+            notePageRenderer.render().catch((e) => {
+                console.error(e);
+            });
+
+            let notePageContentRenderer = new NotePageContentRenderer(notePageParam);
+            notePageContentRenderer.render().catch((e) => {
                 console.error(e);
             });
         });
+    }
+
+    setTitleEnter(titleInput) {
+        titleInput.setAttribute('spellcheck', 'false');
+        titleInput.addEventListener('keydown', (e) => {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                editor.focus();
+            }
+        });
+
     }
 
     addEvent(notePageContentData) {
@@ -66,14 +87,6 @@ class NotePageContentEventHandler {
             });
         });
 
-        const titleInput = document.querySelector(".title");
-        titleInput.setAttribute('spellcheck', 'false');
-        titleInput.addEventListener('keydown', (e) => {
-            if (e.keyCode === 13) {
-                e.preventDefault();
-                editor.focus();
-            }
-        });
 
         titleInput.value = data.notePageDto.title;
         editor.setMarkdown(data.notePageDto.notePageDetailDto.content);

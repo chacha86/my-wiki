@@ -97,22 +97,22 @@
                         </div>
                     </form>
                 </div>
-                <div id="add-group-note" class="flex items-center text-center justify-center border border-gray-300 ">
+                <div id="add-group-note" class="flex items-center text-center justify-center border border-gray-300 hover:bg-gray-300 hover:">
                     <a>새그룹 추가</a>
                 </div>
             </div>
             <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
-            <div class="custom-scroll left-second-menu-content min-w-[150px] bg-gray-800 text-white overflow-scroll w-[250px]">
+            <div class="custom-scroll relative left-second-menu-content min-w-[150px] bg-gray-800 text-white overflow-scroll w-[250px]">
                 <div class="h-[10%] flex items-center justify-around border-white border-b">
                     <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
                     <div id="add-page-btn">
                     </div>
                 </div>
-                <div id="page-item-list">
+                <div id="page-item-list" class="p-[10px]">
                 </div>
-                <div class="absolute top-[90%]">
-                    <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"
-                          class="flex relative justify-between items-center" onsubmit="return false;">
+                <div id="search-area" class="absolute top-[90%] w-[90%]">
+<!--                    <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"-->
+<!--                          class="flex relative justify-between items-center" onsubmit="return false;">-->
                         <input type="text" placeholder="Search" name="keyword"
                                class="input input-bordered text-black w-full max-w-xs"
                                id="search-input" autocomplete="off">
