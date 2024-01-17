@@ -1,6 +1,7 @@
 import {SearchApi} from "./search_api.js";
 import {NoteRenderer} from "../note/note_renderer.js";
 import {NotePageRenderer} from "../note/note_page/note_page_renderer.js";
+import {NotePageContentRenderer} from "../note/note_page_content/note_page_content_renderer.js";
 
 class SearchBoxHandler {
     constructor() {
@@ -19,7 +20,6 @@ class SearchBoxHandler {
     setClickToItems(searchResultItems, param) {
         searchResultItems.forEach((item) => {
             item.addEventListener('click', async (e) => {
-                console.log(item);
 
                 param.selectedNoteId = item.getAttribute('data-note-id');
                 await new NoteRenderer(param).render();
@@ -27,6 +27,7 @@ class SearchBoxHandler {
                 if(pageId != null || pageId !== undefined) {
                     param.selectedPageId = pageId;
                     await new NotePageRenderer(param).render();
+                    await new NotePageContentRenderer(param).render();
                 }
             });
         });

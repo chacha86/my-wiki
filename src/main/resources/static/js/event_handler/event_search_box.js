@@ -16,9 +16,24 @@ if (searchInput.value !== '') {
 
 
 body.addEventListener('click', function (e) {
-    if (e.target.id !== 'search-input' && e.target.id !== 'search-box') {
-        searchBox.style.display = 'none';
+
+    const classValue = e.target.getAttribute("class");
+
+    if (classValue != null && classValue.includes('side-control-bar')) {
+        return;
     }
+
+    if (classValue != null && classValue.includes('search-content')) {
+        return;
+    }
+
+    if (e.target.id === 'search-input') {
+        return;
+    }
+
+
+    searchBox.style.display = 'none';
+
 });
 
 

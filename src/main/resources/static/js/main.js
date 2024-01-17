@@ -1,5 +1,6 @@
 import {} from "./event_handler/event_search_box.js";
 import {} from "./event_handler/event_item_menu.js";
+import {} from "./event_handler/event_side_drag.js";
 import {NoteRenderer} from "./note/note_renderer.js";
 import {CommonRenderer} from "./common/common_renderer.js";
 
