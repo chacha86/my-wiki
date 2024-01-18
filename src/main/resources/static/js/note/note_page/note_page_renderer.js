@@ -24,8 +24,7 @@ class NotePageRenderer {
 
     async render() {
         this.preRender();
-        let noteData = this.param;
-        const data = await this.pageHandler.getNotePageData(noteData);
+        const data = await this.pageHandler.getNotePageData(this.param);
         const pageItemList = document.querySelector("#" + this.renderTarget);
 
         pageItemList.innerHTML = "";

@@ -81,7 +81,7 @@ public class NoteRestController {
     }
 
     @Getter
-    private static enum SortType {
+    private enum SortType {
         TITLE("title"), CREATED_DATE("createDate"), UPDATED_DATE("updateDate");
 
         SortType(String value) {
@@ -92,7 +92,7 @@ public class NoteRestController {
     }
 
     @Getter
-    private static enum SortDirection {
+    private enum SortDirection {
         ASC(0), DESC(1);
 
         SortDirection(int value) {

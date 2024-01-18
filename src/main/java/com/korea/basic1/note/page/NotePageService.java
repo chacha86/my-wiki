@@ -86,8 +86,8 @@ public class NotePageService {
     }
 
     public List<NotePage> getNotePageListByNoteId(Long id, String sortType, Sort.Direction direction) {
-        Sort sort = Sort.by(Sort.Direction.DESC, sortType);
-        return notePageRepository.findByNoteId(id);
+        Sort sort = Sort.by(direction, sortType);
+        return notePageRepository.findByNoteId(id, sort);
     }
 
     public List<NotePageDto> getNotePageDtoList(List<NotePage> notePageList) {

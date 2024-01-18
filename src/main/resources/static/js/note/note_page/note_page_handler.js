@@ -9,16 +9,20 @@ class NotePageHandler {
         this.notePageApi = new NotePageApi();
     }
 
-    async getNotePageData(noteData) {
-        if (noteData.selectedNoteId == null) {
+    async getNotePageData(param) {
+        if (param.selectedNoteId == null) {
             return null;
         }
 
-        const param = {
-            'noteIdNo': ItemData.getItemNoById(noteData.selectedNoteId),
-            'sortType': 'TITLE',
-            'sort': 0
-        };
+        if(param.sortType == null) {
+            param.sortType = "TITLE";
+        }
+
+        if(param.direction == null) {
+            param.direction = 0;
+        }
+
+        param.noteIdNo = ItemData.getItemNoById(param.selectedNoteId);
         return await this.notePageApi.getAllPagesByNote(param);
     }
 
@@ -74,15 +78,27 @@ class NotePageHandler {
     setSortApiToBtn(sortBtnDiv, param) {
         sortBtnDiv.innerHTML = "";
         sortBtnDiv.innerHTML = `
-                                <a class="border p-[5px] hover:bg-gray-300 hover:text-black hover:cursor-pointer">
+                                <a class="desc border p-[5px] hover:bg-gray-300 hover:text-black hover:cursor-pointer">
                                     <i class="fa-solid fa-arrow-down-wide-short"></i>
                                 </a>
-                                <a class="border p-[5px] hover:bg-gray-300 hover:text-black hover:cursor-pointer">
+                                <a class="asc border p-[5px] hover:bg-gray-300 hover:text-black hover:cursor-pointer">
                                     <i class="fa-solid fa-arrow-up-wide-short"></i>
                                 </a>
                                 `;
 
-        const sortBtn = sortBtnDiv.querySelector("a");
+        const sortBtnList = sortBtnDiv.querySelectorAll("a");
+        sortBtnList.forEach((sortBtn) => {
+            sortBtn.addEventListener("click", (e) => {
+                console.log(sortBtn.classList);
+                sortBtn.classList.contains("desc") ? param.direction = 1 : param.direction = 0;
+                param.sortType = "TITLE";
+
+                let notePageRenderer = new NotePageRenderer(param);
+                notePageRenderer.render().catch((e) => {
+                    console.error(e);
+                });
+            });
+        });
         // sortBtn.addEventListener("click", async () => {
         //
         // }
