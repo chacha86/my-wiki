@@ -19,7 +19,7 @@ public class Note {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 30, nullable = false)
+    @Column(length = 100, nullable = false)
     private String name;
     @Column(nullable = false)
     private LocalDateTime createDate;

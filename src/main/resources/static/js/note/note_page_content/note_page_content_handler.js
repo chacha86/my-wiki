@@ -28,6 +28,10 @@ class NotePageContentEventHandler {
                 console.error(e);
             });
 
+            let notePageContentRenderer = new NotePageContentRenderer(param);
+            notePageContentRenderer.render().catch((e) => {
+                console.error(e);
+            });
             // let notePageContentRenderer = new NotePageContentRenderer(param);
             // notePageContentRenderer.render().catch((e) => {
             //     console.error(e);

@@ -67,6 +67,9 @@ class NotePageRenderer {
 
         const addPageBtn = document.querySelector("#add-page-btn");
         this.pageHandler.setAddApiToBtn(addPageBtn, param);
+
+        const sortBtn = document.querySelector("#sort-btn");
+        this.pageHandler.setSortApiToBtn(sortBtn, param);
     }
 
     createNotePageItem(notePageDto) {

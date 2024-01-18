@@ -10,93 +10,91 @@
     <div id="editor" class="text-red text-left"></div>
     <script th:inline="javascript">
 
-        window.onload = function () {
-            const Editor = toastui.Editor;
-            const editor = new Editor({
-                el: document.querySelector("#editor"),
-                plugins: [toastui.Editor.plugin.codeSyntaxHighlight],
-                height: "730px",
-                initialEditType: "markdown",
-                previewStyle: "vertical",
-                hideModeSwitch: true,
-                initialValue: [[${pageDetail.notePageDetail.content}]]
+        const Editor = toastui.Editor;
+        const editor = new Editor({
+            el: document.querySelector("#editor"),
+            plugins: [toastui.Editor.plugin.codeSyntaxHighlight],
+            height: "730px",
+            initialEditType: "markdown",
+            previewStyle: "vertical",
+            hideModeSwitch: true,
+            initialValue: [[${pageDetail.notePageDetail.content}]]
+        });
+
+        const wysiwygIframe = document.querySelector('.md-mode .ProseMirror');
+        wysiwygIframe.setAttribute('spellcheck', 'false');
+        document.addEventListener('keydown', handleKeyDown, {capture: true});
+
+        // titleInput = document.querySelector("input[name='title']");
+        // titleInput.setAttribute('spellcheck', 'false');
+        // titleInput.addEventListener('keydown', function (e) {
+        //     if (e.keyCode === 13) {
+        //         e.preventDefault();
+        //         editor.focus();
+        //     }
+        // });
+
+        editor.on('change', () => {
+            console.log(document.querySelectorAll(".toast-editor-container a"));
+            document.querySelectorAll(".toast-editor-container a").forEach((item) => {
+                item.setAttribute('target', '_blank');
             });
+        });
 
-            const wysiwygIframe = document.querySelector('.md-mode .ProseMirror');
-            wysiwygIframe.setAttribute('spellcheck', 'false');
-            document.addEventListener('keydown', handleKeyDown, {capture: true});
-
-            // titleInput = document.querySelector("input[name='title']");
-            // titleInput.setAttribute('spellcheck', 'false');
-            // titleInput.addEventListener('keydown', function (e) {
-            //     if (e.keyCode === 13) {
-            //         e.preventDefault();
-            //         editor.focus();
-            //     }
-            // });
-
-            editor.on('change', () => {
-                console.log(document.querySelectorAll(".toast-editor-container a"));
-                document.querySelectorAll(".toast-editor-container a").forEach((item) => {
-                    item.setAttribute('target', '_blank');
-                });
-            });
-
-            // front에서 스크롤 조정. 너무 번거로움. 그냥 서버에 scroll값 넘겨서 처리하자.
-            // let leftSideMenu = document.querySelector('.left-side-menu-content');
-            // leftSideMenu.scrollTop = 0;
-            // let itemHeight = 70;
-            // console.log(leftSideMenu.clientHeight);
-            // console.log(itemHeight);
-            // console.log(leftSideMenu.clientHeight / itemHeight);
-            //
-            // scrollMoveThresh = Math.floor(leftSideMenu.clientHeight / itemHeight);
-            // scrollMoveValue = itemHeight * (articleId - scrollMoveThresh);
-            // console.log(articleId);
-            // console.log(scrollMoveValue);
-            // leftSideMenu.scrollTop = scrollMoveValue;
-            // function confirmDelete() {
-            //     if (confirm('정말 삭제하시겠습니까?')) {
-            //         let input = document.querySelector('#updateForm [name="noteId"]');
-            //         let deleteForm = document.querySelector('#delete');
-            //         deleteForm.appendChild(input);
-            //         deleteForm.submit();
-            //     }
-            // }
+        // front에서 스크롤 조정. 너무 번거로움. 그냥 서버에 scroll값 넘겨서 처리하자.
+        // let leftSideMenu = document.querySelector('.left-side-menu-content');
+        // leftSideMenu.scrollTop = 0;
+        // let itemHeight = 70;
+        // console.log(leftSideMenu.clientHeight);
+        // console.log(itemHeight);
+        // console.log(leftSideMenu.clientHeight / itemHeight);
+        //
+        // scrollMoveThresh = Math.floor(leftSideMenu.clientHeight / itemHeight);
+        // scrollMoveValue = itemHeight * (articleId - scrollMoveThresh);
+        // console.log(articleId);
+        // console.log(scrollMoveValue);
+        // leftSideMenu.scrollTop = scrollMoveValue;
+        // function confirmDelete() {
+        //     if (confirm('정말 삭제하시겠습니까?')) {
+        //         let input = document.querySelector('#updateForm [name="noteId"]');
+        //         let deleteForm = document.querySelector('#delete');
+        //         deleteForm.appendChild(input);
+        //         deleteForm.submit();
+        //     }
+        // }
 
 
-            // function setScroll() {
-            //     console.log('test');
-            //     let leftSideMenu = document.querySelector('.left-side-menu-content');
-            //     console.log(leftSideMenu.scrollTop);
-            //     localStorage.setItem('scrollPosition', leftSideMenu.scrollTop);
-            // }
+        // function setScroll() {
+        //     console.log('test');
+        //     let leftSideMenu = document.querySelector('.left-side-menu-content');
+        //     console.log(leftSideMenu.scrollTop);
+        //     localStorage.setItem('scrollPosition', leftSideMenu.scrollTop);
+        // }
 
-            function handleKeyDown(event) {
-                // Ctrl + K 단축키를 감지
-                if (event.ctrlKey && event.key.toLowerCase() === 's') {
-                    event.preventDefault();
-                    form = document.querySelector('#updateForm');
-                    form.content.value = editor.getMarkdown();
-                    form.submit();
-                    event.stopPropagation();  // 이벤트 전파 중지
-                    // 원하는 동작을 실행
-                } else if (event.ctrlKey && event.key.toLowerCase() === 'r') {
-                    event.preventDefault();
-                    if (editor.isWysiwygMode()) {
-                        editor.changeMode('markdown');
-                        document.querySelector('input[name="title"]').readOnly = false;
-                        editor.blur();
-                    } else {
-                        editor.changeMode('wysiwyg');
-                        document.querySelector('.ww-mode .toastui-editor-contents').setAttribute('contenteditable', 'false');
-                        document.querySelector('input[name="title"]').readOnly = true;
-                    }
-                    event.stopPropagation();  // 이벤트 전파 중지
+        function handleKeyDown(event) {
+            // Ctrl + K 단축키를 감지
+            if (event.ctrlKey && event.key.toLowerCase() === 's') {
+                event.preventDefault();
+                form = document.querySelector('#updateForm');
+                form.content.value = editor.getMarkdown();
+                form.submit();
+                event.stopPropagation();  // 이벤트 전파 중지
+                // 원하는 동작을 실행
+            } else if (event.ctrlKey && event.key.toLowerCase() === 'r') {
+                event.preventDefault();
+                if (editor.isWysiwygMode()) {
+                    editor.changeMode('markdown');
+                    document.querySelector('input[name="title"]').readOnly = false;
+                    editor.blur();
+                } else {
+                    editor.changeMode('wysiwyg');
+                    document.querySelector('.ww-mode .toastui-editor-contents').setAttribute('contenteditable', 'false');
+                    document.querySelector('input[name="title"]').readOnly = true;
                 }
+                event.stopPropagation();  // 이벤트 전파 중지
             }
-
         }
+
         // function scrollDown() {
         //     element = document.querySelector('.left-side-menu-content');
         //     element.scrollTop = 100000;

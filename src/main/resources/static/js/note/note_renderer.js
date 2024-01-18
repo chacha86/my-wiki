@@ -152,7 +152,7 @@ class NoteRenderer {
         noteItemList.innerHTML = "";
 
         const html = `
-            <ul>
+            <ul class="menu bg-gray-800">
                 ${this.createNoteTree(data.noteTree, data.noteUIParam)}
             </ul>
         `;

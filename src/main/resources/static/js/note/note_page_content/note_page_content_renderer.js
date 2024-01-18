@@ -2,7 +2,14 @@ import {NotePageContentEventHandler} from "./note_page_content_handler.js";
 import {NotePageContentApi} from "./note_page_content_api.js";
 import {NoteData} from "../note_renderer.js";
 
+class NotePageContentData {
+    static getUpdateDateMsg(date) {
+        if(date == null) return '';
 
+        const dateStr = date[0] + '년 ' + date[1] + '월 ' + date[2] + '일 ' + date[3] + '시 ' + date[4] + '분';
+        return dateStr + '에 마지막으로 변경';
+    }
+}
 class NotePageContentRenderer {
     constructor(param) {
         this.param = param;
@@ -28,14 +35,17 @@ class NotePageContentRenderer {
             .getPageContentByPage(NoteData.getNo(this.param.selectedPageId));
 
         this.notePageContentDataRefer.data = data;
-
+        console.log(data);
         contentHeader.innerHTML = `
-            <input class="title block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none select-none" type="text"
+            <div class="mb-[10px] text-right text-[gray]">${NotePageContentData.getUpdateDateMsg(data.notePageDto.updateDate)}</div>
+            <div class="content-header flex justify-between">
+            <input class="title block border-b-[1px] font-bold mb-[10px] focus:outline-none select-none" type="text"
                    name="title">
                 <div>
-                    <a id="page-update-btn" class="font-bold text-blue-500 p-[10px]">🛠️ 저장하기</a>
-                    <a id="page-delete-btn" class="font-bold text-red-500 p-[10px]">🗑️ 삭제하기</a>
-                </div>`;
+                    <a id="page-update-btn" class="font-bold text-blue-400 p-[10px] hover:cursor-pointer"><i class="fa-solid fa-floppy-disk"></i> 저장하기</a>
+                    <a id="page-delete-btn" class="font-bold text-red-400 p-[10px] hover:cursor-pointer"><i class="fa-solid fa-trash"></i> 삭제하기</a>
+                </div>
+            </div>`;
 
         const titleInput = document.querySelector(".title");
         titleInput.value = data.notePageDto.title;

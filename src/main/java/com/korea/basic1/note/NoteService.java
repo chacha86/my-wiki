@@ -117,6 +117,7 @@ public class NoteService {
             new IllegalArgumentException("해당 노트는 존재하지 않습니다.");
         } else {
             note.setName(noteName);
+            note.setUpdateDate(LocalDateTime.now());
             noteRepository.save(note); // save는 ID가 있으면 update, ID가 없으면 insert
         }
     }

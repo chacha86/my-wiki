@@ -10,16 +10,6 @@ sideControlBars.forEach(function (item) {
     });
 });
 
-sideControlBars.forEach(function (item) {
-    item.addEventListener("mouseup", function (e) {
-        let allElements = document.getElementsByTagName('input'); // 모든 요소를 선택합니다.
-
-        for (let i = 0; i < allElements.length; i++) {
-            allElements[i].style.userSelect = 'auto'; // user-select 속성을 설정합니다.
-        }
-    });
-});
-
 document.querySelector(".main").addEventListener("mousemove", function (e) {
     if (isDragging) {
         let target = onDragTarget.previousElementSibling;
@@ -40,6 +30,6 @@ document.querySelector("body").addEventListener("mouseup", function (e) {
     if (isDragging) {
         // document.querySelector(".main").style.cursor = 'default';
         isDragging = false;
-        document.querySelector("body").classList.add("select-auto")
+        document.querySelector("body").classList.remove("select-none")
     }
 });

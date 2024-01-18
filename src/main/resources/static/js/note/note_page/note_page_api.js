@@ -1,9 +1,9 @@
 import {aPostFetch} from "../../note_api.js";
 
 class NotePageApi {
-    async getAllPagesByNote(noteIdNo) {
-        const url = "/api/notes/" + noteIdNo + "/pages";
-        return await aPostFetch(url, null);
+    async getAllPagesByNote(param) {
+        const url = "/api/notes/" + param.noteIdNo + "/pages";
+        return await aPostFetch(url, JSON.stringify(param));
     }
 
     async addPage(noteIdNo) {

@@ -3,6 +3,7 @@ package com.korea.basic1.note.page;
 import com.korea.basic1.note.Note;
 import com.korea.basic1.note.NotePageDto;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
+import com.korea.basic1.note.tag.NoteRestController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -55,6 +56,8 @@ public class NotePageService {
         } else {
             notePage.setTitle(title);
             notePage.getNotePageDetail().setContent(content);
+            notePage.getNotePageDetail().setUpdateDate(LocalDateTime.now());
+            notePage.setUpdateDate(LocalDateTime.now());
             notePageRepository.save(notePage); // save는 ID가 있으면 update, ID가 없으면 insert
         }
     }
@@ -82,7 +85,8 @@ public class NotePageService {
         return notePageRepository.findByNoteId(id, sort);
     }
 
-    public List<NotePage> getNotePageListByNoteId(Long id) {
+    public List<NotePage> getNotePageListByNoteId(Long id, String sortType, Sort.Direction direction) {
+        Sort sort = Sort.by(Sort.Direction.DESC, sortType);
         return notePageRepository.findByNoteId(id);
     }
 

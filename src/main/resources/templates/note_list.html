@@ -93,7 +93,7 @@
                         <input type="hidden" id="csrf-header" th:value="${_csrf.headerName}">
                         <input type="hidden" id="csrf-token" th:name="${_csrf.parameterName}"
                                th:value="${_csrf.token}"/>
-                        <div id="note-item-list" class="menu bg-gray-800">
+                        <div id="note-item-list">
                         </div>
                     </form>
                 </div>
@@ -104,9 +104,11 @@
             </div>
             <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
             <div class="custom-scroll relative left-second-menu-content min-w-[150px] bg-gray-800 text-white overflow-scroll w-[250px]">
-                <div class="h-[10%] flex items-center justify-around border-white border-b">
-                    <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
+                <div class="h-[10%] flex items-center justify-around border-white border-b text-[1rem]">
+                    <h1 class="p-[20px] font-bold">페이지 목록</h1>
                     <div id="add-page-btn">
+                    </div>
+                    <div id="sort-btn">
                     </div>
                 </div>
                 <div id="page-item-list" class="p-[10px]">
@@ -145,7 +147,7 @@
         </div>
     </div>
     <div class="content h-[100vh-94px] w-[100%] overflow-x-hidden overflow-y-hidden">
-        <div id="content-header" class="content-header flex justify-between">
+        <div id="content-header" class="p-[10px]">
         </div>
         <div th:replace="~{fragments/toast_editor::test}">
         </div>
