@@ -30,7 +30,7 @@ class NotePageContentRenderer {
         this.notePageContentDataRefer.data = data;
 
         contentHeader.innerHTML = `
-            <input class="title block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
+            <input class="title block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none select-none" type="text"
                    name="title">
                 <div>
                     <a id="page-update-btn" class="font-bold text-blue-500 p-[10px]">🛠️ 저장하기</a>
