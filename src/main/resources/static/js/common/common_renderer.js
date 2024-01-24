@@ -6,7 +6,7 @@ class CommonRenderer {
         this.handler = new CommonHandler();
     }
 
-    render() {
+    render(param) {
 
         this.postRender();
     }

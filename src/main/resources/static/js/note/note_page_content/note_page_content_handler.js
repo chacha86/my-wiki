@@ -5,7 +5,7 @@ import {NotePageRenderer} from "../note_page/note_page_renderer.js";
 import {postFetch} from "../../note_api.js";
 import {NotePageApi} from "../note_page/note_page_api.js";
 
-class NotePageContentEventHandler {
+class NotePageContentHandler {
     constructor() {
         this.notePageContentApi = new NotePageContentApi();
         this.notePageApi = new NotePageApi();
@@ -98,4 +98,4 @@ class NotePageContentEventHandler {
     }
 }
 
-export {NotePageContentEventHandler}
+export {NotePageContentHandler}

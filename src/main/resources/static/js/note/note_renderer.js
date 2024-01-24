@@ -1,6 +1,7 @@
 import {aPostFetch} from "../note_api.js";
 import {NoteMenuHandler} from "./menu/note_menu_handler.js";
 import {NoteHandler} from "./note_handler.js";
+import {HandlerFactory} from "../initializer.js";
 
 class NoteApi {
     async getAllNotes(param) {
@@ -121,33 +122,34 @@ class NoteData {
 }
 
 class NoteRenderer {
-    constructor(param) {
-        this.param = param;
-
+    constructor() {
         this.renderTarget = "note-item-list";
-        this.noteDataRefer = {
+        this.props = {
             'selectedNoteId': null,
             'prevNoteId': null,
+            'data': null,
         }
 
         this.noteHandler = new NoteHandler();
         this.noteMenuHandler = new NoteMenuHandler();
     }
 
-    preRender() {
-        if(this.param.selectedNoteId != null || this.param.selectedNoteId !== undefined) {
-            this.noteDataRefer.selectedNoteId = this.param.selectedNoteId;
-        }
+    async preRender(param) {
+        Object.keys(this.props).forEach((key) => {
+            if(param[key] != null) {
+                this.props[key] = param[key];
+            }
+        });
 
-        if(this.param.prevNoteId != null || this.param.prevNoteId !== undefined) {
-            this.noteDataRefer.prevNoteId = this.param.prevNoteId;
+        if (this.props.data == null) {
+            this.props.data = await HandlerFactory.get("note").getNoteData();
         }
     }
 
-    async render() {
-        this.preRender();
+    async render(param) {
+        await this.preRender(param);
+        let data = this.props.data;
 
-        let data = await this.noteHandler.getNoteData();
         const noteItemList = document.querySelector("#" + this.renderTarget);
         noteItemList.innerHTML = "";
 

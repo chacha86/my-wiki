@@ -1,4 +1,4 @@
-import {NoteMoveModalEventHandler} from "./note_move_modal_event_handler.js";
+import {NoteMoveModalHandler} from "./note_move_modal_handler.js";
 import {ItemData, NoteData} from "../../note_renderer.js";
 
 class NoteMoveModalData {
@@ -16,7 +16,7 @@ class NoteMoveModalData {
 class NoteMoveModalRenderer {
     constructor(param) {
         this.param = param;
-        this.eventHandler = new NoteMoveModalEventHandler();
+        this.eventHandler = new NoteMoveModalHandler();
         this.renderTarget = "move-note-modal";
 
         this.noteMoveModalDataRefer = {

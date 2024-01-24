@@ -2,7 +2,7 @@ import {NoteData, ItemData, NoteRenderer} from "../../note_renderer.js";
 import {NoteMoveModalRenderer} from "./note_move_modal_renderer.js";
 import {NoteMenuApi} from "../note_menu_api.js";
 
-class NoteMoveModalEventHandler {
+class NoteMoveModalHandler {
     constructor() {
         this.noteMenuApi = new NoteMenuApi();
     }
@@ -107,4 +107,4 @@ class NoteMoveModalEventHandler {
     }
 }
 
-export {NoteMoveModalEventHandler}
+export {NoteMoveModalHandler}

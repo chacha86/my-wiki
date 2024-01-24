@@ -1,4 +1,4 @@
-import {NotePageContentEventHandler} from "./note_page_content_handler.js";
+import {NotePageContentHandler} from "./note_page_content_handler.js";
 import {NotePageContentApi} from "./note_page_content_api.js";
 import {NoteData} from "../note_renderer.js";
 
@@ -19,7 +19,7 @@ class NotePageContentRenderer {
         };
 
         this.notePageContentApi = new NotePageContentApi();
-        this.eventHandler = new NotePageContentEventHandler();
+        this.eventHandler = new NotePageContentHandler();
     }
 
     async render() {
@@ -71,4 +71,4 @@ class NotePageContentRenderer {
     }
 }
 
-export {NotePageContentEventHandler, NotePageContentRenderer}
+export {NotePageContentHandler, NotePageContentRenderer}
