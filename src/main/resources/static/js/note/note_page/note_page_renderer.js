@@ -1,6 +1,7 @@
 import {NotePageData} from "./note_page_data.js";
 import {NotePageHandler} from "./note_page_handler.js";
 import {NoteMenuHandler} from "../menu/note_menu_handler.js";
+
 class NotePageRenderer {
     constructor(param) {
         this.param = param;
@@ -8,23 +9,28 @@ class NotePageRenderer {
         this.notePageData = {
             'selectedPageId': null,
             'prevPageId': null,
+            'data': null
         };
         this.pageHandler = new NotePageHandler();
         this.menuHandler = new NoteMenuHandler();
     }
 
-    preRender() {
-        if(this.param.selectedPageId !== undefined) {
-            this.notePageData.selectedPageId = this.param.selectedPageId;
-        }
-        if(this.param.prevPageId !== undefined) {
-            this.notePageData.prevPageId = this.param.prevPageId;
+    async preRender() {
+        Object.keys(this.notePageData).forEach((key) => {
+            if (this.param[key] != null) {
+                this.notePageData[key] = this.param[key];
+            }
+        });
+
+        if (this.notePageData.data == null) {
+            this.notePageData.data = await this.pageHandler.getNotePageData(this.param);
         }
     }
 
     async render() {
-        this.preRender();
-        const data = await this.pageHandler.getNotePageData(this.param);
+        await this.preRender();
+
+        const data = this.notePageData.data;
         const pageItemList = document.querySelector("#" + this.renderTarget);
 
         pageItemList.innerHTML = "";
@@ -35,28 +41,31 @@ class NotePageRenderer {
             `
         pageItemList.innerHTML = html;
         this.postRender();
+        this.eventHandle();
     }
+
     postRender() {
-        const param = {
-            'selectedPageId': this.notePageData.selectedPageId,
-            'prevPageId': this.notePageData.prevPageId,
-            'selectedNoteId': this.param.selectedNoteId,
-            'prevNoteId': this.param.prevNoteId
-        };
 
-        if(this.notePageData.selectedPageId != null) {
-            const page = document.querySelector("#" + this.notePageData.selectedPageId);
-            let customClass = " bg-gray-500 text-white rounded-md";
-            let originClass = page.getAttribute("class")
-            let newClass = originClass + customClass;
-            page.setAttribute("class", newClass);
-        }
+        Object.keys(this.notePageData).forEach((key) => {
+            this.param[key] = this.notePageData[key];
+        });
 
+        if (this.notePageData.selectedPageId == null) return;
 
-        this.eventHandle(param);
+        const page = document.querySelector("#" + this.notePageData.selectedPageId);
+        if(page == null) return;
+
+        let customClass = " bg-gray-500 text-white rounded-md";
+        let originClass = page.getAttribute("class")
+        let newClass = originClass + customClass;
+
+        page.setAttribute("class", newClass);
+
     }
 
-    eventHandle(param) {
+    eventHandle() {
+
+        const param = this.param;
 
         const pageItemList = document.querySelectorAll("#page-item-list li");
         this.menuHandler.setMenuToItem(pageItemList, param);

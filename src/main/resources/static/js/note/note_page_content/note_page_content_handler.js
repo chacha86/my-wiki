@@ -3,10 +3,12 @@ import {NotePageContentRenderer} from "./note_page_content_renderer.js";
 import {ItemData} from "../note_renderer.js";
 import {NotePageRenderer} from "../note_page/note_page_renderer.js";
 import {postFetch} from "../../note_api.js";
+import {NotePageApi} from "../note_page/note_page_api.js";
 
 class NotePageContentEventHandler {
     constructor() {
         this.notePageContentApi = new NotePageContentApi();
+        this.notePageApi = new NotePageApi();
     }
 
     setContentUpdateBtn(pageUpdateBtn, param) {
@@ -21,7 +23,8 @@ class NotePageContentEventHandler {
                 content: content
             }
 
-            let msg = await this.notePageContentApi.updateContent(updateContentParam);
+            const msg = await this.notePageContentApi.updateContent(updateContentParam);
+            param.data = await this.notePageApi.getAllPagesByNote(param);
 
             let notePageRenderer = new NotePageRenderer(param);
             notePageRenderer.render().catch((e) => {
@@ -47,11 +50,9 @@ class NotePageContentEventHandler {
 
             let msg = await this.notePageContentApi.deleteContent(deleteContentParam);
 
-            let notePageParam = {
-                'selectedNoteId': param.selectedNoteId,
-                'selectedPageId': null,
-            };
-            let notePageRenderer = new NotePageRenderer(notePageParam);
+            param.data = await this.notePageApi.getAllPagesByNote(param);
+
+            let notePageRenderer = new NotePageRenderer(param);
             notePageRenderer.render().catch((e) => {
                 console.error(e);
             });

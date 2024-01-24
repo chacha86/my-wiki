@@ -10,9 +10,7 @@ class NotePageHandler {
     }
 
     async getNotePageData(param) {
-        if (param.selectedNoteId == null) {
-            return null;
-        }
+        console.assert(param.selectedNoteId != null, "selectedNoteId is null");
 
         if(param.sortType == null) {
             param.sortType = "TITLE";
@@ -44,7 +42,7 @@ class NotePageHandler {
         });
     }
 
-    setAddApiToBtn(addPageDiv, notePageData) {
+    setAddApiToBtn(addPageDiv, param) {
 
         addPageDiv.innerHTML = "";
         addPageDiv.innerHTML = `<a class="border p-[5px] hover:bg-gray-300 hover:text-black hover:cursor-pointer">
@@ -53,20 +51,14 @@ class NotePageHandler {
 
         const addPageBtn = addPageDiv.querySelector("a");
         addPageBtn.addEventListener("click", async () => {
-            if (notePageData.selectedNoteId === null) {
+            if (param.selectedNoteId === null) {
                 alert("Please select a note to add a new note");
                 return;
             }
 
-            const itemInfo = ItemData.getItemInfoById(notePageData.selectedNoteId);
+            const itemInfo = ItemData.getItemInfoById(param.selectedNoteId);
             const msg = await this.notePageApi.addPage(itemInfo.itemIdNo);
-
-            let param = {
-                'selectedNoteId': notePageData.selectedNoteId,
-                'selectedPageId': notePageData.selectedPageId,
-                'prevNoteId': notePageData.prevNoteId,
-                'prevPageId': notePageData.prevPageId,
-            };
+            param.data = await this.getNotePageData(param);
 
             let notePageRenderer = new NotePageRenderer(param);
             notePageRenderer.render().catch((e) => {
@@ -88,10 +80,11 @@ class NotePageHandler {
 
         const sortBtnList = sortBtnDiv.querySelectorAll("a");
         sortBtnList.forEach((sortBtn) => {
-            sortBtn.addEventListener("click", (e) => {
-                console.log(sortBtn.classList);
+            sortBtn.addEventListener("click", async (e) => {
+
                 sortBtn.classList.contains("desc") ? param.direction = 1 : param.direction = 0;
                 param.sortType = "TITLE";
+                param.data = await this.notePageApi.getAllPagesByNote(param);
 
                 let notePageRenderer = new NotePageRenderer(param);
                 notePageRenderer.render().catch((e) => {
