@@ -4,7 +4,7 @@ import {getNoteUIParamJsonStr} from "../../ui/note_list_ui_util.js";
 class NotePageContentApi {
     async getPageContentByPage(pageIdNo) {
         const url = "/api/notes/pages/" + pageIdNo;
-        return await aPostFetch(url, getNoteUIParamJsonStr());
+        return await aPostFetch(url,getNoteUIParamJsonStr());
     }
 
     async updateContent(updateContentParam) {

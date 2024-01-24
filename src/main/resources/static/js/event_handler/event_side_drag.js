@@ -1,7 +1,6 @@
 let sideControlBars = document.querySelectorAll(".side-control-bar");
 let isDragging = false;
 let onDragTarget = null;
-
 sideControlBars.forEach(function (item) {
     item.addEventListener("mousedown", function (e) {
         isDragging = true;
@@ -22,7 +21,6 @@ document.querySelector(".main").addEventListener("mousemove", function (e) {
 
         target.style.width = e.clientX - target.getBoundingClientRect().x + "px";
         target.style.transform = "scaleX(1)";
-
     }
 });
 

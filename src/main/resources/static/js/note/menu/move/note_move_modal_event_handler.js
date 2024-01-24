@@ -1,7 +1,6 @@
 import {NoteData, ItemData, NoteRenderer} from "../../note_renderer.js";
 import {NoteMoveModalRenderer} from "./note_move_modal_renderer.js";
 import {NoteMenuApi} from "../note_menu_api.js";
-import {getNoteUIParamJsonStr} from "../../../ui/note_list_ui_util.js";
 
 class NoteMoveModalEventHandler {
     constructor() {

@@ -21,6 +21,7 @@ async function aPostFetch(url, jsonData) {
             console.error('Error:', error);
         });
 }
+
 function postFetch(url, jsonData, callback) {
 
     const headerName = document.querySelector("#csrf-header").value;

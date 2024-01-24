@@ -14,7 +14,6 @@ if (searchInput.value !== '') {
 //     searchBox.style.display = 'none';
 // });
 
-
 body.addEventListener('click', function (e) {
 
     const classValue = e.target.getAttribute("class");
@@ -30,12 +29,6 @@ body.addEventListener('click', function (e) {
     if (e.target.id === 'search-input') {
         return;
     }
-
-
     searchBox.style.display = 'none';
 
 });
-
-
-
-
