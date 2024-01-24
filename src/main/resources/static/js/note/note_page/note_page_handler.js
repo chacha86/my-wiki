@@ -9,18 +9,24 @@ class NotePageHandler {
         this.notePageApi = new NotePageApi();
     }
 
-    async getNotePageData(param) {
-        console.assert(param.selectedNoteId != null, "selectedNoteId is null");
+    async getNotePageData(selectedNoteId, sortType, direction) {
+        console.assert(selectedNoteId != null, "selectedNoteId is null");
 
-        if(param.sortType == null) {
-            param.sortType = "TITLE";
+        if(sortType == null) {
+            sortType = "TITLE";
         }
 
-        if(param.direction == null) {
-            param.direction = 0;
+        if(direction == null) {
+            direction = 0;
         }
 
-        param.noteIdNo = ItemData.getItemNoById(param.selectedNoteId);
+        const noteIdNo = ItemData.getItemNoById(selectedNoteId);
+
+        const param = {
+            noteId: noteIdNo,
+            sortType: sortType,
+            direction: direction
+        }
         return await this.notePageApi.getAllPagesByNote(param);
     }
 

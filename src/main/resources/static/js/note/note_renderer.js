@@ -130,8 +130,8 @@ class NoteRenderer {
             'data': null,
         }
 
-        this.noteHandler = new NoteHandler();
-        this.noteMenuHandler = new NoteMenuHandler();
+        this.noteHandler = HandlerFactory.get("note");
+        this.noteMenuHandler = HandlerFactory.get("noteMenu");
     }
 
     async preRender(param) {
@@ -142,7 +142,7 @@ class NoteRenderer {
         });
 
         if (this.props.data == null) {
-            this.props.data = await HandlerFactory.get("note").getNoteData();
+            this.props.data = await this.noteHandler.getNoteData();
         }
     }
 
