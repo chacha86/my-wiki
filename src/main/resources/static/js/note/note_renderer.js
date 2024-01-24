@@ -160,32 +160,28 @@ class NoteRenderer {
         `;
 
         noteItemList.innerHTML = html;
-        this.postRender();
+        this.postRender(param);
     }
 
-    postRender() {
-        if (this.noteDataRefer.selectedNoteId != null) {
-            const selectedItem = document.querySelector("#" + this.noteDataRefer.selectedNoteId);
+    postRender(param) {
+        if (this.props.selectedNoteId != null) {
+            const selectedItem = document.querySelector("#" + this.props.selectedNoteId);
             let originClass = selectedItem.getAttribute("class");
             let customClass = " bg-gray-500 text-white rounded-md";
             let newClass = originClass + customClass;
             selectedItem.setAttribute("class", newClass);
 
-            this.openSelectedTree(this.noteDataRefer.selectedNoteId);
+            this.openSelectedTree(this.props.selectedNoteId);
         }
 
-
-        let param = {
-            'noteDataRefer': this.noteDataRefer,
-            'prevPageId': null,
-            'selectedPageId': null,
-        };
+        Object.keys(this.props).forEach((key) => {
+            param[key] = this.props[key];
+        });
 
         this.eventHandle(param);
     }
 
     eventHandle(param) {
-
 
         let noteItemList = document.querySelectorAll('#note-item-list li');
         this.noteMenuHandler.setMenuToItem(noteItemList, param);
