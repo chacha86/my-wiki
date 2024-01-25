@@ -1,4 +1,6 @@
 import {SearchBoxRenderer} from "../search/search_box_renderer.js";
+import {HandlerFactory, RendererFactory} from "../initializer.js";
+import {NoteParam} from "../note/noteParam.js";
 
 class CommonHandler {
     constructor() {
@@ -6,15 +8,15 @@ class CommonHandler {
     }
 
     setKeyupToSearchInput(searchInput, param) {
-        searchInput.addEventListener('input',  (e) => {
-            const targetValue = e.target.value;
-            param.keyword = targetValue;
-            if(targetValue.length === 0) {
+        searchInput.addEventListener('input',  async (e) => {
+            const keyword = e.target.value;
+            if(keyword.length === 0) {
                 console.log("keyword is empty");
                 return;
             }
-            console.log(e.target.value);
-            new SearchBoxRenderer(param).render();
+            const searchParam = new NoteParam();
+            searchParam.data = await HandlerFactory.get("searchBox").getSearchList(keyword);
+            RendererFactory.get("searchBox").render(searchParam);
         });
     }
 }

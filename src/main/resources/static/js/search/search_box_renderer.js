@@ -1,25 +1,32 @@
 import {SearchBoxHandler} from "./search_box_handler.js";
+import {HandlerFactory} from "../initializer.js";
 
 class SearchBoxRenderer {
-    constructor(param) {
-        this.param = param;
+    constructor() {
         this.renderTarget = "search-result-list";
-        this.searchBoxDataRefer = {
+        this.props = {
             'keyword': "",
+            'data': null
         }
-        this.eventHandler = new SearchBoxHandler();
+        this.handler = HandlerFactory.get("searchBox");
     }
 
-    preRender() {
+    async preRender(param) {
+        Object.keys(this.props).forEach((key) => {
+            if (param[key] != null) {
+                this.props[key] = param[key];
+            }
+        });
+
+        if(this.props.data == null) {
+            this.props.data = await this.handler.getSearchList(this.props.keyword);
+        }
     }
 
-    async render() {
-
-        this.preRender();
-
+    async render(param) {
+        await this.preRender(param);
+        const resultData = this.props.data;
         const renderTarget = document.querySelector("#" + this.renderTarget);
-        const keyword = this.param.keyword;
-        const resultData = await this.eventHandler.getSearchList(keyword);
         const itemClass = "hover:bg-gray-400 w-[100%] px-[0.5rem] mb-[5px]";
 
         renderTarget.innerHTML = `
@@ -41,17 +48,20 @@ class SearchBoxRenderer {
         }).join('')}
     `;
 
-        this.postRender();
+        this.postRender(param);
     }
 
-    postRender() {
-        this.eventHandle();
+    postRender(param) {
+        Object.keys(this.props).forEach((key) => {
+            param[key] = this.props[key];
+        });
+        this.eventHandle(param);
     }
 
-    eventHandle() {
+    eventHandle(param) {
 
         const searchResultItems = document.querySelectorAll('#search-result-list li');
-        this.eventHandler.setClickToItems(searchResultItems, this.param);
+        this.handler.setClickToItems(searchResultItems, param);
 
     }
 }

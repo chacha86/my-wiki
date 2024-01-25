@@ -1,23 +1,35 @@
 import {CommonHandler} from "./common_handler.js";
+import {HandlerFactory} from "../initializer.js";
 
 class CommonRenderer {
-    constructor(param) {
-        this.param = param;
-        this.handler = new CommonHandler();
+    constructor() {
+        this.props = {
+
+        };
+        this.handler = HandlerFactory.get("common");
     }
 
+    preRender(param) {
+        Object.keys(this.props).forEach((key) => {
+            if (param[key] != null) {
+                this.props[key] = param[key];
+            }
+        });
+    }
     render(param) {
-
-        this.postRender();
+        this.preRender(param);
+        this.postRender(param);
     }
 
-    postRender() {
-
-        this.eventHandle();
+    postRender(param) {
+        Object.keys(this.props).forEach((key) => {
+            param[key] = this.props[key];
+        });
+        this.eventHandle(param);
     }
-    eventHandle() {
+    eventHandle(param) {
         const searchInput = document.querySelector("#search-input");
-        this.handler.setKeyupToSearchInput(searchInput, this.param);
+        this.handler.setKeyupToSearchInput(searchInput, param);
     }
 }
 

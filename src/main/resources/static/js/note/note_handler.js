@@ -41,6 +41,8 @@ class NoteHandler {
 
                     const pageParam = new NoteParam();
                     pageParam.data = await HandlerFactory.get("notePage").getNotePageData(noteId, sortType, direction);
+                    pageParam.selectedNoteId = noteId;
+
                     RendererFactory.get("notePage").render(pageParam);
 
                 }

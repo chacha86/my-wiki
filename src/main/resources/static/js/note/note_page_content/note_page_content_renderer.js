@@ -1,6 +1,7 @@
 import {NotePageContentHandler} from "./note_page_content_handler.js";
 import {NotePageContentApi} from "./note_page_content_api.js";
 import {NoteData} from "../note_renderer.js";
+import {HandlerFactory} from "../../initializer.js";
 
 class NotePageContentData {
     static getUpdateDateMsg(date) {
@@ -14,28 +15,36 @@ class NotePageContentRenderer {
     constructor(param) {
         this.param = param;
         this.renderTarget = "content-header";
-        this.notePageContentDataRefer = {
+        this.props = {
             'data': null
         };
 
-        this.notePageContentApi = new NotePageContentApi();
-        this.eventHandler = new NotePageContentHandler();
+        this.handler = HandlerFactory.get("notePageContent");
+    }
+    async preRender(param) {
+        Object.keys(this.props).forEach((key) => {
+            if (param[key] != null) {
+                this.props[key] = param[key];
+            }
+        });
+
+        if (this.props.data == null) {
+            this.props.data = await this.handler.getNotePageData(this.props.selectedNoteId, this.props.sortType, this.props.direction);
+        }
     }
 
-    async render() {
+    async render(param) {
+        await this.preRender(param);
+
         const contentHeader = document.querySelector("#" + this.renderTarget);
 
-        if (this.param.selectedPageId == null) {
+        if (param.selectedPageId == null) {
             contentHeader.innerHTML = "";
             editor.setMarkdown("");
             return;
         }
 
-        let data = await this.notePageContentApi
-            .getPageContentByPage(NoteData.getNo(this.param.selectedPageId));
-
-        this.notePageContentDataRefer.data = data;
-        console.log(data);
+        const data = this.props.data;
         contentHeader.innerHTML = `
             <div class="mb-[10px] text-right text-[gray]">${NotePageContentData.getUpdateDateMsg(data.notePageDto.updateDate)}</div>
             <div class="content-header flex justify-between">
@@ -51,23 +60,25 @@ class NotePageContentRenderer {
         titleInput.value = data.notePageDto.title;
         editor.setMarkdown(data.notePageDto.notePageDetailDto.content);
 
-        this.postRender();
+        this.postRender(param);
     }
 
-    postRender() {
-
-        this.eventHandle(this.param);
+    postRender(param) {
+        Object.keys(this.props).forEach((key) => {
+            param[key] = this.props[key];
+        });
+        this.eventHandle(param);
     }
 
     eventHandle(param) {
         const updateBtn = document.querySelector("#page-update-btn");
-        this.eventHandler.setContentUpdateBtn(updateBtn, param);
+        this.handler.setContentUpdateBtn(updateBtn, param);
 
         const deleteBtn = document.querySelector("#page-delete-btn");
-        this.eventHandler.setContentDeleteBtn(deleteBtn, param);
+        this.handler.setContentDeleteBtn(deleteBtn, param);
 
         const titleInput = document.querySelector(".title");
-        this.eventHandler.setTitleEnter(titleInput);
+        this.handler.setTitleEnter(titleInput);
     }
 }
 

@@ -9,7 +9,7 @@ import {NoteParam} from "./note/noteParam.js";
 
 Initializer.init();
 
-RendererFactory.get("common").render(null);
+RendererFactory.get("common").render(new NoteParam());
 RendererFactory.get("note").render(new NoteParam());
 // let noteRenderer = new NoteRenderer(new Map());
 // noteRenderer.render();

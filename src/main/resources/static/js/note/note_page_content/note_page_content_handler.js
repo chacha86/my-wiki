@@ -1,14 +1,21 @@
 import {NotePageContentApi} from "./note_page_content_api.js";
 import {NotePageContentRenderer} from "./note_page_content_renderer.js";
-import {ItemData} from "../note_renderer.js";
+import {ItemData, NoteData} from "../note_renderer.js";
 import {NotePageRenderer} from "../note_page/note_page_renderer.js";
 import {postFetch} from "../../note_api.js";
 import {NotePageApi} from "../note_page/note_page_api.js";
+import {NoteParam} from "../noteParam.js";
+import {HandlerFactory, RendererFactory} from "../../initializer.js";
 
 class NotePageContentHandler {
     constructor() {
         this.notePageContentApi = new NotePageContentApi();
         this.notePageApi = new NotePageApi();
+    }
+
+    async getContentByPageId(pageId) {
+        return await this.notePageContentApi
+            .getPageContentByPage(ItemData.getItemNoById(pageId));
     }
 
     setContentUpdateBtn(pageUpdateBtn, param) {
@@ -24,21 +31,21 @@ class NotePageContentHandler {
             }
 
             const msg = await this.notePageContentApi.updateContent(updateContentParam);
-            param.data = await this.notePageApi.getAllPagesByNote(param);
 
-            let notePageRenderer = new NotePageRenderer(param);
-            notePageRenderer.render().catch((e) => {
-                console.error(e);
-            });
+            const pageParam = new NoteParam();
 
-            let notePageContentRenderer = new NotePageContentRenderer(param);
-            notePageContentRenderer.render().catch((e) => {
-                console.error(e);
-            });
-            // let notePageContentRenderer = new NotePageContentRenderer(param);
-            // notePageContentRenderer.render().catch((e) => {
-            //     console.error(e);
-            // });
+            pageParam.selectedNoteId = param.selectedNoteId;
+            pageParam.selectedPageId = param.selectedPageId;
+            pageParam.data = await HandlerFactory.get("notePage").getNotePageData(param.selectedNoteId, RendererFactory.get("notePage").props.sortType, RendererFactory.get("notePage").props.direction);
+
+            RendererFactory.get("notePage").render(pageParam);
+
+            const contentParam = new NoteParam();
+            contentParam.selectedNoteId = param.selectedNoteId;
+            contentParam.selectedPageId = param.selectedPageId;
+            contentParam.data = await HandlerFactory.get("notePageContent").getContentByPageId(param.selectedPageId);
+
+            RendererFactory.get("notePageContent").render(contentParam);
         });
     }
 
@@ -50,17 +57,20 @@ class NotePageContentHandler {
 
             let msg = await this.notePageContentApi.deleteContent(deleteContentParam);
 
-            param.data = await this.notePageApi.getAllPagesByNote(param);
+            const pageParam = new NoteParam();
 
-            let notePageRenderer = new NotePageRenderer(param);
-            notePageRenderer.render().catch((e) => {
-                console.error(e);
-            });
+            pageParam.selectedNoteId = param.selectedNoteId;
+            pageParam.selectedPageId = null;
+            pageParam.data = await HandlerFactory.get("notePage").getNotePageData(param.selectedNoteId, RendererFactory.get("notePage").props.sortType, RendererFactory.get("notePage").props.direction);
 
-            let notePageContentRenderer = new NotePageContentRenderer(notePageParam);
-            notePageContentRenderer.render().catch((e) => {
-                console.error(e);
-            });
+            RendererFactory.get("notePage").render(pageParam);
+
+            // const contentParam = new NoteParam();
+            // contentParam.selectedNoteId = param.selectedNoteId;
+            // contentParam.selectedPageId = param.selectedPageId;
+            // contentParam.data = await HandlerFactory.get("notePageContent").getContentByPageId(param.selectedPageId);
+            //
+            // RendererFactory.get("notePageContent").render(contentParam);
         });
     }
 

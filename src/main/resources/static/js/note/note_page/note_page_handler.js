@@ -3,6 +3,8 @@ import {NotePageContentRenderer} from "../note_page_content/note_page_content_re
 import {NotePageApi} from "./note_page_api.js";
 import {ItemData} from "../note_renderer.js";
 import {NotePageRenderer} from "./note_page_renderer.js";
+import {HandlerFactory, RendererFactory} from "../../initializer.js";
+import {NoteParam} from "../noteParam.js";
 
 class NotePageHandler {
     constructor() {
@@ -12,11 +14,11 @@ class NotePageHandler {
     async getNotePageData(selectedNoteId, sortType, direction) {
         console.assert(selectedNoteId != null, "selectedNoteId is null");
 
-        if(sortType == null) {
+        if (sortType == null) {
             sortType = "TITLE";
         }
 
-        if(direction == null) {
+        if (direction == null) {
             direction = 0;
         }
 
@@ -31,18 +33,32 @@ class NotePageHandler {
     }
 
     setRenderContentByPage(pageItemList, param) {
-        pageItemList.forEach(item => {
-            item.addEventListener("click", (e) => {
-                const pageId = item.parentElement.getAttribute("id");
-                if (pageId != null) {
-                    param.prevPageId = param.selectedPageId;
-                    changeSelectedItem(pageId, param.prevPageId, " bg-gray-500 text-white rounded-md");
-                    param.selectedPageId = pageId;
+        console.assert(param.selectedNoteId != null, "selectedNoteId is null");
 
-                    let notePageContentRenderer = new NotePageContentRenderer(param);
-                    notePageContentRenderer.render().catch((e) => {
-                        console.log(e)
-                    });
+        pageItemList.forEach(item => {
+            item.addEventListener("click", async (e) => {
+                const pageId = item.parentElement.getAttribute("id");
+                console.log("dfsdf");
+                console.log(pageId);
+                if (pageId != null) {
+                    const pageParam = new NoteParam();
+
+                    const noteId = param.selectedNoteId;
+                    const sortType = RendererFactory.get("notePage").props.sortType;
+                    const direction = RendererFactory.get("notePage").props.direction;
+
+                    pageParam.data = await HandlerFactory.get("notePage").getNotePageData(noteId, sortType, direction);
+                    pageParam.selectedNoteId = noteId;
+                    pageParam.selectedPageId = pageId;
+                    RendererFactory.get("notePage").render(pageParam);
+
+                    const contentParam = new NoteParam();
+
+                    contentParam.selectedNoteId = noteId;
+                    contentParam.selectedPageId = pageId;
+                    contentParam.data = await HandlerFactory.get("notePageContent").getContentByPageId(pageId);
+
+                    RendererFactory.get("notePageContent").render(contentParam);
                 }
             });
         });
@@ -62,14 +78,20 @@ class NotePageHandler {
                 return;
             }
 
-            const itemInfo = ItemData.getItemInfoById(param.selectedNoteId);
-            const msg = await this.notePageApi.addPage(itemInfo.itemIdNo);
-            param.data = await this.getNotePageData(param);
+            // const itemInfo = ItemData.getItemInfoById(param.selectedNoteId);
+            const noteIdNo = ItemData.getItemNoById(param.selectedNoteId);
+            const msg = await this.notePageApi.addPage(noteIdNo);
 
-            let notePageRenderer = new NotePageRenderer(param);
-            notePageRenderer.render().catch((e) => {
-                console.log(e)
-            });
+            const pageParam = new NoteParam();
+
+            const noteId = param.selectedNoteId;
+            const sortType = RendererFactory.get("notePage").props.sortType;
+            const direction = RendererFactory.get("notePage").props.direction;
+
+            pageParam.data = await HandlerFactory.get("notePage").getNotePageData(noteId, sortType, direction);
+            pageParam.selectedNoteId = noteId;
+            pageParam.selectedPageId = null;
+            RendererFactory.get("notePage").render(pageParam);
         });
     }
 
@@ -88,14 +110,18 @@ class NotePageHandler {
         sortBtnList.forEach((sortBtn) => {
             sortBtn.addEventListener("click", async (e) => {
 
-                sortBtn.classList.contains("desc") ? param.direction = 1 : param.direction = 0;
-                param.sortType = "TITLE";
-                param.data = await this.notePageApi.getAllPagesByNote(param);
+                const sortType = "TITLE";
+                const direction = sortBtn.classList.contains("desc") ? 1 : 0;
+                const data = await HandlerFactory.get("notePage").getNotePageData(param.selectedNoteId, sortType, direction);
 
-                let notePageRenderer = new NotePageRenderer(param);
-                notePageRenderer.render().catch((e) => {
-                    console.error(e);
-                });
+                const pageParam = new NoteParam();
+                pageParam.data = data;
+                pageParam.selectedNoteId = param.selectedNoteId;
+                pageParam.selectedPageId = param.selectedPageId;
+                pageParam.sortType = sortType;
+                pageParam.direction = direction;
+
+                RendererFactory.get("notePage").render(pageParam);
             });
         });
         // sortBtn.addEventListener("click", async () => {

@@ -47,17 +47,13 @@ class NotePageRenderer {
     }
 
     postRender(param) {
+        console.assert(param.selectedNoteId != null, "selectedNoteId is null");
 
         Object.keys(this.props).forEach((key) => {
             param[key] = this.props[key];
         });
 
-        if (this.props.selectedPageId == null) {
-            this.eventHandle(param);
-            return;
-        }
-
-        const page = document.querySelector("#" + this.notePageData.selectedPageId);
+        const page = document.querySelector("#" + this.props.selectedPageId);
         if(page == null) {
             this.eventHandle(param);
             return;

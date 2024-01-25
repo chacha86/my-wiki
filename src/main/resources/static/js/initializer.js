@@ -14,6 +14,8 @@ import {PageMoveModalRenderer} from "./note/menu/move/page_move_modal_renderer.j
 import {PageMoveModalHandler} from "./note/menu/move/page_move_modal_handler.js";
 import {RenameModalRenderer} from "./note/menu/rename/rename_modal_renderer.js";
 import {RenameModalHandler} from "./note/menu/rename/rename_modal_handler.js";
+import {SearchBoxRenderer} from "./search/search_box_renderer.js";
+import {SearchBoxHandler} from "./search/search_box_handler.js";
 
 
 class Initializer {
@@ -26,6 +28,7 @@ class Initializer {
         HandlerFactory.set('noteMoveModal', new NoteMoveModalHandler());
         HandlerFactory.set('pageMoveModal', new PageMoveModalHandler());
         HandlerFactory.set('renameModal', new RenameModalHandler());
+        HandlerFactory.set('searchBox', new SearchBoxHandler());
         HandlerFactory.set('common', new CommonHandler());
 
         RendererFactory.set('note', new NoteRenderer());
@@ -35,6 +38,7 @@ class Initializer {
         RendererFactory.set('noteMoveModal', new NoteMoveModalRenderer());
         RendererFactory.set('pageMoveModal', new PageMoveModalRenderer());
         RendererFactory.set('renameModal', new RenameModalRenderer());
+        RendererFactory.set('searchBox', new SearchBoxRenderer());
         RendererFactory.set('common', new CommonRenderer());
     }
 }
