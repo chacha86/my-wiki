@@ -136,7 +136,7 @@ class NoteRenderer {
 
     async preRender(param) {
         Object.keys(this.props).forEach((key) => {
-            if(param[key] != null) {
+            if(param[key] !== undefined) {
                 this.props[key] = param[key];
             }
         });
@@ -190,7 +190,7 @@ class NoteRenderer {
         this.noteHandler.setRenderPageBySelect(noteItemAnchorList, param);
 
         let addGroupDiv = document.querySelector("#add-group-note");
-        this.noteHandler.setApiAddGroupNoteBtn(addGroupDiv);
+        this.noteHandler.setApiAddGroupNoteBtn(addGroupDiv, param);
     }
 
     openSelectedTree(selectedNoteId) {

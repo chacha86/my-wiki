@@ -1,6 +1,8 @@
 import {NoteMenuApi} from "../note_menu_api.js";
 import {ItemData, NoteRenderer} from "../../note_renderer.js";
 import {NotePageRenderer} from "../../note_page/note_page_renderer.js";
+import {HandlerFactory, RendererFactory} from "../../../initializer.js";
+import {NoteParam} from "../../noteParam.js";
 
 class RenameModalHandler {
     constructor() {
@@ -12,43 +14,48 @@ class RenameModalHandler {
         renameBtnDiv.innerHTML = "";
         renameBtnDiv.innerHTML = "<a>OK</a>";
         const renameBtn = renameBtnDiv.querySelector('a');
-
-        let itemInfo = param.itemInfo;
+        const itemInfo = param.itemInfo;
 
         renameBtn.addEventListener('click', async () => {
             const noteNameInput = document.querySelector('#new-item-text');
-            let renderer = new NoteRenderer(new Map());
+            const newName = noteNameInput.value;
+            const renderParam = new NoteParam();
+
+            let renderer = RendererFactory.get("note");
             let msg = "";
 
-            param.newNoteName = noteNameInput.value;
-
             if(itemInfo.itemType === 'page') {
-                renderer = new NotePageRenderer(param);
-                msg = await this._renamePage(param);
+                renderer = RendererFactory.get("notePage");
+                msg = await this._renamePage(itemInfo.itemIdNo, newName);
 
+                renderParam.sortType = renderer.props.sortType;
+                renderParam.direction = renderer.props.direction;
+                renderParam.selectedNoteId = renderer.props.selectedNoteId;
+                renderParam.selectedPageId = renderer.props.selectedPageId;
+                renderParam.data = await HandlerFactory.get("notePage").getNotePageData(renderer.props.selectedNoteId, renderer.props.sortType, renderer.props.direction);
             }
             else {
-                msg = await this._renameNote(param);
+                msg = await this._renameNote(itemInfo.itemIdNo, newName);
+                renderParam.selectedNoteId = renderer.props.selectedNoteId;
+                renderParam.data = await HandlerFactory.get("note").getNoteData();
             }
 
-            renderer.render().catch((err) => {
-                console.log(err);
-            });
+            renderer.render(renderParam);
         });
     }
 
-    async _renameNote(param) {
+    async _renameNote(noteIdNo, newName) {
         const renameNoteParam = {
-            itemIdNo: param.itemInfo.itemIdNo,
-            noteName: param.newNoteName,
+            itemIdNo: noteIdNo,
+            noteName: newName,
         }
         await this.noteMenuApi.renameNote(renameNoteParam);
     }
 
-    async _renamePage(param) {
+    async _renamePage(pageIdNo, newName) {
         const renamePageParam = {
-            pageIdNo: param.itemInfo.itemIdNo,
-            title: param.newNoteName,
+            pageIdNo: pageIdNo,
+            title: newName,
             content: editor.getMarkdown()
         }
 

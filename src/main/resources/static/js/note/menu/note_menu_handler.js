@@ -6,6 +6,8 @@ import {RenameModalRenderer} from "./rename/rename_modal_renderer.js";
 import {NotePageRenderer} from "../note_page/note_page_renderer.js";
 import {PageMoveModalRenderer} from "./move/page_move_modal_renderer.js";
 import {NotePageContentRenderer} from "../note_page_content/note_page_content_renderer.js";
+import {NoteParam} from "../noteParam.js";
+import {HandlerFactory, RendererFactory} from "../../initializer.js";
 
 class NoteMenuHandler {
     constructor() {
@@ -24,7 +26,7 @@ class NoteMenuHandler {
         });
     }
 
-    setMenuToItem(itemList, data) {
+    setMenuToItem(itemList, param) {
         itemList.forEach((item) => {
             item.addEventListener('contextmenu', (event) => {
                 event.preventDefault();
@@ -36,18 +38,12 @@ class NoteMenuHandler {
                     'mouseX': event.clientX,
                     'mouseY': event.clientY
                 };
-                let param = {
-                    'itemInfo': itemInfo,
-                    'mousePos': mousePos,
-                    'selectedNoteId': data.selectedNoteId,
-                    'prevNoteId': data.prevNoteId,
-                    'selectedPageId': data.selectedPageId,
-                    'prevPageId': data.prevPageId,
-                };
+                const menuParam = new NoteParam();
+                menuParam.itemInfo = itemInfo;
+                menuParam.mousePos = mousePos;
+                menuParam.data = this.getMenuItemList(itemInfo);
 
-                new NoteMenuRenderer(param).render().catch((e) => {
-                    console.error(e);
-                });
+                RendererFactory.get("noteMenu").render(menuParam);
             })
         });
     }
@@ -264,17 +260,37 @@ class NoteMenuHandler {
     }
 
     async _addNote(param) {
-        let itemInfo = param.itemInfo;
+        const itemInfo = param.itemInfo;
+        const noteParam = new NoteParam();
+        const selectedNoteId = RendererFactory.get("note").props.selectedNoteId;
+
+        const msg = await this.addNote(itemInfo.itemIdNo);
         this._openAddedGroupNote(itemInfo);
-        const msg = await this.noteMenuApi.addNote(itemInfo.itemIdNo);
-        await new NoteRenderer(param).render();
+
+        noteParam.selectedNoteId = selectedNoteId;
+        noteParam.data = await HandlerFactory.get("note").getNoteData();
+
+        RendererFactory.get("note").render(noteParam);
+    }
+
+    async addNote(noteIdNo) {
+        return await this.noteMenuApi.addNote(noteIdNo);
     }
 
     async _addGroupNote(param) {
-        let itemInfo = param.itemInfo;
+        const itemInfo = param.itemInfo;
+        const noteParam = new NoteParam();
+        const selectedNoteId = RendererFactory.get("note").props.selectedNoteId;
+
+        const msg = await this.addGroupNote(itemInfo.itemIdNo);
         this._openAddedGroupNote(itemInfo);
-        const msg = await this.noteMenuApi.addGroupNote(itemInfo.itemIdNo);
-        await new NoteRenderer(param).render();
+        noteParam.data = await HandlerFactory.get("note").getNoteData();
+        noteParam.selectedNoteId = selectedNoteId;
+        RendererFactory.get("note").render(noteParam);
+    }
+
+    async addGroupNote(noteIdNo) {
+        return await this.noteMenuApi.addGroupNote(noteIdNo);
     }
 
     _openAddedGroupNote(itemInfo) {
@@ -286,13 +302,27 @@ class NoteMenuHandler {
     }
 
     async _deleteNote(param) {
-        let itemInfo = param.itemInfo;
-        const msg = await this.noteMenuApi.deleteNote(itemInfo.itemIdNo);
+        const itemInfo = param.itemInfo;
+        const selectedNoteId = RendererFactory.get("note").props.selectedNoteId;
+        const noteParam = new NoteParam();
 
-        param.selectedNoteId = null;
-        param.selectedPageId = null;
+        const msg = await this.deleteNote(itemInfo.itemIdNo);
+        noteParam.selectedNoteId = selectedNoteId;
 
-        await new NoteRenderer(param).render();
+        if(selectedNoteId === ItemData.getNoteIdByItemNo(itemInfo.itemIdNo)) {
+            noteParam.selectedNoteId = null;
+        }
+
+        if(itemInfo.itemType === 'group') {
+            noteParam.selectedNoteId = null;
+        }
+
+        noteParam.data = await HandlerFactory.get("note").getNoteData();
+        RendererFactory.get("note").render(noteParam);
+    }
+
+    async deleteNote(noteIdNo) {
+        return await this.noteMenuApi.deleteNote(noteIdNo);
     }
 
     async _deletePage(param) {
@@ -338,10 +368,11 @@ class NoteMenuHandler {
     async _renameModal(param) {
         const renameModal = document.querySelector('#my_modal_1');
         const itemTextInput = document.querySelector('#new-item-text');
-        itemTextInput.value = param.itemInfo.itemText;
+        const renameParam = new NoteParam();
 
-        let renameModalRenderer = new RenameModalRenderer(param);
-        await renameModalRenderer.render();
+        itemTextInput.value = param.itemInfo.itemText;
+        renameParam.itemInfo = param.itemInfo;
+        RendererFactory.get("renameModal").render(param);
 
         renameModal.show();
     }

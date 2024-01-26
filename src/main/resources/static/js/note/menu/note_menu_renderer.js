@@ -1,21 +1,38 @@
 import {NoteMenuApi} from "./note_menu_api.js";
 import {NoteMenuHandler} from "./note_menu_handler.js";
 import {NoteMenuData} from "./note_menu_data.js";
+import {HandlerFactory} from "../../initializer.js";
 
 class NoteMenuRenderer {
-    constructor(param) {
-        this.param = param;
-        this.eventHandler = new NoteMenuHandler();
+    constructor() {
+        this.props = {
+            'mousePos' :null,
+            'itemInfo' : null,
+            'data' : null
+        };
+        this.handler = HandlerFactory.get("noteMenu");
     }
 
-    async render() {
-        let mousePos = this.param.mousePos;
-        let itemInfo = this.param.itemInfo;
+    preRender(param) {
+        Object.keys(this.props).forEach((key) => {
+            if (param[key] !== undefined) {
+                this.props[key] = param[key];
+            }
+        });
+
+        if (this.props.data == null) {
+            this.props.data = this.handler.getMenuItemList(this.props.itemInfo);
+        }
+    }
+    async render(param) {
+        this.preRender(param);
+        const mousePos = this.props.mousePos;
+        const itemInfo = this.props.itemInfo;
 
         let mouseX = mousePos.mouseX;
         let mouseY = mousePos.mouseY;
 
-        let menuItemList = this.eventHandler.getMenuItemList(itemInfo);
+        let menuItemList = this.props.data;
 
         let itemMenuPopup = document.querySelector('#item-menu-popup');
         let body = document.querySelector('body');
@@ -37,24 +54,27 @@ class NoteMenuRenderer {
             </div>
         `;
         body.insertAdjacentHTML('beforeend', html);
-        this.postRender();
+        this.postRender(param);
     }
 
-    postRender() {
-        let param = {
-            'selectedNoteId': this.param.selectedNoteId,
-            'prevNoteId': this.param.prevNoteId,
-            'selectedPageId': this.param.selectedPageId,
-            'prevPageId': this.param.prevPageId,
-            'itemInfo': this.param.itemInfo,
-        };
+    postRender(param) {
+        // let param = {
+        //     'selectedNoteId': this.param.selectedNoteId,
+        //     'prevNoteId': this.param.prevNoteId,
+        //     'selectedPageId': this.param.selectedPageId,
+        //     'prevPageId': this.param.prevPageId,
+        //     'itemInfo': this.param.itemInfo,
+        // };
+        Object.keys(this.props).forEach((key) => {
+            param[key] = this.props[key];
+        });
 
         this.eventHandle(param);
     }
 
     eventHandle(param) {
         let menuItemAnchorList = document.querySelectorAll("#item-menu-popup a");
-        this.eventHandler.setApiToMenuItem(menuItemAnchorList, param);
+        this.handler.setApiToMenuItem(menuItemAnchorList, param);
     }
 
 }

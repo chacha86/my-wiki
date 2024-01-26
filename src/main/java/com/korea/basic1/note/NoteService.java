@@ -80,6 +80,7 @@ public class NoteService {
 
     public Note saveGroupNotebook(Note parent) {
         Note child = getDefaultNotebook();
+        child.setName("새 그룹 노트");
         child.setParent(parent);
         child.setGroupYn(1);
         return noteRepository.save(child);

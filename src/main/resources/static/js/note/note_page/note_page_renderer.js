@@ -20,7 +20,7 @@ class NotePageRenderer {
 
     async preRender(param) {
         Object.keys(this.props).forEach((key) => {
-            if (param[key] != null) {
+            if (param[key] !== undefined) {
                 this.props[key] = param[key];
             }
         });

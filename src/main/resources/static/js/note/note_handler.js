@@ -50,17 +50,19 @@ class NoteHandler {
         });
     }
 
-    setApiAddGroupNoteBtn(addGroupDiv) {
+    setApiAddGroupNoteBtn(addGroupDiv, param) {
 
         addGroupDiv.innerHTML = "";
         addGroupDiv.innerHTML = `<a class="flex w-[100%] items-center text-center justify-center hover:cursor-pointer hover:bg-gray-300 hover:text-black">새그룹 추가</a>`;
         const addGroupBtn = addGroupDiv.querySelector("a");
         addGroupBtn.addEventListener("click", async () => {
             const msg = await this.noteApi.addGroupNote();
-            const renderer = new NoteRenderer(new Map());
-            renderer.render().catch((e) => {
-                console.error(e)
-            });
+            const data = await this.getNoteData();
+
+            const noteParam = new NoteParam();
+            noteParam.data = data;
+
+            RendererFactory.get("note").render(noteParam);
         });
     }
 }
