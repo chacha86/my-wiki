@@ -340,16 +340,16 @@ class NoteMenuHandler {
     async _moveNoteModal(param) {
         const moveModal = document.querySelector('#my_modal_2');
         const itemInfo = param.itemInfo;
+        const moveParam = new NoteParam();
 
-        param.targetNoteId = ItemData.getNoteIdByItemNo(itemInfo.itemIdNo);
-        param.moveNoteTree = await this._getMoveNoteTree(itemInfo);
+        moveParam.moveTargetNoteId = ItemData.getNoteIdByItemNo(itemInfo.itemIdNo);
+        moveParam.data = await this.getMoveNoteTree(itemInfo.itemIdNo);
 
-        let noteMoveModalRenderer = new NoteMoveModalRenderer(param);
-        await noteMoveModalRenderer.render();
+        RendererFactory.get("noteMoveModal").render(moveParam);
         moveModal.show();
     }
-    async _getMoveNoteTree(itemInfo) {
-        return await this.noteMenuApi.moveNote(itemInfo.itemIdNo);
+    async getMoveNoteTree(noteIdNo) {
+        return await this.noteMenuApi.moveNote(noteIdNo);
     }
 
     async _movePageModal(param) {
@@ -358,7 +358,7 @@ class NoteMenuHandler {
 
         param.targetNoteId = param.selectedNoteId;
         param.targetPageId = ItemData.getPageIdByItemNo(itemInfo.itemIdNo);
-        param.moveNoteTree = await this._getMoveNoteTree(itemInfo);
+        param.moveNoteTree = await this.getMoveNoteTree(itemInfo);
 
         let pageMoveModalRenderer = new PageMoveModalRenderer(param);
         await pageMoveModalRenderer.render();

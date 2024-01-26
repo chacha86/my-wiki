@@ -1,39 +1,35 @@
 import {NoteMoveModalHandler} from "./note_move_modal_handler.js";
 import {ItemData, NoteData} from "../../note_renderer.js";
-
-class NoteMoveModalData {
-
-    constructor() {
-        this.selectedNoteIdNo = null;
-        this.moveNoteTree = null;
-    }
-
-    getSelectedNoteId() {
-        return "note-" + this.selectedNoteIdNo;
-    }
-}
+import {HandlerFactory} from "../../../initializer.js";
 
 class NoteMoveModalRenderer {
-    constructor(param) {
-        this.param = param;
-        this.eventHandler = new NoteMoveModalHandler();
+    constructor() {
         this.renderTarget = "move-note-modal";
 
-        this.noteMoveModalDataRefer = {
+        this.props = {
             'destinationNoteId': null,
             'moveTargetNoteId': null,
+            'data': null
         };
-
+        this.handler = HandlerFactory.get("noteMoveModal");
+    }
+    preRender(param) {
+        Object.keys(this.props).forEach((key) => {
+            if (param[key] !== undefined) {
+                this.props[key] = param[key];
+            }
+        });
     }
 
-    async render() {
+    async render(param) {
+        this.preRender(param);
 
-        let data = this.param.moveNoteTree;
-        let targetNoteIdNo = Number(ItemData.getItemNoById(this.param.targetNoteId));
+        const data = this.props.data;
+        const targetNoteIdNo = Number(ItemData.getItemNoById(this.props.moveTargetNoteId));
 
         const noteItemList = document.querySelector("#" + this.renderTarget);
-        let itemContent = " inline-block w-[90%] p-[5px] cursor-default";
-        let itemContentHover = " hover:bg-gray-200 hover:rounded-md";
+        const itemContent = " inline-block w-[90%] p-[5px] cursor-default";
+        const itemContentHover = " hover:bg-gray-200 hover:rounded-md";
 
         noteItemList.innerHTML = "";
 
@@ -50,51 +46,68 @@ class NoteMoveModalRenderer {
 
         noteItemList.innerHTML = html;
 
-        this.postRender();
+        this.postRender(param);
     }
 
-    postRender() {
-        this.renderCollapseIcon();
-        this.renderSelectEffect()
+    postRender(param) {
 
-        this.noteMoveModalDataRefer.moveTargetNoteId = this.param.targetNoteId;
+        Object.keys(this.props).forEach((key) => {
+            param[key] = this.props[key];
+        });
 
+        this._renderCollapseIcon();
+        this._renderSelectEffect();
 
-        const param = {
-            'moveNoteTree': this.param.moveNoteTree,
-            'itemInfo': this.param.itemInfo,
-            'noteMoveModalDataRefer': this.noteMoveModalDataRefer,
-            'selectedNoteId': this.param.selectedNoteId,
-            'selectedNoteIdNo': this.param.selectedPageId,
-            'prevNoteId': this.param.prevNoteId,
-            'prevPageId': this.param.prevPageId,
-        };
+        // this.noteMoveModalDataRefer.moveTargetNoteId = this.param.targetNoteId;
+        // const param = {
+        //     'moveNoteTree': this.param.moveNoteTree,
+        //     'itemInfo': this.param.itemInfo,
+        //     'noteMoveModalDataRefer': this.noteMoveModalDataRefer,
+        //     'selectedNoteId': this.param.selectedNoteId,
+        //     'selectedNoteIdNo': this.param.selectedPageId,
+        //     'prevNoteId': this.param.prevNoteId,
+        //     'prevPageId': this.param.prevPageId,
+        // };
         this.eventHandle(param);
     }
 
     eventHandle(param) {
         let collapseItems = document.querySelectorAll(".parent .move-tree-collapse");
-        this.eventHandler.renderCollapseIcon(collapseItems);
+        this.handler.renderCollapseIcon(collapseItems);
 
         let noteItemList = document.querySelectorAll(".move-tree-content");
-        this.eventHandler.setSelectEffect(noteItemList, param);
+        this.handler.setSelectEffect(noteItemList, param);
 
         let moveBtn = document.querySelector("#move-btn");
-        this.eventHandler.setUpdateApiToMoveBtn(moveBtn, param);
+        this.handler.setUpdateApiToMoveBtn(moveBtn, param);
+
+        let closeBtn = document.querySelector("#move-close-btn");
+        this.handler.setMoveCloseBtn(closeBtn, param);
     }
 
-    renderSelectEffect() {
-        if (this.param.targetNoteId != null) {
-            let targetNoteIdNo = ItemData.getItemNoById(this.param.targetNoteId);
+    _renderSelectEffect() {
+        if (this.props.moveTargetNoteId != null) {
+            let targetNoteIdNo = ItemData.getItemNoById(this.props.moveTargetNoteId);
+            console.log(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
             const selectedItem = document.querySelector(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
             let originClass = selectedItem.getAttribute("class");
             let customClass = " bg-gray-300 rounded-md";
             let newClass = originClass + customClass;
             selectedItem.setAttribute("class", newClass);
         }
+
+        if(this.props.destinationNoteId != null) {
+            let targetNoteIdNo = ItemData.getItemNoById(this.props.destinationNoteId);
+            console.log(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
+            const selectedItem = document.querySelector(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
+            let originClass = selectedItem.getAttribute("class");
+            let customClass = " bg-gray-500 rounded-md";
+            let newClass = originClass + customClass;
+            selectedItem.setAttribute("class", newClass);
+        }
     }
 
-    renderCollapseIcon() {
+    _renderCollapseIcon() {
         let parentItems = document.querySelectorAll(".parent");
         let collapse = " inline-block w-[20px] text-center text-[1.3rem] shadow border border-black select-none"
         let collapseHover = " hover:font-bold hover:bg-gray-200 cursor-pointer";
