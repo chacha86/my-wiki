@@ -376,6 +376,14 @@ class NoteMenuHandler {
 
         renameModal.show();
     }
+
+    async updateMovePage(pageIdNo, noteIdNo) {
+        const updateMovePageParam = {
+            noteIdNo: noteIdNo,
+            pageIdNo: pageIdNo
+        };
+        return await this.noteMenuApi.updateMovePage(updateMovePageParam);
+    }
 }
 
 

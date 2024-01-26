@@ -72,37 +72,38 @@ class PageMoveModalHandler {
         moveBtnDiv.innerHTML = "";
         moveBtnDiv.innerHTML = `<a>이동</a>`
 
-        let pageMoveModalDataRefer = param.pageMoveModalDataRefer;
-
         document.querySelector("#move-btn a").addEventListener("click", async () => {
-            let currentSelectedNoteId = pageMoveModalDataRefer.destinationNoteId;
+            const destinationNoteId = RendererFactory.get("pageMoveModal").props.destinationNoteId;
+            const moveTargetNoteId = RendererFactory.get("pageMoveModal").props.moveTargetNoteId;
+            const moveTargetPageId = RendererFactory.get("pageMoveModal").props.moveTargetPageId;
+            const notePageParam = new NoteParam();
+            const moveParam = new NoteParam();
 
-            if (currentSelectedNoteId == null) {
+            if (destinationNoteId == null) {
                 alert("이동할 노트를 선택해주세요.");
                 return;
             }
 
             const updateMovePageParam = {
-                "pageIdNo": NoteData.getNo(pageMoveModalDataRefer.moveTargetPageId),
-                "noteIdNo": NoteData.getNo(currentSelectedNoteId)
+                "pageIdNo": ItemData.getItemNoById(moveTargetPageId),
+                "noteIdNo": ItemData.getItemNoById(destinationNoteId)
             };
 
-            let msg = await this.noteMenuApi.updateMovePage(updateMovePageParam);
+            const msg = await HandlerFactory.get("noteMenu").updateMovePage(updateMovePageParam);
 
-            let notePageRenderer = new NotePageRenderer(param);
-            notePageRenderer.render().catch((e) => {
-                console.error(e);
-            });
+            notePageParam.selectedPageId = moveTargetPageId;
+            notePageParam.sortType = RendererFactory.get("notePage").props.sortType;
+            notePageParam.direction = RendererFactory.get("notePage").props.direction;
+            notePageParam.data = await HandlerFactory.get("noteMenu").getNotePageData(RendererFactory.get("note").props.selectedNoteId);
 
-            const modalParam = {
-                "targetNoteId": pageMoveModalDataRefer.moveTargetNoteId,
-                "moveNoteTree": await this.noteMenuApi.moveNote(ItemData.getItemNoById(pageMoveModalDataRefer.moveTargetNoteId))
-            };
+            RendererFactory.get("notePage").render(notePageParam);
 
-            let pageMoveModalRenderer = new PageMoveModalRenderer(modalParam);
-            pageMoveModalRenderer.render().catch((e) => {
-                console.error(e);
-            });
+            moveParam.destinationNoteId = destinationNoteId;
+            moveParam.moveTargetNoteId = moveTargetNoteId;
+            moveParam.moveTargetPageId = moveTargetPageId;
+            moveParam.data = await HandlerFactory.get("noteMenu").getMoveNoteTree(ItemData.getItemNoById(moveTargetNoteId));
+
+            RendererFactory.get("pageMoveModal").render(moveParam);
         });
     }
 

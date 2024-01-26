@@ -52,10 +52,7 @@ class NoteMenuApi {
 
     async updateMovePage(movePageParam) {
         const url = "/api/pages/update/move/" + movePageParam.pageIdNo;
-        const param = {
-            noteId: movePageParam.noteIdNo,
-        };
-        return await aPostFetch(url, JSON.stringify(param));
+        return await aPostFetch(url, JSON.stringify(movePageParam));
     }
 }
 
