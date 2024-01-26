@@ -24,6 +24,8 @@ class NoteMoveModalRenderer {
     async render(param) {
         this.preRender(param);
 
+        console.assert(this.props.data !== null, "data is null");
+
         const data = this.props.data;
         const targetNoteIdNo = Number(ItemData.getItemNoById(this.props.moveTargetNoteId));
 

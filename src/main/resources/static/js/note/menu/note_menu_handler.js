@@ -355,13 +355,13 @@ class NoteMenuHandler {
     async _movePageModal(param) {
         const moveModal = document.querySelector('#my_modal_2');
         const itemInfo = param.itemInfo;
+        const moveParam = new NoteParam();
 
-        param.targetNoteId = param.selectedNoteId;
-        param.targetPageId = ItemData.getPageIdByItemNo(itemInfo.itemIdNo);
-        param.moveNoteTree = await this.getMoveNoteTree(itemInfo);
+        moveParam.moveTargetNoteId = RendererFactory.get("note").props.selectedNoteId;
+        moveParam.moveTargetPageId = ItemData.getPageIdByItemNo(itemInfo.itemIdNo);
+        moveParam.data = await this.getMoveNoteTree(itemInfo.itemIdNo);
 
-        let pageMoveModalRenderer = new PageMoveModalRenderer(param);
-        await pageMoveModalRenderer.render();
+        RendererFactory.get("pageMoveModal").render(moveParam);
         moveModal.show();
     }
 

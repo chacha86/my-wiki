@@ -2,6 +2,8 @@ import {NoteData, ItemData, NoteRenderer} from "../../note_renderer.js";
 import {PageMoveModalRenderer} from "./page_move_modal_renderer.js";
 import {NoteMenuApi} from "../note_menu_api.js";
 import {NotePageRenderer} from "../../note_page/note_page_renderer.js";
+import {NoteParam} from "../../noteParam.js";
+import {HandlerFactory, RendererFactory} from "../../../initializer.js";
 
 class PageMoveModalHandler {
     constructor() {
@@ -37,27 +39,30 @@ class PageMoveModalHandler {
 
     setSelectEffect(noteItemList, param) {
 
-        let pageMoveModalDataRefer = param.pageMoveModalDataRefer;
-        let prevSelectedNoteElement = null;
-        let currentSelectedNoteElement = null;
-
         noteItemList.forEach((item) => {
-            item.addEventListener('click', (e) => {
-                prevSelectedNoteElement = this.getElementByDataNoteId(NoteData.getNo(pageMoveModalDataRefer.destinationNoteId));
-                currentSelectedNoteElement = e.target;
-                const noteIdNo = currentSelectedNoteElement.getAttribute('data-note-id');
+            item.addEventListener('click', async (e) => {
+                const moveParam = new NoteParam();
+                const currentSelectedNoteElement = e.target;
+                const noteIdNo = this.getNoteIdNoFromElement(currentSelectedNoteElement);
+                const destinationNoteId = ItemData.getNoteIdByItemNo(noteIdNo);
+                const moveTargetNoteId = RendererFactory.get("note").props.selectedNoteId;
                 const itemInfo = ItemData.getItemInfoById(ItemData.getNoteIdByItemNo(noteIdNo));
+                // prevSelectedNoteElement = this.getElementByDataNoteId(NoteData.getNo(pageMoveModalDataRefer.destinationNoteId));
+                // currentSelectedNoteElement = e.target;
+                // const noteIdNo = currentSelectedNoteElement.getAttribute('data-note-id');
+                const data = await HandlerFactory.get("noteMenu").getMoveNoteTree(ItemData.getItemNoById(moveTargetNoteId));
 
-                if(itemInfo.itemType === "group") {
+                if (itemInfo.itemType === "group") {
                     console.log("그룹은 선택할 수 없습니다.");
                     return;
                 }
 
-                pageMoveModalDataRefer.destinationNoteId = NoteData.getId(this.getNoteIdFromElement(currentSelectedNoteElement));
-                if (prevSelectedNoteElement != null) {
-                    prevSelectedNoteElement.classList.remove("bg-gray-500", "rounded-md");
-                }
-                currentSelectedNoteElement.classList.add("bg-gray-500", "rounded-md");
+                moveParam.moveTargetNoteId = moveTargetNoteId;
+                moveParam.destinationNoteId = destinationNoteId;
+                moveParam.moveTargetPageId = param.moveTargetPageId;
+                moveParam.data = data;
+
+                RendererFactory.get("pageMoveModal").render(moveParam);
             });
         });
     }
@@ -101,7 +106,7 @@ class PageMoveModalHandler {
         });
     }
 
-    getNoteIdFromElement(element) {
+    getNoteIdNoFromElement(element) {
         return element.getAttribute('data-note-id');
     }
 

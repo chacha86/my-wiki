@@ -1,27 +1,35 @@
 import {ItemData, NoteData} from "../../note_renderer.js";
 import {PageMoveModalHandler} from "./page_move_modal_handler.js";
+import {HandlerFactory} from "../../../initializer.js";
 
 class PageMoveModalRenderer {
-    constructor(param) {
-        this.param = param;
-        this.eventHandler = new PageMoveModalHandler();
+    constructor() {
         this.renderTarget = "move-note-modal";
-
-        this.pageMoveModalDataRefer = {
+        this.props = {
             'destinationNoteId': null,
             'moveTargetNoteId': null,
             'moveTargetPageId': null,
+            'data': null
         };
 
+        this.eventHandler = HandlerFactory.get("pageMoveModal");
     }
+    preRender(param) {
+        Object.keys(this.props).forEach((key) => {
+            if (param[key] !== undefined) {
+                this.props[key] = param[key];
+            }
+        });
+    }
+    async render(param) {
+        this.preRender(param);
 
-    async render() {
+        console.assert(this.props.data !== null, "data is null");
 
-        let data = this.param.moveNoteTree;
-
+        const data = this.props.data;
         const noteItemList = document.querySelector("#" + this.renderTarget);
-        let itemContent = " inline-block w-[90%] p-[5px] cursor-default";
-        let itemContentHover = " hover:bg-gray-200 hover:rounded-md";
+        const itemContent = " inline-block w-[90%] p-[5px] cursor-default";
+        const itemContentHover = " hover:bg-gray-200 hover:rounded-md";
 
         noteItemList.innerHTML = "";
 
@@ -38,25 +46,17 @@ class PageMoveModalRenderer {
 
         noteItemList.innerHTML = html;
 
-        this.postRender();
+        this.postRender(param);
     }
 
-    postRender() {
+    postRender(param) {
+        Object.keys(this.props).forEach((key) => {
+            param[key] = this.props[key];
+        });
+
         this.renderCollapseIcon();
         this.renderSelectEffect()
 
-        this.pageMoveModalDataRefer.moveTargetNoteId = this.param.targetNoteId;
-        this.pageMoveModalDataRefer.moveTargetPageId = this.param.targetPageId;
-
-        const param = {
-            'moveNoteTree': this.param.moveNoteTree,
-            'itemInfo': this.param.itemInfo,
-            'pageMoveModalDataRefer': this.pageMoveModalDataRefer,
-            'selectedNoteId': this.param.selectedNoteId,
-            'selectedNoteIdNo': this.param.selectedPageId,
-            'prevNoteId': this.param.prevNoteId,
-            'prevPageId': this.param.prevPageId,
-        };
         this.eventHandle(param);
     }
 
@@ -72,13 +72,22 @@ class PageMoveModalRenderer {
     }
 
     renderSelectEffect() {
-        if (this.param.targetNoteId != null) {
-            let targetNoteIdNo = ItemData.getItemNoById(this.param.targetNoteId);
+        if (this.props.targetNoteId != null) {
+            let targetNoteIdNo = ItemData.getItemNoById(this.props.targetNoteId);
             const selectedItem = document.querySelector(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
             let originClass = selectedItem.getAttribute("class");
             let customClass = " bg-gray-300 rounded-md";
             let newClass = originClass + customClass;
             selectedItem.setAttribute("class", newClass);
+        }
+        if(this.props.destinationNoteId != null) {
+            let targetNoteIdNo = ItemData.getItemNoById(this.props.destinationNoteId);
+            const selectedItem = document.querySelector(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
+            let originClass = selectedItem.getAttribute("class");
+            let customClass = " bg-gray-500 rounded-md";
+            let newClass = originClass + customClass;
+            selectedItem.setAttribute("class", newClass);
+
         }
     }
 
