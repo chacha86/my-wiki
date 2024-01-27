@@ -1,4 +1,26 @@
 import {getNoteUIParamJsonStr} from "./ui/note_list_ui_util.js";
+async function aPostFetch(url, jsonData) {
+
+    const headerName = document.querySelector("#csrf-header").value;
+    const token = document.querySelector("#csrf-token").value;
+
+    return await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            [headerName]: token
+        },
+        body: jsonData
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            return data;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
 
 function postFetch(url, jsonData, callback) {
 
@@ -105,5 +127,5 @@ function postFetch(url, jsonData, callback) {
 //
 // }
 
-export {postFetch};
+export {postFetch, aPostFetch};
 

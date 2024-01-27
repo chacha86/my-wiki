@@ -5,7 +5,7 @@ sideControlBars.forEach(function (item) {
     item.addEventListener("mousedown", function (e) {
         isDragging = true;
         onDragTarget = e.target;
-        console.log(onDragTarget);
+        document.querySelector("body").classList.add("select-none");
     });
 });
 
@@ -28,5 +28,6 @@ document.querySelector("body").addEventListener("mouseup", function (e) {
     if (isDragging) {
         // document.querySelector(".main").style.cursor = 'default';
         isDragging = false;
+        document.querySelector("body").classList.remove("select-none")
     }
 });

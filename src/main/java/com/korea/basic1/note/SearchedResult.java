@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SearchedResult {
     private String keyword;
-    private List<Note>  searchedNoteList;
-    private List<NotePage> searchedNotePageList;
+    private List<NoteDto>  searchedNoteList;
+    private List<NotePageDto> searchedNotePageList;
 
 }

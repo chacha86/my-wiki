@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="light" lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -7,6 +7,49 @@
 </head>
 <body>
 <div th:replace="fragments/common-js"></div>
+<dialog id="my_modal_2" class="modal text-black">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">노트 이동</h3>
+
+        <!--        <ul id="move-note-modal" class="menu">-->
+        <!--        </ul>-->
+
+        <div id="move-note-modal" class="my-menu">
+
+        </div>
+        <div>
+            <form th:action method="post" onsubmit="return false;">
+                <div id="move-btn">
+                    <a>OK</a>
+                </div>
+            </form>
+            <form method="dialog">
+                <div id="move-close-btn">
+                </div>
+            </form>
+        </div>
+    </div>
+</dialog>
+
+<dialog id="my_modal_1" class="modal text-black">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">노트 이름 변경</h3>
+        <div>
+            <form th:action method="post" onsubmit="return false;">
+                <div class="my-[10px]">
+                    <input type="text" class="input input-bordered w-full max-w-xs"
+                           name="noteName" id="new-item-text">
+                </div>
+                <div id="rename-btn">
+                    <a>OK</a>
+                </div>
+            </form>
+            <form method="dialog">
+                <button class="btn">Close</button>
+            </form>
+        </div>
+    </div>
+</dialog>
 <div class="navbar bg-gray-800 text-white py-[20px] border-b-[3px] border-white">
     <div class="flex-1">
         <a class="btn btn-ghost normal-case text-[30px]">CNote</a>
@@ -24,15 +67,12 @@
             <li>
                 <label class="swap swap-rotate hover:text-white hover:bg-gray-600 p-[5px]">
                     <input type="checkbox" id="nav-toggle"/>
-                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                         viewBox="0 0 512 512">
-                        <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/>
-                    </svg>
-                    <svg class="swap-on fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                         viewBox="0 0 512 512">
-                        <polygon
-                                points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49"/>
-                    </svg>
+                    <i class="swap-off fill-current fa-solid fa-up-right-and-down-left-from-center"></i>
+                    <!--                    <svg class="swap-off fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20"-->
+                    <!--                         viewBox="0 0 512 512">-->
+                    <!--                        <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z"/>-->
+                    <!--                    </svg>-->
+                    <i class="swap-on fill-current fa-solid fa-down-left-and-up-right-to-center"></i>
                 </label>
             </li>
         </ul>
@@ -54,76 +94,54 @@
                         <input type="hidden" id="csrf-header" th:value="${_csrf.headerName}">
                         <input type="hidden" id="csrf-token" th:name="${_csrf.parameterName}"
                                th:value="${_csrf.token}"/>
-                        <ul id="note-item-list" class="menu bg-gray-800">
-                        </ul>
-                    </form>
-                </div>
-                <div id="async">
+                        <div id="note-item-list">
 
-                </div>
-
-                <div class="flex items-center text-center justify-center border border-gray-300 ">
-                    <form th:action="@{/note/add-group}" method="post">
-                        <input type="submit" value="새그룹 추가">
-                    </form>
-                    <dialog id="my_modal_1" class="modal text-black">
-                        <div class="modal-box">
-                            <h3 class="font-bold text-lg">노트 이름 변경</h3>
-                            <div>
-                                <form th:action method="post" onsubmit="return false;">
-                                    <div class="my-[10px]">
-                                        <input type="text" class="input input-bordered w-full max-w-xs"
-                                               name="noteName" id="new-note-name">
-                                    </div>
-                                    <div>
-                                        <a th:href="@{|/api/notes/update/${noteDetail.id}|}" class="btn"
-                                           th:onclick="renameNote(this, [[${noteDetail.id}]]); return false;">Ok</a>
-                                    </div>
-                                </form>
-                                <form method="dialog">
-                                    <button class="btn">Close</button>
-                                </form>
-                            </div>
                         </div>
-                    </dialog>
+                    </form>
+                </div>
+                <div id="add-group-note"
+                     class="flex items-center text-center justify-center border border-gray-300 hover:bg-gray-300 hover:">
+                    <a>새그룹 추가</a>
                 </div>
             </div>
             <div class="side-control-bar w-[5px] h-[100%] bg-gray-800 hover:cursor-move"></div>
-            <div class="custom-scroll left-second-menu-content min-w-[150px] bg-gray-800 text-white overflow-scroll w-[250px]">
-                <div class="h-[10%] flex items-center justify-around border-white border-b">
-                    <h1 class="text-[1rem] p-[20px] font-bold">페이지 목록</h1>
-                    <div  id="add-note-btn" class="border p-[5px] hover:bg-gray-300 hover:text-black">
-                        +
+            <div class="custom-scroll relative left-second-menu-content min-w-[150px] bg-gray-800 text-white overflow-scroll w-[250px]">
+                <div class="h-[10%] flex items-center justify-around border-white border-b text-[1rem]">
+                    <h1 class="p-[20px] font-bold">페이지 목록</h1>
+                    <div id="add-page-btn">
+                    </div>
+                    <div id="sort-btn">
                     </div>
                 </div>
-                <ul id="page-item-list">
-
-                </ul>
-                <div class="absolute top-[90%]">
-                    <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"
-                          class="flex relative justify-between items-center">
-                        <input type="text" placeholder="Search" name="keyword"
-                               class="input input-bordered text-black w-full max-w-xs"
-                               id="search-input" autocomplete="off">
-                        <input type="submit" class="btn text-white hover:text-black" value="search">
-                        <div class="searchBox hidden absolute z-10 bottom-[100%] left-[0] bg-gray-600 bg-opacity-[98%] h-[50vh] w-[100%] p-[20px]">
-                            <div class="content border h-[100%] border-white overflow-scroll">
-                                <ul class="m-[10px]" th:if="${searchedResult}">
-                                    <li th:each="note : ${searchedResult.searchedNoteList}"
-                                        class="hover:bg-gray-400 px-[0.5rem]"><a
-                                            th:href="@{|/note/${note.id}?keyword=${searchedResult.keyword}|}"
-                                            class="inline-block w-[100%]" th:text="${note.name}"
-                                            th:classappend="${note.id == noteDetail.id} ? 'bg-gray-400' : ''"></a></li>
-                                    <li th:unless="${#lists.isEmpty(searchedResult.searchedNotePageList)}"
-                                        th:each="notePage : ${searchedResult.searchedNotePageList}"
-                                        class="hover:bg-gray-400 px-[0.5rem]">
-                                        <a
-                                                class="inline-block w-[100%]"
-                                                th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "
-                                                th:text="${notePage.title}"></a></li>
-                                </ul>
-                            </div>
+                <div id="page-item-list" class="p-[10px]">
+                </div>
+                <div id="search-area" class="absolute top-[90%] w-[90%]">
+                    <!--                    <form th:action="@{|/note/${noteDetail.id}/page/${pageDetail.id}|}"-->
+                    <!--                          class="flex relative justify-between items-center" onsubmit="return false;">-->
+                    <input type="text" placeholder="Search" name="keyword"
+                           class="input input-bordered text-black w-full max-w-xs"
+                           id="search-input" autocomplete="off">
+                    <div id="search-box"
+                         class="searchBox hidden absolute z-10 bottom-[100%] left-[0] bg-gray-600 bg-opacity-[98%] h-[50vh] w-[100%] p-[20px]">
+                        <div class="search-content border h-[100%] border-white overflow-scroll">
+                            <ul id="search-result-list" class="w-[100%] m-[10px]">
+                            </ul>
+                            <!--                                <ul class="m-[10px]" th:if="${searchedResult}">-->
+                            <!--                                    <li th:each="note : ${searchedResult.searchedNoteList}"-->
+                            <!--                                        class="hover:bg-gray-400 px-[0.5rem]"><a-->
+                            <!--                                            th:href="@{|/note/${note.id}?keyword=${searchedResult.keyword}|}"-->
+                            <!--                                            class="inline-block w-[100%]" th:text="${note.name}"-->
+                            <!--                                            th:classappend="${note.id == noteDetail.id} ? 'bg-gray-400' : ''"></a></li>-->
+                            <!--                                    <li th:unless="${#lists.isEmpty(searchedResult.searchedNotePageList)}"-->
+                            <!--                                        th:each="notePage : ${searchedResult.searchedNotePageList}"-->
+                            <!--                                        class="hover:bg-gray-400 px-[0.5rem]">-->
+                            <!--                                        <a-->
+                            <!--                                                class="inline-block w-[100%]"-->
+                            <!--                                                th:classappend="${notePage.id == noteDetail.id} ? 'bg-gray-400':'' "-->
+                            <!--                                                th:text="${notePage.title}"></a></li>-->
+                            <!--                                </ul>-->
                         </div>
+                    </div>
                     </form>
                 </div>
             </div>
@@ -131,19 +149,8 @@
         </div>
     </div>
     <div class="content h-[100vh-94px] w-[100%] overflow-x-hidden overflow-y-hidden">
-        <form id="updateForm" th:action="@{|/note/${noteDetail.id}/page/update|}" method="post" onsubmit="return false">
-            <div class="flex justify-between">
-
-                <input class="title block border-b-[1px] font-bold p-[10px] mb-[10px] focus:outline-none" type="text"
-                       name="title">
-                <a href="#" class="font-bold text-red-500 p-[10px]"
-                   onclick="confirmDelete()">X</a>
-            </div>
-            <div>
-                <input type="hidden" name="pageId" th:value="${pageDetail.id}">
-                <input type="hidden" name="content">
-            </div>
-        </form>
+        <div id="content-header" class="p-[10px]">
+        </div>
         <div th:replace="~{fragments/toast_editor::test}">
         </div>
     </div>

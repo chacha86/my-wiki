@@ -8,16 +8,17 @@ function initScrollPosition(noteSideScrollPosition, pageSideScrollPosition) {
 function getIdNoFromId(id) {
     return id.split('-')[1];
 }
+
 function getItemTypeFromId(id) {
     return id.split('-')[0];
 }
+
 function extractIdNoFromItem(item) {
     let itemId = item.getAttribute('id');
     return getIdNoFromId(itemId);
 }
 
 function changeSelectedItem(currentItemId, prevItemId, customClass) {
-
     const currentItem = document.querySelector("#" + currentItemId);
     const prevItem = document.querySelector("#" + prevItemId);
     //

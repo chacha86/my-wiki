@@ -1,24 +1,15 @@
-import './event_handler/event_nav_toggle.js';
-import './event_handler/event_side_drag.js';
-import './event_handler/event_search_box.js';
-import './event_handler/event_item_menu.js';
-import './event_handler/event_btn.js';
-import { renderingNoteTree2, getNoteUIParamJsonStr} from './ui/note_renderer.js';
-// import { getNotesCallback } from './callback.js';
-// import {addContextMenuEventToNote} from "./ui/item_menu_renderer.js";
+import {} from "./event_handler/event_search_box.js";
+import {} from "./event_handler/event_item_menu.js";
+import {} from "./event_handler/event_side_drag.js";
+import {} from "./event_handler/event_nav_toggle.js";
+import {Initializer, RendererFactory} from "./initializer.js";
+import {NoteRenderer} from "./note/note_renderer.js";
+import {CommonRenderer} from "./common/common_renderer.js";
+import {NoteParam} from "./note/noteParam.js";
 
-renderingNoteTree2();
-// getNotes(getNoteUIParamJsonStr(), renderingNoteTree, getNotesCallback);
+Initializer.init();
 
-
-// addContextMenuEventToNote(getNotesCallback);
-
-// noteApi.getNotes(getNoteUIParamJsonStr());
-// document.querySelectorAll('#note-item-list li').forEach(item => {
-//     console.log('========================>');
-//     console.log(item);
-//     item.addEventListener('click', event => {
-//         const noteIdNo = item.getAttribute("data-note-id-no");
-//         getPages(82);
-//     })
-// });
+RendererFactory.get("common").render(new NoteParam());
+RendererFactory.get("note").render(new NoteParam());
+// let noteRenderer = new NoteRenderer(new Map());
+// noteRenderer.render();

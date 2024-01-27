@@ -1,5 +1,6 @@
 package com.korea.basic1.note;
 
+import com.korea.basic1.note.page.NotePage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -9,6 +10,7 @@ import java.sql.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -78,6 +80,7 @@ public class NoteService {
 
     public Note saveGroupNotebook(Note parent) {
         Note child = getDefaultNotebook();
+        child.setName("새 그룹 노트");
         child.setParent(parent);
         child.setGroupYn(1);
         return noteRepository.save(child);
@@ -115,18 +118,55 @@ public class NoteService {
             new IllegalArgumentException("해당 노트는 존재하지 않습니다.");
         } else {
             note.setName(noteName);
+            note.setUpdateDate(LocalDateTime.now());
             noteRepository.save(note); // save는 ID가 있으면 update, ID가 없으면 insert
         }
     }
 
     public void moveNoteTo(Long moveTargetId, Long destinationId) {
         Note target = getNoteById(moveTargetId);
-        target.setParent(getNoteById(destinationId));
+        Note destinationNote = null;
+        if(destinationId != 0) {
+             destinationNote = getNoteById(destinationId);
+        }
+        target.setParent(destinationNote);
         noteRepository.save(target);
     }
 
     public List<Note> getNoteListByKeyword(String keyword) {
         return noteRepository.findAllByNameContaining(keyword);
+    }
+    public List<NoteDto> getNoteDtoListByKeyword(String keyword) {
+        List<Note> noteList = noteRepository.findAllByNameContaining(keyword);
+        List<NoteDto> noteDtoList = new ArrayList<>();
+        for(Note note : noteList) {
+            noteDtoList.add(note.toDto());
+        }
+        return noteDtoList;
+    }
+    public List<NoteTreeDto> buildNoteTreeDtoForPage() {
+
+        List<NoteTreeDto> parentNoteList = new ArrayList<>();
+
+        for (Note parentNote : getParentNoteList()) {
+            NoteTreeDto havingChildrenNoteTreeDto = getHavingChildrenNoteTreeDto(parentNote);
+            parentNoteList.add(havingChildrenNoteTreeDto);
+        }
+
+        return parentNoteList;
+
+    }
+    public List<NoteTreeDto> buildNoteTreeDtoForNote(Long noteId) {
+
+        List<NoteTreeDto> parentNoteList = new ArrayList<>();
+
+        for (Note parentNote : getParentNoteList()) {
+            NoteTreeDto havingChildrenNoteTreeDto = getHavingChildrenNoteTreeDto(parentNote, noteId);
+            parentNoteList.add(havingChildrenNoteTreeDto);
+        }
+
+        return parentNoteList;
+
     }
 
     public List<NoteTreeDto> buildNoteTreeDto() {
@@ -139,8 +179,27 @@ public class NoteService {
         return parentNoteList;
     }
 
+    public NoteTreeDto getHavingChildrenNoteTreeDto(Note parent, Long noteId) {
+        NoteTreeDto noteTreeDto = transformNoteToTreeDto(parent);
+
+        if(Objects.equals(parent.getId(), noteId)) {
+            return noteTreeDto;
+        }
+
+        if (parent.getChildren().isEmpty()) {
+            return noteTreeDto;
+        }
+
+        for (Note childNote : parent.getChildren()) {
+            NoteTreeDto childNoteDto = getHavingChildrenNoteTreeDto(childNote, noteId);
+            noteTreeDto.getChildren().add(childNoteDto);
+        }
+
+        return noteTreeDto;
+    }
+
     public NoteTreeDto getHavingChildrenNoteTreeDto(Note parent) {
-        NoteTreeDto noteTreeDto = transformNoteToDto(parent);
+        NoteTreeDto noteTreeDto = transformNoteToTreeDto(parent);
         if (parent.getChildren().isEmpty()) {
             return noteTreeDto;
         }
@@ -153,13 +212,22 @@ public class NoteService {
         return noteTreeDto;
     }
 
-    public NoteTreeDto transformNoteToDto(Note note) {
+    public NoteTreeDto transformNoteToTreeDto(Note note) {
         return NoteTreeDto.builder()
                 .id(note.getId())
                 .name(note.getName())
                 .children(new ArrayList<>())
                 .groupYn(note.getGroupYn())
                 .build();
+    }
+
+    public List<NoteDto> getParentNoteDtoListByKeyword(String keyword, int groupYn) {
+        List<Note> noteList = noteRepository.findAllByNameContainingAndGroupYn(keyword, groupYn);
+        List<NoteDto> noteDtoList = new ArrayList<>();
+        for(Note note : noteList) {
+            noteDtoList.add(note.toDto());
+        }
+        return noteDtoList;
     }
 
 //    private NoteTreeDto transformNoteToTreeDto(Note note) {

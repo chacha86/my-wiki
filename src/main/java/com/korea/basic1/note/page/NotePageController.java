@@ -56,7 +56,7 @@ public class NotePageController {
         NotePage notePage = notePageService.getNotePageById(pageId);
         SearchedResult searchedResult = noteProcessingService.getSearchedNoteAndPageList(noteParam);
 
-        NoteDto noteDto = new NoteDto();
+        NoteTemplateDto noteDto = new NoteTemplateDto();
         noteDto.setCurrentNote(note);
         noteDto.setParentList(noteList);
         noteDto.setChildren(note.getChildren());

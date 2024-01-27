@@ -9,6 +9,7 @@ import com.korea.basic1.note.page.NotePageService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,7 @@ public class NoteRestController {
     @Getter
     @Setter
     private static class NoteResultDto {
+        private Long noteId;
         private List<NoteTreeDto> noteTree;
         private NoteUIParam noteUIParam;
     }
@@ -53,22 +55,97 @@ public class NoteRestController {
 
     @Getter
     @Setter
-    private static class NotePageResultDto {
-        private List<NotePageDto> notePageDtoList;
+    private static class MoveNoteParamDto {
+        private Long noteId;
         private NoteUIParam noteUIParam;
     }
+
+    @RequestMapping("move/{noteId}")
+    public String moveNote(@PathVariable("noteId") Long noteId) {
+        List<NoteTreeDto> noteTreeForMove = noteService.buildNoteTreeDtoForNote(noteId);
+        String jsonStr = null;
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            NoteResultDto noteResultDto = new NoteResultDto();
+
+            noteResultDto.setNoteId(noteId);
+            noteResultDto.setNoteTree(noteTreeForMove);
+
+            jsonStr = objectMapper.writeValueAsString(noteResultDto);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return jsonStr;
+    }
+
+    @Getter
+    private enum SortType {
+        TITLE("title"), CREATED_DATE("createDate"), UPDATED_DATE("updateDate");
+
+        SortType(String value) {
+            this.value = value;
+        }
+
+        private final String value;
+    }
+
+    @Getter
+    private enum SortDirection {
+        ASC(0), DESC(1);
+
+        SortDirection(int value) {
+            this.value = value;
+        }
+
+        private final int value;
+
+        Sort.Direction getDirection() {
+            if (this.equals(ASC)) {
+                return Sort.Direction.ASC;
+            } else {
+                return Sort.Direction.DESC;
+            }
+        }
+    }
+
+    @Getter
+    @Setter
+    private static class NotePageResultDto {
+        //        private Long noteId;
+//        private Long pageId;
+        private List<NotePageDto> notePageDtoList;
+//        private NoteUIParam noteUIParam;
+    }
+
+    @Getter
+    @Setter
+    private static class PageListParamDto {
+        private Long noteId;
+        private SortType sortType;
+        private SortDirection direction;
+    }
+
     @RequestMapping("/{noteId}/pages")
-    public String getPages(@PathVariable Long noteId, @RequestBody NoteUIParam noteUIParam) {
-        List<NotePage> notePageList = notePageService.getNotePageListByNoteId(noteId);
+    public String getPages(@PathVariable Long noteId, @RequestBody PageListParamDto pageListParamDto) {
+
+        List<NotePage> notePageList = notePageService.getNotePageListByNoteId(noteId,
+                pageListParamDto.getSortType().getValue(),
+                pageListParamDto.getDirection().getDirection());
+
         List<NotePageDto> notePageDtoList = notePageService.getNotePageDtoList(notePageList);
         String jsonStr = null;
+
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
             NotePageResultDto notePageResultDto = new NotePageResultDto();
 
+//            notePageResultDto.setNoteId(noteId);
+//            notePageResultDto.setPageId(pageListParamDto.getPageId());
             notePageResultDto.setNotePageDtoList(notePageDtoList);
-            notePageResultDto.setNoteUIParam(noteUIParam);
+//            notePageResultDto.setNoteUIParam(noteUIParam);
 
             jsonStr = objectMapper.writeValueAsString(notePageResultDto);
 
@@ -84,6 +161,7 @@ public class NoteRestController {
         private NotePageDto notePageDto;
         private NoteUIParam noteUIParam;
     }
+
     @RequestMapping("/pages/{notePageId}")
     public String getPageContent(@PathVariable Long notePageId, @RequestBody NoteUIParam noteUIParam) {
         NotePage notePage = notePageService.getNotePageById(notePageId);
@@ -104,17 +182,24 @@ public class NoteRestController {
         }
         return jsonStr;
     }
+
     @RequestMapping("/delete/{noteId}")
     public String delete(@PathVariable Long noteId) {
         noteProcessingService.deleteNote(noteId);
         return "{\"msg\" : \"노트가 삭제되었습니다.\"}";
     }
 
+    @RequestMapping("/add-group")
+    public String addGroup() {
+        Note note = noteProcessingService.saveGroupNotebook();
+        return "{\"msg\" : \"그룹 노트가 생성되었습니다.\", \"noteId\" : " + note.getId() + "}";
+
+    }
+
     @RequestMapping("/add-group/{noteId}")
     public String addGroup(@PathVariable Long noteId) {
         Note note = noteProcessingService.saveGroupNotebook(noteId);
         return "{\"msg\" : \"그룹 노트가 생성되었습니다.\", \"noteId\" : " + note.getId() + "}";
-
     }
 
     @RequestMapping("/add/{noteId}")
@@ -137,5 +222,42 @@ public class NoteRestController {
         noteService.updateNoteName(noteId, noteName);
 
         return "{\"msg\" : \"노트가 수정되었습니다.\"}";
+    }
+
+    @Getter
+    @Setter
+    private static class UpdateMoveNoteParamDto {
+        private Long moveTargetId;
+        private Long destinationId;
+    }
+
+    @RequestMapping("/update/move")
+    public String move(@RequestBody UpdateMoveNoteParamDto updateMoveNoteParamDto) {
+        noteService.moveNoteTo(updateMoveNoteParamDto.getMoveTargetId(), updateMoveNoteParamDto.getDestinationId());
+        return "{\"msg\" : \"노트를 이동하였습니다.\"}";
+    }
+
+    @Getter
+    @Setter
+    private static class SearchParamDto {
+        private String keyword;
+    }
+
+    @RequestMapping("/search")
+    public String search(@RequestBody SearchParamDto searchParamDto) {
+        NoteParam noteParam = new NoteParam();
+        noteParam.setKeyword(searchParamDto.getKeyword());
+        SearchedResult searchedResult = noteProcessingService.getSearchedNoteAndPageList(noteParam);
+
+        String jsonStr = null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            jsonStr = objectMapper.writeValueAsString(searchedResult);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return jsonStr;
     }
 }

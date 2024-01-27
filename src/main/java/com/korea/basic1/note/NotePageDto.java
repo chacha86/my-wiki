@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class NotePageDto {
+    private Long noteId;
     private Long id;
     private String title;
     private int hit;

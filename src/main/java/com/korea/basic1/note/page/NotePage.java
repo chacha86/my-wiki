@@ -34,6 +34,7 @@ public class NotePage {
 
     public NotePageDto toDto() {
         return NotePageDto.builder()
+                .noteId(note.getId())
                 .id(id)
                 .title(title)
                 .hit(hit)

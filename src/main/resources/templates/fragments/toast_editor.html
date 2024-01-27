@@ -25,16 +25,17 @@
         wysiwygIframe.setAttribute('spellcheck', 'false');
         document.addEventListener('keydown', handleKeyDown, {capture: true});
 
-        titleInput = document.querySelector("input[name='title']");
-        titleInput.setAttribute('spellcheck', 'false');
-        titleInput.addEventListener('keydown', function (e) {
-            if (e.keyCode === 13) {
-                e.preventDefault();
-                editor.focus();
-            }
-        });
+        // titleInput = document.querySelector("input[name='title']");
+        // titleInput.setAttribute('spellcheck', 'false');
+        // titleInput.addEventListener('keydown', function (e) {
+        //     if (e.keyCode === 13) {
+        //         e.preventDefault();
+        //         editor.focus();
+        //     }
+        // });
 
         editor.on('change', () => {
+            console.log(document.querySelectorAll(".toast-editor-container a"));
             document.querySelectorAll(".toast-editor-container a").forEach((item) => {
                 item.setAttribute('target', '_blank');
             });
@@ -53,14 +54,14 @@
         // console.log(articleId);
         // console.log(scrollMoveValue);
         // leftSideMenu.scrollTop = scrollMoveValue;
-        function confirmDelete() {
-            if (confirm('정말 삭제하시겠습니까?')) {
-                let input = document.querySelector('#updateForm [name="noteId"]');
-                let deleteForm = document.querySelector('#delete');
-                deleteForm.appendChild(input);
-                deleteForm.submit();
-            }
-        }
+        // function confirmDelete() {
+        //     if (confirm('정말 삭제하시겠습니까?')) {
+        //         let input = document.querySelector('#updateForm [name="noteId"]');
+        //         let deleteForm = document.querySelector('#delete');
+        //         deleteForm.appendChild(input);
+        //         deleteForm.submit();
+        //     }
+        // }
 
 
         // function setScroll() {
@@ -93,7 +94,6 @@
                 event.stopPropagation();  // 이벤트 전파 중지
             }
         }
-
 
         // function scrollDown() {
         //     element = document.querySelector('.left-side-menu-content');
