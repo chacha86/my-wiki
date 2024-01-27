@@ -62,7 +62,7 @@ public class NoteRestController {
 
     @RequestMapping("move/{noteId}")
     public String moveNote(@PathVariable("noteId") Long noteId) {
-        List<NoteTreeDto> noteTreeForMove = noteService.buildNoteTreeDtoForMove(noteId);
+        List<NoteTreeDto> noteTreeForMove = noteService.buildNoteTreeDtoForNote(noteId);
         String jsonStr = null;
 
         try {

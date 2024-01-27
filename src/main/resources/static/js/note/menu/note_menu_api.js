@@ -54,6 +54,11 @@ class NoteMenuApi {
         const url = "/api/pages/update/move/" + movePageParam.pageIdNo;
         return await aPostFetch(url, JSON.stringify(movePageParam));
     }
+
+    async movePage() {
+        const url = "/api/pages/move";
+        return await aPostFetch(url, getNoteUIParamJsonStr());
+    }
 }
 
 export {NoteMenuApi}

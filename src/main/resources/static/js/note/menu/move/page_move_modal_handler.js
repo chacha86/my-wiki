@@ -1,7 +1,5 @@
-import {NoteData, ItemData, NoteRenderer} from "../../note_renderer.js";
-import {PageMoveModalRenderer} from "./page_move_modal_renderer.js";
+import {ItemData} from "../../note_renderer.js";
 import {NoteMenuApi} from "../note_menu_api.js";
-import {NotePageRenderer} from "../../note_page/note_page_renderer.js";
 import {NoteParam} from "../../noteParam.js";
 import {HandlerFactory, RendererFactory} from "../../../initializer.js";
 
@@ -45,19 +43,19 @@ class PageMoveModalHandler {
                 const currentSelectedNoteElement = e.target;
                 const noteIdNo = this.getNoteIdNoFromElement(currentSelectedNoteElement);
                 const destinationNoteId = ItemData.getNoteIdByItemNo(noteIdNo);
-                const moveTargetNoteId = RendererFactory.get("note").props.selectedNoteId;
+                // const moveTargetNoteId = RendererFactory.get("note").props.selectedNoteId;
                 const itemInfo = ItemData.getItemInfoById(ItemData.getNoteIdByItemNo(noteIdNo));
                 // prevSelectedNoteElement = this.getElementByDataNoteId(NoteData.getNo(pageMoveModalDataRefer.destinationNoteId));
                 // currentSelectedNoteElement = e.target;
                 // const noteIdNo = currentSelectedNoteElement.getAttribute('data-note-id');
-                const data = await HandlerFactory.get("noteMenu").getMoveNoteTree(ItemData.getItemNoById(moveTargetNoteId));
+                const data = await HandlerFactory.get("noteMenu").getMovePageTree();
 
                 if (itemInfo.itemType === "group") {
                     console.log("그룹은 선택할 수 없습니다.");
                     return;
                 }
 
-                moveParam.moveTargetNoteId = moveTargetNoteId;
+                // moveParam.moveTargetNoteId = moveTargetNoteId;
                 moveParam.destinationNoteId = destinationNoteId;
                 moveParam.moveTargetPageId = param.moveTargetPageId;
                 moveParam.data = data;
@@ -74,7 +72,7 @@ class PageMoveModalHandler {
 
         document.querySelector("#move-btn a").addEventListener("click", async () => {
             const destinationNoteId = RendererFactory.get("pageMoveModal").props.destinationNoteId;
-            const moveTargetNoteId = RendererFactory.get("pageMoveModal").props.moveTargetNoteId;
+            // const moveTargetNoteId = RendererFactory.get("pageMoveModal").props.moveTargetNoteId;
             const moveTargetPageId = RendererFactory.get("pageMoveModal").props.moveTargetPageId;
             const notePageParam = new NoteParam();
             const moveParam = new NoteParam();
@@ -84,29 +82,55 @@ class PageMoveModalHandler {
                 return;
             }
 
-            const updateMovePageParam = {
-                "pageIdNo": ItemData.getItemNoById(moveTargetPageId),
-                "noteIdNo": ItemData.getItemNoById(destinationNoteId)
-            };
+            const selectedNoteId = RendererFactory.get("note").props.selectedNoteId;
+            const selectedPageId = RendererFactory.get("notePage").props.selectedPageId;
+            const moveTargetPageIdNo = ItemData.getItemNoById(moveTargetPageId);
+            const destinationNoteIdNo = ItemData.getItemNoById(destinationNoteId);
 
-            const msg = await HandlerFactory.get("noteMenu").updateMovePage(updateMovePageParam);
+            const msg = await HandlerFactory.get("noteMenu").updateMovePage(moveTargetPageIdNo, destinationNoteIdNo);
 
-            notePageParam.selectedPageId = moveTargetPageId;
-            notePageParam.sortType = RendererFactory.get("notePage").props.sortType;
-            notePageParam.direction = RendererFactory.get("notePage").props.direction;
-            notePageParam.data = await HandlerFactory.get("noteMenu").getNotePageData(RendererFactory.get("note").props.selectedNoteId);
+            if(moveTargetPageId === selectedPageId) {
+                const noteParam = new NoteParam();
+                noteParam.selectedNoteId = destinationNoteId;
+                noteParam.data = await HandlerFactory.get("note").getNoteData();
+                RendererFactory.get("note").render(noteParam);
+            }
+
+            const sortType = RendererFactory.get("notePage").props.sortType;
+            const direction = RendererFactory.get("notePage").props.direction;
+
+            notePageParam.selectedNoteId = destinationNoteId;
+            notePageParam.selectedPageId = selectedPageId;
+            notePageParam.sortType = sortType;
+            notePageParam.direction = direction;
+            notePageParam.data = await HandlerFactory.get("notePage").getNotePageData(destinationNoteId, sortType, direction);
 
             RendererFactory.get("notePage").render(notePageParam);
 
             moveParam.destinationNoteId = destinationNoteId;
-            moveParam.moveTargetNoteId = moveTargetNoteId;
             moveParam.moveTargetPageId = moveTargetPageId;
-            moveParam.data = await HandlerFactory.get("noteMenu").getMoveNoteTree(ItemData.getItemNoById(moveTargetNoteId));
+            moveParam.data = await HandlerFactory.get("noteMenu").getMovePageTree();
 
             RendererFactory.get("pageMoveModal").render(moveParam);
         });
     }
 
+    setMoveCloseBtn(moveCloseBtnDiv, param) {
+        const moveCloseBtn = `
+            <button class="btn move-close">Close</button>
+        `;
+
+        moveCloseBtnDiv.innerHTML = "";
+        moveCloseBtnDiv.innerHTML = moveCloseBtn;
+
+        document.querySelector("#move-close-btn button").addEventListener("click", () => {
+            const moveParam = new NoteParam();
+            moveParam.destinationNoteId = null;
+            moveParam.data = param.data;
+            RendererFactory.get("pageMoveModal").render(moveParam);
+            document.querySelector("#my_modal_2").close();
+        });
+    }
     getNoteIdNoFromElement(element) {
         return element.getAttribute('data-note-id');
     }
@@ -114,6 +138,8 @@ class PageMoveModalHandler {
     getElementByDataNoteId(dataNoteId) {
         return document.querySelector(`[data-note-id="${dataNoteId}"]`);
     }
+
+
 }
 
 export {PageMoveModalHandler}

@@ -78,19 +78,19 @@ class NotePageHandler {
                 return;
             }
 
-            // const itemInfo = ItemData.getItemInfoById(param.selectedNoteId);
             const noteIdNo = ItemData.getItemNoById(param.selectedNoteId);
             const msg = await this.notePageApi.addPage(noteIdNo);
 
             const pageParam = new NoteParam();
 
             const noteId = param.selectedNoteId;
+            const pageId = param.selectedPageId;
             const sortType = RendererFactory.get("notePage").props.sortType;
             const direction = RendererFactory.get("notePage").props.direction;
 
             pageParam.data = await HandlerFactory.get("notePage").getNotePageData(noteId, sortType, direction);
             pageParam.selectedNoteId = noteId;
-            pageParam.selectedPageId = null;
+            pageParam.selectedPageId = pageId;
             RendererFactory.get("notePage").render(pageParam);
         });
     }

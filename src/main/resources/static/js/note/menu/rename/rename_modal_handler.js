@@ -22,6 +22,7 @@ class RenameModalHandler {
             const renderParam = new NoteParam();
 
             let renderer = RendererFactory.get("note");
+            const selectedNoteId = renderer.props.selectedNoteId;
             let msg = "";
 
             if(itemInfo.itemType === 'page') {
@@ -30,13 +31,13 @@ class RenameModalHandler {
 
                 renderParam.sortType = renderer.props.sortType;
                 renderParam.direction = renderer.props.direction;
-                renderParam.selectedNoteId = renderer.props.selectedNoteId;
                 renderParam.selectedPageId = renderer.props.selectedPageId;
-                renderParam.data = await HandlerFactory.get("notePage").getNotePageData(renderer.props.selectedNoteId, renderer.props.sortType, renderer.props.direction);
+                renderParam.selectedNoteId = selectedNoteId;
+                renderParam.data = await HandlerFactory.get("notePage").getNotePageData(selectedNoteId, renderer.props.sortType, renderer.props.direction);
             }
             else {
                 msg = await this._renameNote(itemInfo.itemIdNo, newName);
-                renderParam.selectedNoteId = renderer.props.selectedNoteId;
+                renderParam.selectedNoteId = selectedNoteId;
                 renderParam.data = await HandlerFactory.get("note").getNoteData();
             }
 

@@ -7,7 +7,6 @@ class PageMoveModalRenderer {
         this.renderTarget = "move-note-modal";
         this.props = {
             'destinationNoteId': null,
-            'moveTargetNoteId': null,
             'moveTargetPageId': null,
             'data': null
         };
@@ -69,17 +68,20 @@ class PageMoveModalRenderer {
 
         let moveBtn = document.querySelector("#move-btn");
         this.eventHandler.setUpdateApiToMoveBtn(moveBtn, param);
+
+        let closeBtn = document.querySelector("#move-close-btn");
+        this.eventHandler.setMoveCloseBtn(closeBtn, param);
     }
 
     renderSelectEffect() {
-        if (this.props.targetNoteId != null) {
-            let targetNoteIdNo = ItemData.getItemNoById(this.props.targetNoteId);
-            const selectedItem = document.querySelector(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
-            let originClass = selectedItem.getAttribute("class");
-            let customClass = " bg-gray-300 rounded-md";
-            let newClass = originClass + customClass;
-            selectedItem.setAttribute("class", newClass);
-        }
+        // if (this.props.moveTargetNoteId != null) {
+        //     let targetNoteIdNo = ItemData.getItemNoById(this.props.moveTargetPageId);
+        //     const selectedItem = document.querySelector(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
+        //     let originClass = selectedItem.getAttribute("class");
+        //     let customClass = " bg-gray-300 rounded-md";
+        //     let newClass = originClass + customClass;
+        //     selectedItem.setAttribute("class", newClass);
+        // }
         if(this.props.destinationNoteId != null) {
             let targetNoteIdNo = ItemData.getItemNoById(this.props.destinationNoteId);
             const selectedItem = document.querySelector(".move-tree-content[data-note-id='" + targetNoteIdNo + "']");
@@ -141,10 +143,14 @@ class PageMoveModalRenderer {
         let itemContentHover = " hover:bg-gray-200 hover:rounded-md";
 
         let itemParent = "item parent" + item;
+        if(note.groupYn === 0) {
+            itemParent += itemContentHover;
+        }
+
         return `
             <div class="item-group">
                 <div class="${itemParent}" open="true">
-                    <span data-note-id="${note.id}" class="${"move-tree-content" + itemContent + itemContentHover}" selected="false">${note.name}</span>
+                    <span data-note-id="${note.id}" class="${"move-tree-content" + itemContent}" selected="false">${note.name}</span>
                 </div>
                 ${note.groupYn === 1 ? this.createChildNoteTree(note, noteUIParam, this.createNoteTree.bind(this)) : ''}
             </div>

@@ -319,6 +319,15 @@ class NoteMenuHandler {
 
         noteParam.data = await HandlerFactory.get("note").getNoteData();
         RendererFactory.get("note").render(noteParam);
+
+        const notePageParam = new NoteParam();
+        notePageParam.selectedNoteId = null;
+        RendererFactory.get("notePage").render(notePageParam);
+
+        const notePageContentParam = new NoteParam();
+        notePageContentParam.selectedPageId = null;
+        RendererFactory.get("notePageContent").render(notePageContentParam);
+
     }
 
     async deleteNote(noteIdNo) {
@@ -327,14 +336,33 @@ class NoteMenuHandler {
 
     async _deletePage(param) {
         const itemInfo = param.itemInfo;
-        const msg = await this.noteMenuApi.deletePage(itemInfo.itemIdNo);
+        const selectedNoteId = RendererFactory.get("note").props.selectedNoteId;
+        const notePageParam = new NoteParam();
+        const notePageContentParam = new NoteParam();
 
-        if(param.selectedPageId === ItemData.getPageIdByItemNo(itemInfo.itemIdNo)) {
-            param.selectedPageId = null;
+        let selectedPageId = RendererFactory.get("notePage").props.selectedPageId;
+
+        const msg = await this.deletePage(itemInfo.itemIdNo);
+
+        if(selectedPageId === ItemData.getPageIdByItemNo(itemInfo.itemIdNo)) {
+            selectedPageId = null;
         }
 
-        await new NotePageRenderer(param).render();
-        await new NotePageContentRenderer(param).render();
+        notePageParam.selectedNoteId = selectedNoteId;
+        notePageParam.selectedPageId = selectedPageId;
+        notePageParam.sortType = param.sortType;
+        notePageParam.direction = param.direction;
+
+        notePageParam.data = await HandlerFactory.get("notePage").getNotePageData(selectedNoteId, param.sortType, param.direction);
+        RendererFactory.get("notePage").render(notePageParam);
+
+        notePageContentParam.selectedPageId = selectedPageId;
+        RendererFactory.get("notePageContent").render(notePageContentParam);
+
+    }
+
+    async deletePage(pageIdNo) {
+        return await this.noteMenuApi.deletePage(pageIdNo);
     }
 
     async _moveNoteModal(param) {
@@ -364,6 +392,9 @@ class NoteMenuHandler {
         RendererFactory.get("pageMoveModal").render(moveParam);
         moveModal.show();
     }
+    async getMovePageTree() {
+        return await this.noteMenuApi.movePage();
+    }
 
     async _renameModal(param) {
         const renameModal = document.querySelector('#my_modal_1');
@@ -379,7 +410,7 @@ class NoteMenuHandler {
 
     async updateMovePage(pageIdNo, noteIdNo) {
         const updateMovePageParam = {
-            noteIdNo: noteIdNo,
+            noteId: noteIdNo,
             pageIdNo: pageIdNo
         };
         return await this.noteMenuApi.updateMovePage(updateMovePageParam);

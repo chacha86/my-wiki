@@ -58,12 +58,17 @@ class NotePageContentHandler {
             let msg = await this.notePageContentApi.deleteContent(deleteContentParam);
 
             const pageParam = new NoteParam();
+            const contentParam = new NoteParam();
 
             pageParam.selectedNoteId = param.selectedNoteId;
             pageParam.selectedPageId = null;
             pageParam.data = await HandlerFactory.get("notePage").getNotePageData(param.selectedNoteId, RendererFactory.get("notePage").props.sortType, RendererFactory.get("notePage").props.direction);
 
             RendererFactory.get("notePage").render(pageParam);
+
+            contentParam.selectedPageId = null;
+            RendererFactory.get("notePageContent").render(contentParam);
+
 
             // const contentParam = new NoteParam();
             // contentParam.selectedNoteId = param.selectedNoteId;

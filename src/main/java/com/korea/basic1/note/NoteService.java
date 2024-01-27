@@ -144,8 +144,19 @@ public class NoteService {
         }
         return noteDtoList;
     }
+    public List<NoteTreeDto> buildNoteTreeDtoForPage() {
 
-    public List<NoteTreeDto> buildNoteTreeDtoForMove(Long noteId) {
+        List<NoteTreeDto> parentNoteList = new ArrayList<>();
+
+        for (Note parentNote : getParentNoteList()) {
+            NoteTreeDto havingChildrenNoteTreeDto = getHavingChildrenNoteTreeDto(parentNote);
+            parentNoteList.add(havingChildrenNoteTreeDto);
+        }
+
+        return parentNoteList;
+
+    }
+    public List<NoteTreeDto> buildNoteTreeDtoForNote(Long noteId) {
 
         List<NoteTreeDto> parentNoteList = new ArrayList<>();
 

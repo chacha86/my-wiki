@@ -28,8 +28,12 @@ class NotePageContentRenderer {
             }
         });
 
+        if(param.selectedPageId == null) {
+            return;
+        }
+
         if (this.props.data == null) {
-            this.props.data = await this.handler.getNotePageData(this.props.selectedNoteId, this.props.sortType, this.props.direction);
+            this.props.data = await this.handler.getContentByPageId(param.selectedPageId);
         }
     }
 
@@ -37,9 +41,9 @@ class NotePageContentRenderer {
         await this.preRender(param);
 
         const contentHeader = document.querySelector("#" + this.renderTarget);
+        contentHeader.innerHTML = "";
 
         if (param.selectedPageId == null) {
-            contentHeader.innerHTML = "";
             editor.setMarkdown("");
             return;
         }

@@ -1,8 +1,8 @@
 package com.korea.basic1.note.tag;
 
-import com.korea.basic1.note.Note;
-import com.korea.basic1.note.NoteProcessingService;
-import com.korea.basic1.note.NoteService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.korea.basic1.note.*;
 import com.korea.basic1.note.page.NotePage;
 import com.korea.basic1.note.page.NotePageService;
 import com.korea.basic1.note.pageDetail.NotePageDetail;
@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/pages")
@@ -68,5 +70,27 @@ public class NotePageRestController {
         Note destination = noteService.getNoteById(updateMovePageParamDto.getNoteId());
         NotePage result = notePageService.movePage(target, destination);
         return "{\"msg\" : \"페이지를 이동하였습니다.\"}";
+    }
+    @Getter
+    @Setter
+    private static class PageMoveTreeDto {
+        private List<NoteTreeDto> noteTree;
+    }
+    @RequestMapping("move")
+    public String movePage() {
+        List<NoteTreeDto> noteTreeForPage = noteService.buildNoteTreeDtoForPage();
+        String jsonStr = null;
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            PageMoveTreeDto pageMoveTreeDto = new PageMoveTreeDto();
+            pageMoveTreeDto.setNoteTree(noteTreeForPage);
+
+            jsonStr = objectMapper.writeValueAsString(pageMoveTreeDto);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return jsonStr;
     }
 }

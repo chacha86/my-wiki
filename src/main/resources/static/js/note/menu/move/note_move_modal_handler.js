@@ -118,7 +118,6 @@ class NoteMoveModalHandler {
             RendererFactory.get("noteMoveModal").render(moveParam);
             document.querySelector("#my_modal_2").close();
         });
-
     }
 
     getNoteIdNoFromElement(element) {

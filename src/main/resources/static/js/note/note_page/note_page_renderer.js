@@ -7,7 +7,6 @@ class NotePageRenderer {
     constructor() {
         this.renderTarget = "page-item-list";
         this.props = {
-            'selectedNoteId': null,
             'selectedPageId': null,
             'prevPageId': null,
             'sortType': 'TITLE',
@@ -25,18 +24,28 @@ class NotePageRenderer {
             }
         });
 
+        if(param.selectedNoteId == null) {
+            return;
+        }
+
         if (this.props.data == null) {
-            this.props.data = await this.pageHandler.getNotePageData(this.props.selectedNoteId, this.props.sortType, this.props.direction);
+            this.props.data = await this.pageHandler.getNotePageData(param.selectedNoteId, this.props.sortType, this.props.direction);
         }
     }
 
     async render(param) {
         await this.preRender(param);
 
-        const data = this.props.data;
         const pageItemList = document.querySelector("#" + this.renderTarget);
-
         pageItemList.innerHTML = "";
+
+        if(param.selectedNoteId == null) {
+            return;
+        }
+
+
+        const data = this.props.data;
+
         const html = `
             <ul>
                 ${this.createNotePage(data.notePageDtoList)}
