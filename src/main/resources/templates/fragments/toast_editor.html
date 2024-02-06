@@ -8,7 +8,7 @@
 
 <div th:fragment="test" class="toast-editor-container">
     <div id="editor" class="text-red text-left"></div>
-    <script th:inline="javascript">
+    <script>
 
         const Editor = toastui.Editor;
         const editor = new Editor({
@@ -18,7 +18,6 @@
             initialEditType: "markdown",
             previewStyle: "vertical",
             hideModeSwitch: true,
-            initialValue: [[${pageDetail.notePageDetail.content}]]
         });
 
         const wysiwygIframe = document.querySelector('.md-mode .ProseMirror');

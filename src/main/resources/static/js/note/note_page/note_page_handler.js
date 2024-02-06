@@ -38,27 +38,36 @@ class NotePageHandler {
         pageItemList.forEach(item => {
             item.addEventListener("click", async (e) => {
                 const pageId = item.parentElement.getAttribute("id");
-                console.log("dfsdf");
-                console.log(pageId);
                 if (pageId != null) {
                     const pageParam = new NoteParam();
-
-                    const noteId = param.selectedNoteId;
+                    const selectedNoteId = param.selectedNoteId;
+                    const prevPageId = param.prevPageId;
                     const sortType = RendererFactory.get("notePage").props.sortType;
                     const direction = RendererFactory.get("notePage").props.direction;
 
-                    pageParam.data = await HandlerFactory.get("notePage").getNotePageData(noteId, sortType, direction);
-                    pageParam.selectedNoteId = noteId;
+                    pageParam.data = await HandlerFactory.get("notePage").getNotePageData(selectedNoteId, sortType, direction);
+                    pageParam.selectedNoteId = selectedNoteId;
                     pageParam.selectedPageId = pageId;
                     RendererFactory.get("notePage").render(pageParam);
 
                     const contentParam = new NoteParam();
 
-                    contentParam.selectedNoteId = noteId;
+                    contentParam.selectedNoteId = selectedNoteId;
                     contentParam.selectedPageId = pageId;
                     contentParam.data = await HandlerFactory.get("notePageContent").getContentByPageId(pageId);
 
                     RendererFactory.get("notePageContent").render(contentParam);
+
+                    window.history.pushState({
+                            'selectedNoteId': RendererFactory.get("note").props.selectedNoteId,
+                            'prevNoteId': RendererFactory.get("note").props.prevNoteId,
+                            'selectedPageId' : RendererFactory.get("notePage").props.selectedPageId,
+                            'prevPageId' : RendererFactory.get("notePage").props.prevPageId,
+                            'noteData' : RendererFactory.get("note").props.data,
+                            'pageData' : RendererFactory.get("notePage").props.data},
+                        "",
+                        "/note/" + ItemData.getItemNoById(selectedNoteId) + "/page/" + ItemData.getItemNoById(pageId)
+                    );
                 }
             });
         });

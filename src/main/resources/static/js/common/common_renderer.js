@@ -30,6 +30,8 @@ class CommonRenderer {
     eventHandle(param) {
         const searchInput = document.querySelector("#search-input");
         this.handler.setKeyupToSearchInput(searchInput, param);
+
+        this.handler.setPopState();
     }
 }
 

@@ -2,6 +2,7 @@ package com.korea.basic1;
 
 import com.korea.basic1.note.Note;
 import com.korea.basic1.note.NoteService;
+import com.korea.basic1.note.page.NotePage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,12 +18,7 @@ public class MainController {
 
     @RequestMapping("/")
     public String main(Model model) {
-
-        List<Note> noteList = noteService.getParentNoteList();
-        if (noteList.isEmpty()) {
-            return "redirect:add";
-        }
-        return "redirect:/note/" + noteList.get(0).getId();
+        return "note_list";
     }
 
     @RequestMapping("/async")

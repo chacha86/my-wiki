@@ -21,17 +21,12 @@ class NoteHandler {
             item.addEventListener("click", async (e) => {
                 const noteId = item.parentElement.getAttribute("id");
                 if (noteId != null) {
-                    // noteDataRefer.prevNoteId = noteDataRefer.selectedNoteId;
-                    // noteDataRefer.selectedNoteId = noteId;
-                    // changeSelectedItem(noteId, noteDataRefer.prevNoteId, " bg-gray-500 text-white rounded-md");
-                    //
-                    // let param = {
-                    //     selectedNoteId: noteDataRefer.selectedNoteId,
-                    //     prevNoteId: noteDataRefer.prevNoteId,
-                    // };
-
                     const noteParam = new NoteParam();
+                    const prevNoteId = RendererFactory.get("note").props.prevNoteId;
+                    const selectedNoteId = RendererFactory.get("note").props.selectedNoteId;
+
                     noteParam.data = await this.noteApi.getAllNotes(getNoteUIParamJsonStr());
+                    noteParam.prevNoteId = selectedNoteId;
                     noteParam.selectedNoteId = noteId;
                     RendererFactory.get("note").render(noteParam);
 
@@ -48,6 +43,14 @@ class NoteHandler {
 
                     RendererFactory.get("notePage").render(pageParam);
 
+                    window.history.pushState({
+                        'selectedNoteId': RendererFactory.get("note").props.selectedNoteId,
+                        'prevNoteId': RendererFactory.get("note").props.prevNoteId,
+                        'noteData' : RendererFactory.get("note").props.data,
+                        'pageData' : RendererFactory.get("notePage").props.data},
+                        "",
+                        "/note/" + ItemData.getItemNoById(noteId)
+                    );
                 }
             });
         });

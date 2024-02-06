@@ -127,6 +127,7 @@ class NoteRenderer {
         this.props = {
             'selectedNoteId': null,
             'prevNoteId': null,
+            'currentNoteUrl': null,
             'data': null,
         }
 
@@ -241,7 +242,7 @@ class NoteRenderer {
 
         return `
             <li id="${'note-' + note.id}" data-item-text="${note.name}" data-item-type="${isGroup ? 'group' : 'note'}" class="${groupItemClass}">
-                ${(!isGroup) ? `<a class=${noteAnchorClass}">${note.name}</a>` : ``}
+                ${(!isGroup) ? `<a class=${noteAnchorClass}>${note.name}</a>` : ``}
                 ${isGroup ? this.createChildNoteTree(note, noteUIParam, noteItemClass, noteAnchorClass, this.createNoteTree.bind(this)) : ''}
             </li>
         `
